@@ -1,0 +1,20 @@
+{{#dirtytranslation}}
+    <div class="alert alert-warning">{{#str}}dirtytranslation, filter_translations{{/str}}</div>
+{{/dirtytranslation}}
+<dl>
+    <dt>{{#str}}rawtext, filter_translations{{/str}}</dt>
+    <dd>{{{rawtext}}}</dd>
+    <dt>{{#str}}generatedhash, filter_translations{{/str}}</dt>
+    <dd>{{generatedhash}}</dd>
+    <dt>{{#str}}foundhash, filter_translations{{/str}}</dt>
+    <dd>{{#foundhash}}{{foundhash}}{{/foundhash}}{{^foundhash}}{{#str}}nohash, filter_translations{{/str}}{{/foundhash}}</dd>
+    <dt>{{#str}}translationid, filter_translations{{/str}}</dt>
+    <dd>{{#translationid}}{{translationid}}{{/translationid}}{{^translationid}}{{#str}}notranslation, filter_translations{{/str}}{{/translationid}}</dd>
+</dl>
+<form action="{{config.wwwroot}}/filter/translations/edittranslation.php" method="post" target="_blank">
+    <input type="hidden" name="rawtext" value="{{{rawtext_unprocessed}}}">
+    <input type="hidden" name="generatedhash" value="{{{generatedhash}}}">
+    <input type="hidden" name="foundhash" value="{{{foundhash}}}">
+    <input type="hidden" name="id" value="{{{translationid}}}">
+    <button type="submit" class="btn btn-primary">{{#str}}edittranslationsbutton, filter_translations{{/str}}</button>
+</form>
