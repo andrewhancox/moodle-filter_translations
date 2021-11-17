@@ -51,7 +51,13 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
  * @return string The HTML
  */
 function filter_translations_render_navbar_output(\renderer_base $renderer) {
-    global $PAGE;
+    global $PAGE, $CFG;
+
+    if (!filter_is_enabled('translations')) {
+        return '';
+    }
+
+    require_once("$CFG->dirroot/filter/translations/filter.php");
 
     $currentinlinetranslationstate = filter_translations::checkinlinestranslation();
     $inlinetransationtate = optional_param('inlinetransationtate', null, PARAM_BOOL);
