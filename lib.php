@@ -72,3 +72,12 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
             'inlinetranslationstate' => $currentinlinetranslationstate
     ]);
 }
+
+function filter_translations_after_config() {
+    global $CFG;
+    require_once("$CFG->dirroot/filter/translations/filter.php");
+
+    if (filter_translations::checkinlinestranslation()) {
+        $CFG->formatstringstriptags = false;
+    }
+}
