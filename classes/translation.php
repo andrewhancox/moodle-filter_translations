@@ -35,8 +35,8 @@ class translation extends persistent {
                 'md5key'               => [
                         'type' => PARAM_TEXT,
                 ],
-                'lastgeneratedhash'        => [
-                        'type' => PARAM_TEXT,
+                'lastgeneratedhash'    => [
+                        'type'    => PARAM_TEXT,
                         'default' => ''
                 ],
                 'targetlanguage'       => [

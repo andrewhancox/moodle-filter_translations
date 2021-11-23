@@ -24,6 +24,7 @@
  */
 
 use filter_translations\translation;
+use filter_translations\translator;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,12 +39,13 @@ class filter_translations extends moodle_text_filter {
      * @see filter_manager::apply_filter_chain()
      */
     public function filter($text, array $options = []) {
-        $generatedhash = $this->generatehash($text);
-        $foundhash = $this->findandremovehash($text);
+        global $CFG;
 
-        $translation = $this->getbesttranslation(
-                translation::get_records(['md5key' => $foundhash ?? $generatedhash])
-        );
+        $foundhash = $this->findandremovehash($text);
+        $generatedhash = $this->generatehash($text);
+
+        $translator = new translator();
+        $translation = $translator->get_best_translation(current_language(), $generatedhash, $foundhash);
 
         if (empty($translation)) {
             return $text . $this->addinlinetranslation($text, $generatedhash, $foundhash);
@@ -82,21 +84,6 @@ class filter_translations extends moodle_text_filter {
         $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
 
         return $translationhashes[1];
-    }
-
-    protected function getbesttranslation($translations) {
-        $currlang = current_language();
-        $prioritisedlanguages = array_reverse(array_merge(['en'], get_string_manager()->get_language_dependencies($currlang)));
-
-        foreach ($prioritisedlanguages as $lang) {
-            foreach ($translations as $translation) {
-                if ($translation->get('targetlanguage') == $lang) {
-                    return $translation;
-                }
-            }
-        }
-
-        return null;
     }
 
     protected function grantaccesstotranslationfiles($translation) {
