@@ -41,6 +41,9 @@ if (empty($id)) {
 }
 
 $context = context_system::instance();
+
+require_capability('filter/translations:edittranslations', $context);
+
 $url = new moodle_url('/filter/translations/edittranslation.php');
 $return_url = new moodle_url('/filter/translations/managetranslations.php');
 

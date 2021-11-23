@@ -57,12 +57,17 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         return '';
     }
 
+    if (!has_capability('filter/translations:edittranslations', $PAGE->context)) {
+        return '';
+    }
+
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
     $currentinlinetranslationstate = filter_translations::checkinlinestranslation();
     $inlinetransationtate = optional_param('inlinetransationtate', null, PARAM_BOOL);
 
     if (isset($inlinetransationtate)) {
+        require_capability('filter/translations:edittranslations', $PAGE->context);
         \filter_translations::toggleinlinestranslation($inlinetransationtate);
         redirect($PAGE->url);
     }

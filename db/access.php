@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,27 +24,13 @@
  * @copyright 2021, Andrew Hancox
  */
 
-use filter_translations\managetranslations_table;
-
-require_once(dirname(__FILE__) . '/../../config.php');
-
-$context = context_system::instance();
-
-require_capability('filter/translations:edittranslations', $context);
-
-$PAGE->set_context($context);
-
-$title = get_string('managetranslations', 'filter_translations');
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
-$PAGE->set_url(new moodle_url('/filter/translations/managetranslations.php'));
-
-echo $OUTPUT->header();
-
-$table = new managetranslations_table(null, 'translationsname');
-$table->define_baseurl('');
-$table->out(100, true);
-
-echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
-
-echo $OUTPUT->footer();
+$capabilities = [
+    'filter/translations:edittranslations' => [
+        'captype' => 'write',
+        'riskbitmaskt' => 'RISK_CONFIG',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ]
+];
