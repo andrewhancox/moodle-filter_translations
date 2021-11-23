@@ -26,8 +26,12 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
     var translation_button = {
         'init': function () {
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
+            $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
         },
-        'opentranslation': function () {
+        'opentranslation': function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+
             var clickedbutton = $(this);
 
             var keys = [
