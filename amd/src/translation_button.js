@@ -25,6 +25,10 @@
 define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function ($, ModalFactory, Str, templates) {
     var translation_button = {
         'init': function () {
+            $('.filter_translations_btn_translate').each(function() {
+                $(this).attr('role', 'button'); // Purify_html will have removed this attribute.
+            });
+
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
             $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
         },
@@ -41,14 +45,23 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                 },
             ];
 
-            var context = {
-                'rawtext': decodeURIComponent(clickedbutton.data('rawtext').replace(/\+/g, ' ')),
-                'rawtext_unprocessed': clickedbutton.data('rawtext'),
-                'generatedhash': clickedbutton.data('generatedhash'),
-                'foundhash': clickedbutton.data('foundhash'),
-                'translationid': clickedbutton.data('translationid'),
-                'dirtytranslation': clickedbutton.data('dirtytranslation')
-            };
+            var classList = clickedbutton.prop('classList');
+            var context = null;
+
+            for (var i = 0, l = classList.length; i < l; ++i) {
+                var matches = classList[i].match(/translationkey_([a-zA-Z0-9]+)/);
+                if (matches && matches.length == 2) {
+                    context = translation_button.objects[matches[1]];
+                    break;
+                }
+            }
+
+            if (!context) {
+                return;
+            }
+
+            context.rawtext_unprocessed = context.rawtext;
+            context.rawtext = decodeURIComponent(context.rawtext_unprocessed.replace(/\+/g, ' '));
 
             Str.get_strings(keys).then(function (langStrings) {
                 return templates.render('filter_translations/translationdetailsmodalbody', context).done(function (html) {
@@ -61,7 +74,11 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                     });
                 });
             }).fail(Notification.exception);
-        }
+        },
+        'register': function (key, translationinfo) {
+            translation_button.objects[key] = translationinfo;
+        },
+        objects: {}
     };
 
     return translation_button;

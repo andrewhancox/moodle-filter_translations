@@ -111,35 +111,41 @@ class filter_translations extends moodle_text_filter {
         }
     }
 
+    private static $jsinited = false;
+    private static $registeredtranslations = [];
+
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
 
         if (!self::checkinlinestranslation()) {
             return '';
         }
 
-        $this->init_js();
-
-        return $OUTPUT->render_from_template('filter_translations/translatebutton', (object) [
-                'rawtext'          => urlencode($rawtext),
-                'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
-                'goodtranslation'  => isset($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
-                'generatedhash'    => $generatedhash,
-                'foundhash'        => $foundhash,
-                'translationid'    => isset($translation) ? $translation->get('id') : ''
-        ]);
-    }
-
-    private static $jsinited = false;
-
-    protected function init_js() {
-        if (self::$jsinited) {
-            return;
+        if (!self::$jsinited) {
+            $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init');
+            self::$jsinited = true;
         }
 
-        global $PAGE;
-        $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init');
-        self::$jsinited = true;
+        $obj = (object) [
+                'rawtext'          => urlencode($rawtext),
+                'generatedhash'    => $generatedhash,
+                'foundhash'        => $foundhash,
+                'translationid'    => isset($translation) ? $translation->get('id') : '',
+                'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
+        ];
+        $translationkey = md5(print_r($obj, true));
+        $jsobj = json_encode($obj);
+
+        if (!in_array($translationkey, self::$registeredtranslations)) {
+            $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$translationkey', $jsobj);});");
+            self::$registeredtranslations[] = $translationkey;
+        }
+
+        return $OUTPUT->render_from_template('filter_translations/translatebutton', (object)[
+                'translationkey' => $translationkey,
+                'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
+                'goodtranslation'  => isset($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
+                ]);
     }
 
     public static function toggleinlinestranslation($state) {
