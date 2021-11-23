@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,9 +24,12 @@
  * @copyright 2021, Andrew Hancox
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2021110905;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020061511;        // Requires this Moodle version
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_STABLE;
+$definitions = [
+    'translatedtext' => [
+        'mode' => cache_store::MODE_REQUEST,
+        'simplekeys' => true,
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 100,
+    ],
+];

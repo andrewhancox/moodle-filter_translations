@@ -41,6 +41,14 @@ class filter_translations extends moodle_text_filter {
     public function filter($text, array $options = []) {
         global $CFG;
 
+        $cachekey = $this->generatehash($text);
+        $translatedtextcache = cache::make('filter_translations', 'translatedtext');
+        $renderedfilterscached = $translatedtextcache->get($cachekey);
+
+        if ($renderedfilterscached !== false) {
+            return $renderedfilterscached;
+        }
+
         $foundhash = $this->findandremovehash($text);
         $generatedhash = $this->generatehash($text);
 
