@@ -25,45 +25,50 @@
 define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function ($, ModalFactory, Str, templates) {
     var translation_button = {
         'init': function () {
-            $('.filter_translations_btn_translate').each(function() {
-                $(this).attr('role', 'button'); // Purify_html will have removed this attribute.
-            });
-
+            translation_button.findandinjectbuttons();
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
             $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
+        },
+        'findandinjectbuttons': function() {
+            var encodedone = "\u{200B}"; // Zero-Width Space
+            var encodedzero = "\u{200C}"; // Zero-Width Non-Joiner
+            var encodedseperator = "\u{200D}"; // Zero-Width Joiner
+
+            var elems = translation_button.findElementsDirectlyContainingText(document, encodedseperator + encodedseperator);
+            elems.forEach(function(elem) {
+                var matches = new RegExp(encodedseperator + encodedseperator + '([' + encodedone + encodedzero + ']*)');
+
+                var regexzero = new RegExp(encodedzero, 'g');
+                var regexone = new RegExp(encodedone, 'g');
+
+                var binary = matches.exec($(elem).html())[1].replace(regexone, '1').replace(regexzero, '0');
+                var key = parseInt(binary, 2);
+
+                templates.render('filter_translations/translatebutton', {'inpagetranslationid': key}).done(function (html) {
+                    $(elem).append(html);
+
+                    var translationinfo = translation_button.objects[key];
+                    if (translationinfo.dirtytranslation) {
+                        $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-warning');
+                    } else if (translationinfo.goodtranslation) {
+                        $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-success');
+                    }
+                });
+            });
         },
         'opentranslation': function (event) {
             event.stopPropagation();
             event.preventDefault();
 
-            var clickedbutton = $(this);
-
-            var keys = [
-                {
-                    key: 'translationdetails',
-                    component: 'filter_translations'
-                },
-            ];
-
-            var classList = clickedbutton.prop('classList');
-            var context = null;
-
-            for (var i = 0, l = classList.length; i < l; ++i) {
-                var matches = classList[i].match(/translationkey_([a-zA-Z0-9]+)/);
-                if (matches && matches.length == 2) {
-                    context = translation_button.objects[matches[1]];
-                    break;
-                }
-            }
-
-            if (!context) {
-                return;
-            }
+            var context = context = translation_button.objects[$(this).data('inpagetranslationid')];
 
             context.rawtext_unprocessed = context.rawtext;
             context.rawtext = decodeURIComponent(context.rawtext_unprocessed.replace(/\+/g, ' '));
 
-            Str.get_strings(keys).then(function (langStrings) {
+            Str.get_strings([{
+                key: 'translationdetails',
+                component: 'filter_translations'
+            }]).then(function (langStrings) {
                 return templates.render('filter_translations/translationdetailsmodalbody', context).done(function (html) {
                     ModalFactory.create({
                         title: langStrings[0],
@@ -77,6 +82,34 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
         },
         'register': function (key, translationinfo) {
             translation_button.objects[key] = translationinfo;
+
+            if (translationinfo.dirtytranslation) {
+                $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-warning');
+            } else if (translationinfo.goodtranslation) {
+                $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-success');
+            }
+        },
+        'findElementsDirectlyContainingText': function (ancestor, text) {
+            var elements = [];
+            walk(ancestor);
+            return elements;
+
+            function walk(element) {
+                var n = element.childNodes.length;
+                for (var i = 0; i < n; i++) {
+                    var child = element.childNodes[i];
+                    if (child.nodeType === 3 && child.data.indexOf(text) !== -1) {
+                        elements.push(element);
+                        break;
+                    }
+                }
+                for (var i = 0; i < n; i++) {
+                    var child = element.childNodes[i];
+                    if (child.nodeType === 1) {
+                        walk(child);
+                    }
+                }
+            }
         },
         objects: {}
     };

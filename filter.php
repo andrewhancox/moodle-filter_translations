@@ -109,6 +109,12 @@ class filter_translations extends moodle_text_filter {
     private static $jsinited = false;
     private static $registeredtranslations = [];
 
+    private static $inpagetranslationid = 0;
+    private static function get_next_inpagetranslationid() {
+        self::$inpagetranslationid++;
+        return self::$inpagetranslationid;
+    }
+
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
         global $OUTPUT, $PAGE;
 
@@ -127,20 +133,30 @@ class filter_translations extends moodle_text_filter {
                 'foundhash'        => $foundhash,
                 'translationid'    => isset($translation) ? $translation->get('id') : '',
                 'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
+                'goodtranslation'  => isset($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
         ];
         $translationkey = md5(print_r($obj, true));
         $jsobj = json_encode($obj);
 
-        if (!in_array($translationkey, self::$registeredtranslations)) {
-            $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$translationkey', $jsobj);});");
-            self::$registeredtranslations[] = $translationkey;
+        if (!key_exists($translationkey, self::$registeredtranslations)) {
+            $id = self::get_next_inpagetranslationid();
+            $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
+            self::$registeredtranslations[$translationkey] = $id;
+        } else {
+            $id =  self::$registeredtranslations[$translationkey];
         }
 
-        return $OUTPUT->render_from_template('filter_translations/translatebutton', (object)[
-                'translationkey' => $translationkey,
-                'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
-                'goodtranslation'  => isset($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
-                ]);
+        return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR;
+    }
+
+    const ENCODEDONE = "\u{200B}"; // Zero-Width Space
+    const ENCODEDZERO = "\u{200C}"; // Zero-Width Non-Joiner
+    const ENCODEDSEPERATOR = "\u{200D}"; // Zero-Width Joiner
+    private function encodeintegerashiddenchars($int) {
+        $bin = decbin($int);
+        $bin = str_replace('1', self::ENCODEDONE, $bin);
+        $bin = str_replace('0', self::ENCODEDZERO, $bin);
+        return $bin;
     }
 
     public static function toggleinlinestranslation($state) {
