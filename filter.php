@@ -41,6 +41,11 @@ class filter_translations extends moodle_text_filter {
     public function filter($text, array $options = []) {
         global $CFG;
 
+        // Prevent double translation when adding the button.
+        if (strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
+            return $text;
+        }
+
         $cachekey = $this->generatehash($text);
         $translatedtextcache = cache::make('filter_translations', 'translatedtext');
         $renderedfilterscached = $translatedtextcache->get($cachekey);
