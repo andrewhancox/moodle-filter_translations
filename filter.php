@@ -23,7 +23,6 @@
  * @copyright 2021, Andrew Hancox
  */
 
-use filter_translations\translation;
 use filter_translations\translator;
 
 defined('MOODLE_INTERNAL') || die();
@@ -58,28 +57,32 @@ class filter_translations extends moodle_text_filter {
         $generatedhash = $this->generatehash($text);
 
         if (empty($text)) {
-            return $text;
+            $translatedtext = '';
+        } else {
+            $translator = new translator();
+            $translation = $translator->get_best_translation(current_language(), $generatedhash, $foundhash);
+
+            if (empty($translation)) {
+                $translatedtext = $text;
+            } else {
+                $this->grantaccesstotranslationfiles($translation);
+
+                $translatedtext = file_rewrite_pluginfile_urls(
+                    $translation->get('substitutetext'),
+                    'pluginfile.php',
+                    context_system::instance()->id,
+                    'filter_translations',
+                    'substitutetext',
+                    $translation->get('id')
+                );
+            }
+
+            $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translation);
         }
 
-        $translator = new translator();
-        $translation = $translator->get_best_translation(current_language(), $generatedhash, $foundhash);
+        $translatedtextcache->set($cachekey, $translatedtext);
 
-        if (empty($translation)) {
-            return $text . $this->addinlinetranslation($text, $generatedhash, $foundhash);
-        }
-
-        $this->grantaccesstotranslationfiles($translation);
-
-        $translatedtext = file_rewrite_pluginfile_urls(
-                $translation->get('substitutetext'),
-                'pluginfile.php',
-                context_system::instance()->id,
-                'filter_translations',
-                'substitutetext',
-                $translation->get('id')
-        );
-
-        return $translatedtext . $this->addinlinetranslation($text, $generatedhash, $foundhash, $translation);
+        return $translatedtext;
     }
 
     protected function generatehash($text) {
@@ -125,7 +128,7 @@ class filter_translations extends moodle_text_filter {
     }
 
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
-        global $OUTPUT, $PAGE;
+        global $PAGE;
 
         if (!self::checkinlinestranslation()) {
             return '';
@@ -140,9 +143,9 @@ class filter_translations extends moodle_text_filter {
                 'rawtext'          => urlencode($rawtext),
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
-                'translationid'    => isset($translation) ? $translation->get('id') : '',
-                'dirtytranslation' => isset($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
-                'goodtranslation'  => isset($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
+                'translationid'    => !empty($translation) ? $translation->get('id') : '',
+                'dirtytranslation' => !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
+                'goodtranslation'  => !empty($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
         ];
         $translationkey = md5(print_r($obj, true));
         $jsobj = json_encode($obj);
