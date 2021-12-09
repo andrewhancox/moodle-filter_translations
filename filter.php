@@ -57,6 +57,10 @@ class filter_translations extends moodle_text_filter {
         $foundhash = $this->findandremovehash($text);
         $generatedhash = $this->generatehash($text);
 
+        if (empty($text)) {
+            return $text;
+        }
+
         $translator = new translator();
         $translation = $translator->get_best_translation(current_language(), $generatedhash, $foundhash);
 
