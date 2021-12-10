@@ -23,9 +23,24 @@
  * @copyright 2021, Andrew Hancox
  */
 
-defined('MOODLE_INTERNAL') || die();
+use local_certification\certification;
+use local_certification\task\recertreminders;
 
-$plugin->version   = 2021110908;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020061511;        // Requires this Moodle version
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_STABLE;
+function xmldb_filter_translations_upgrade($oldversion) {
+
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2021110908) {
+        $table = new xmldb_table('filter_translations');
+        $field = new xmldb_field('rawtext', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2021110908, 'filter', 'translations');
+    }
+
+    return true;
+}

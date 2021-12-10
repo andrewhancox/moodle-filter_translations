@@ -45,6 +45,10 @@ class translation extends persistent {
                 'contextid'            => [
                         'type' => PARAM_INT,
                 ],
+                'rawtext'       => [
+                        'type'    => PARAM_RAW,
+                        'default' => ''
+                ],
                 'substitutetext'       => [
                         'type'    => PARAM_RAW,
                         'default' => ''

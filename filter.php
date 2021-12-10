@@ -140,7 +140,7 @@ class filter_translations extends moodle_text_filter {
         }
 
         $obj = (object) [
-                'rawtext'          => urlencode($rawtext),
+                'rawtext'          => $rawtext,
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',

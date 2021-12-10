@@ -62,9 +62,6 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
 
             var context = context = translation_button.objects[$(this).data('inpagetranslationid')];
 
-            context.rawtext_unprocessed = context.rawtext;
-            context.rawtext = decodeURIComponent(context.rawtext_unprocessed.replace(/\+/g, ' '));
-
             Str.get_strings([{
                 key: 'translationdetails',
                 component: 'filter_translations'

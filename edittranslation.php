@@ -61,25 +61,42 @@ $istranslationdirty = !empty($generatedhash) && !empty($persistent->get('id')) &
 if (!empty($generatedhash)) {
     $persistent->set('lastgeneratedhash', $generatedhash);
 }
+if (!empty($rawtext)) {
+    $persistent->set('rawtext', $rawtext);
+}
 
 $PAGE->set_context($context);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 $PAGE->set_url($url);
 
-$form = new edittranslationform($url->out(false), ['persistent' => $persistent]);
+if (!isset($rawtext) || $rawtext !== strip_tags($rawtext)) {
+    $formtype = edittranslationform::FORMTYPE_RICH;
+} else if (strpos($rawtext, "\n") !== false) {
+    $formtype = edittranslationform::FORMTYPE_PLAINMULTILINE;
+} else {
+    $formtype = edittranslationform::FORMTYPE_PLAIN;
+}
+
+$form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype]);
 
 if ($data = $form->get_data()) {
+    if ($formtype !== edittranslationform::FORMTYPE_RICH) {
+        $persistent->set('substitutetext', $data->substitutetext_plain);
+    }
+
     $persistent->from_record($form->filter_data_for_persistent($data));
     $persistent->save();
 
-    $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_test_editoroptions(), $context,
+    if ($formtype == edittranslationform::FORMTYPE_RICH) {
+        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_test_editoroptions(), $context,
             'filter_translations',
             'substitutetext', $persistent->get('id'));
 
-    $persistent->set('substitutetext', $data->substitutetext_editor['text']);
-    $persistent->set('substitutetextformat', $data->substitutetext_editor['format']);
-    $persistent->update();
+        $persistent->set('substitutetext', $data->substitutetext_editor['text']);
+        $persistent->set('substitutetextformat', $data->substitutetext_editor['format']);
+        $persistent->update();
+    }
 
     redirect($return_url);
 } else if ($form->is_cancelled()) {
@@ -92,12 +109,7 @@ if ($istranslationdirty) {
     echo $OUTPUT->notification(get_string('dirtytranslation', 'filter_translations'), notification::WARNING);
 }
 
-if (!empty($rawtext)) {
-    echo html_writer::tag('h2', get_string('rawtext', 'filter_translations'));
-    echo html_writer::div(urldecode($rawtext));
-
-    echo html_writer::tag('h2', get_string('translation', 'filter_translations'));
-}
+echo html_writer::tag('h2', get_string('translation', 'filter_translations'));
 
 $form->display();
 

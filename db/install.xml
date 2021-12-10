@@ -11,6 +11,7 @@
         <FIELD NAME="lastgeneratedhash" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="targetlanguage" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="en" SEQUENCE="false"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="rawtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="substitutetext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="substitutetextformat" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
