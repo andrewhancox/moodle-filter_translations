@@ -44,5 +44,5 @@ $string['translationid'] = 'Translation ID';
 $string['translation'] = 'Translation';
 $string['notranslation'] = 'No translation found';
 $string['nohash'] = 'No translation hash key found';
-$string['dirtytranslation'] = 'Translation was created based on different source text';
+$string['dirtytranslation'] = 'Translation was created based on different source text. Please update the translation.';
 $string['cachedef_translatedtext'] = 'Translated text';
