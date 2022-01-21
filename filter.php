@@ -39,6 +39,7 @@ class filter_translations extends moodle_text_filter {
      */
     public function filter($text, array $options = []) {
         global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
 
         // Prevent double translation when adding the button.
         if (strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
