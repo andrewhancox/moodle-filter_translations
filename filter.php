@@ -145,7 +145,7 @@ class filter_translations extends moodle_text_filter {
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',
-                'dirtytranslation' => !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
+                'staletranslation' => !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
                 'goodtranslation'  => !empty($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
         ];
         $translationkey = md5(print_r($obj, true));

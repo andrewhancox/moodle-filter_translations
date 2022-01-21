@@ -57,7 +57,7 @@ if (empty($id)) {
     $url->param('id', $id);
 }
 
-$istranslationdirty = !empty($generatedhash) && !empty($persistent->get('id')) && $persistent->get('lastgeneratedhash') !== $generatedhash;
+$istranslationstale = !empty($generatedhash) && !empty($persistent->get('id')) && $persistent->get('lastgeneratedhash') !== $generatedhash;
 if (!empty($generatedhash)) {
     $persistent->set('lastgeneratedhash', $generatedhash);
 }
@@ -105,8 +105,8 @@ if ($data = $form->get_data()) {
 
 echo $OUTPUT->header();
 
-if ($istranslationdirty) {
-    echo $OUTPUT->notification(get_string('dirtytranslation', 'filter_translations'), notification::WARNING);
+if ($istranslationstale) {
+    echo $OUTPUT->notification(get_string('staletranslation', 'filter_translations'), notification::WARNING);
 }
 
 echo html_writer::tag('h2', get_string('translation', 'filter_translations'));
