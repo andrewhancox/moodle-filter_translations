@@ -26,6 +26,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cachedef_translatedtext'] = 'Translated text';
+$string['clihelptext'] = 'This tool will copy translations from the filter_fulltranslate plugin into the filter_translations plugin.
+Any entries previously copied using this tool will be removed.
+To execute the task run this command again specifying --confirm e.g:
+php cli/migrate_filter_fulltranslate.php --confirm';
 $string['createtranslation'] = 'Create translation';
 $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';

@@ -23,8 +23,7 @@
  * @copyright 2021, Andrew Hancox
  */
 
-use local_certification\certification;
-use local_certification\task\recertreminders;
+use filter_translations\translation;
 
 function xmldb_filter_translations_upgrade($oldversion) {
 
@@ -40,6 +39,17 @@ function xmldb_filter_translations_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2021110908, 'filter', 'translations');
+    }
+
+    if ($oldversion < 2022012400) {
+        $table = new xmldb_table('filter_translations');
+        $field = new xmldb_field('translationsource', XMLDB_TYPE_INTEGER, 10, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $DB->execute("UPDATE {filter_translations} SET translationsource = :manual", ['manual' => translation::SOURCE_MANUAL]);
+        }
+
+        upgrade_plugin_savepoint(true, 2022012400, 'filter', 'translations');
     }
 
     return true;

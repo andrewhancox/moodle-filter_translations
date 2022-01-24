@@ -30,6 +30,9 @@ use core\persistent;
 class translation extends persistent {
     const TABLE = 'filter_translations';
 
+    const SOURCE_MANUAL = 10;
+    const SOURCE_AUTOMATIC = 20;
+
     protected static function define_properties() {
         return array(
                 'md5key'               => [
@@ -58,6 +61,10 @@ class translation extends persistent {
                         'type'    => PARAM_INT,
                         'default' => FORMAT_HTML
                 ],
+                'translationsource' => [
+                    'type' => PARAM_INT,
+                    'default' => self::SOURCE_MANUAL
+                ]
         );
     }
 }
