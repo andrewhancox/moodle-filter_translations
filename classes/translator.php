@@ -25,6 +25,9 @@
 
 namespace filter_translations;
 
+use filter_translations\translationproviders\googletranslate;
+use filter_translations\translationproviders\languagestringreverse;
+
 class translator {
     protected function get_string_manager() {
         return get_string_manager();
@@ -36,7 +39,19 @@ class translator {
 
         $options = $this->get_usable_translations($prioritisedlanguages, $generatedhash, $foundhash);
         $optionsforbestlanguage = $this->filter_options_by_best_language($options, $prioritisedlanguages);
-        return $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
+        $translation = $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
+
+        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash) {
+            $languagestrings = new languagestringreverse();
+            $translation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+        }
+
+        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash) {
+            $google = new googletranslate();
+            $translation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+        }
+
+        return $translation;
     }
 
     private function filter_options_by_best_hash($options, $generatedhash, $foundhash) {
