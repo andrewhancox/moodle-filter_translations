@@ -31,16 +31,6 @@ use core_component;
 
 defined('MOODLE_INTERNAL') || die();
 
-
-/**
- * Standard string_manager implementation
- *
- * Implements string_manager with getting and printing localised strings
- *
- * @package    core
- * @copyright  2010 Petr Skoda {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class languagestringreverse extends translationprovider {
     private function get_flipped_strings_by_component($lang) {
         $flippedstringscache = cache::make('filter_translations', 'flippedstringsbycomponent');
