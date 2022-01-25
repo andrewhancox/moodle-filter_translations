@@ -32,4 +32,16 @@ $definitions = [
         'staticacceleration' => true,
         'staticaccelerationsize' => 100,
     ],
+    'flippedstringsbycomponent' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => false
+    ],
+    'stringsbycomponent' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => false
+    ],
 ];

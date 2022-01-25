@@ -29,4 +29,22 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('managetranslations', '',
             html_writer::link(new moodle_url('/filter/translations/managetranslations.php'),
                     get_string('managetranslations', 'filter_translations'), ['class' => "btn btn-primary"])));
+
+    $settings->add(new admin_setting_heading('languagestringreverseapi', get_string('languagestringreverse', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/languagestringreverse_enable',
+        get_string('languagestringreverse_enable', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_heading('googletranslateapi', get_string('googletranslate', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/google_enable',
+        get_string('google_enable', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_configtext('filter_translations/google_apiendpoint',
+        get_string('google_apiendpoint', 'filter_translations')
+        , '', 'https://translation.googleapis.com/language/translate/v2',
+        PARAM_URL));
+
+    $settings->add(new admin_setting_configtext('filter_translations/google_apikey', get_string('google_apikey', 'filter_translations')
+        , '', null, PARAM_RAW_TRIMMED, 40));
 }
