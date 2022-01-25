@@ -13,7 +13,6 @@ A CLI tool is available to migrate all translations across from the filter_fullt
 It is recommended that you clean out any unwanted translations that may have been generated as follows:
 ````
 delete from mdl_filter_fulltranslate where sourcetext like '%{mlang%';
-delete from mdl_filter_fulltranslate where sourcetext = translation
 ````
 
 You can then copy the translations from filter_fulltranslate into filter_translations as follows:
