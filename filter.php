@@ -46,22 +46,24 @@ class filter_translations extends moodle_text_filter {
             return $text;
         }
 
-        $cachekey = $this->generatehash($text);
-        $translatedtextcache = cache::make('filter_translations', 'translatedtext');
-        $renderedfilterscached = $translatedtextcache->get($cachekey);
-
-        if ($renderedfilterscached !== false) {
-            return $renderedfilterscached;
-        }
-
         $foundhash = $this->findandremovehash($text);
         $generatedhash = $this->generatehash($text);
+
+        $cachekey = $generatedhash ?? $foundhash;
+
+        $translatedtextcache = cache::make('filter_translations', 'translatedtext');
+        $cachedtranslatedtext = $translatedtextcache->get($cachekey);
+
+        if ($cachedtranslatedtext !== false) {
+            return $cachedtranslatedtext;
+        }
 
         if (empty($text)) {
             $translatedtext = '';
         } else {
             $translator = new translator();
-            $translation = $translator->get_best_translation(current_language(), $generatedhash, $foundhash);
+            $targetlanguage = current_language();
+            $translation = $translator->get_best_translation($targetlanguage, $generatedhash, $foundhash, $text);
 
             if (empty($translation)) {
                 $translatedtext = $text;

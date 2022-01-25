@@ -7,7 +7,7 @@ class translator {
         return get_string_manager();
     }
 
-    public function get_best_translation($language, $generatedhash, $foundhash) {
+    public function get_best_translation($language, $generatedhash, $foundhash, $text) {
         $prioritisedlanguages =
                 array_reverse(array_merge(['en'], $this->get_string_manager()->get_language_dependencies($language)));
 
