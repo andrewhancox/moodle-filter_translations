@@ -1,14 +1,14 @@
 # To Install it manually #
-- Unzip the plugin in the moodle .../filter/ directory.
+- Unzip the plugin in the moodle .../filter/translations directory.
 
 # To Enable it #
-- Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the plugin there.
+- Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the 'Content translations' plugin there.
 
 # To Use it #
 Users with the 'filter/translations:edittranslations' capability will see an icon in the top right hand corner of the screen to enable the translator view of the course. At this point all translatable text will have an icon injected next to it to allow it to be translated.
 
 # To migrate from filter_fulltranslate #
-A CLI tool is available to migrate all translations across from the filter_fulltranslate, this can run as follows:
+A CLI tool is available to migrate all translations across from the filter_fulltranslate.
 
 It is recommended that you clean out any unwanted translations that may have been generated as follows:
 ````
