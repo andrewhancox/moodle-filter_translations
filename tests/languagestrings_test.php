@@ -40,11 +40,11 @@ class languagestrings_test extends advanced_testcase {
         global $CFG;
         require_once("$CFG->dirroot/lib/tests/componentlib_test.php");
 
-        set_config('translationprovider_enable', true, 'filter_translations');
+        set_config('languagestringreverse_enable', true, 'filter_translations');
         $CFG->langlocalroot = $CFG->dirroot . '/filter/translations/tests/fixtures/lang';
 
         $installer = new testable_lang_installer(array('de', 'de_kids'));
-        $result = $installer->run();
+        $installer->run();
 
         $languagestrings = new \filter_translations\translationproviders\languagestringreverse();
 

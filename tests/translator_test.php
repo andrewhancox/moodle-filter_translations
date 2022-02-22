@@ -29,7 +29,7 @@ use filter_translations\translator_testable;
 
 defined('MOODLE_INTERNAL') || die();
 
-class filter_translations_translation_testcase extends advanced_testcase {
+class translator_test extends advanced_testcase {
 
     public function setUp() {
         global $CFG;
@@ -59,7 +59,7 @@ class filter_translations_translation_testcase extends advanced_testcase {
         $translation->save();
 
         $this->assertEquals($translation->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash)->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
 
         $kidstranslation = new translation(0, (object) [
                 'targetlanguage'    => 'de_kids',
@@ -71,7 +71,7 @@ class filter_translations_translation_testcase extends advanced_testcase {
         $kidstranslation->save();
 
         $this->assertEquals($kidstranslation->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash)->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
 
         $kidstranslationmatchonfound = new translation(0, (object) [
                 'targetlanguage'    => 'de_kids',
@@ -83,6 +83,6 @@ class filter_translations_translation_testcase extends advanced_testcase {
         $kidstranslationmatchonfound->save();
 
         $this->assertEquals($kidstranslationmatchonfound->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash)->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
     }
 }

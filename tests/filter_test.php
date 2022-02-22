@@ -27,7 +27,7 @@ use filter_translations\filter_translations_testable;
 
 defined('MOODLE_INTERNAL') || die();
 
-class filter_translations_filter_testcase extends advanced_testcase {
+class filter_test extends advanced_testcase {
 
     public function setUp() {
         global $CFG;
