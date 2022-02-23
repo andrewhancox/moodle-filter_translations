@@ -93,9 +93,10 @@ function filter_translations_before_footer() {
     if (empty(\filter_translations::$translationstoinject)) {
         return;
     }
-
-    $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
+    
     foreach (\filter_translations::$translationstoinject as $id => $jsobj) {
         $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
     }
+
+    $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
 }
