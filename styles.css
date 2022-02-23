@@ -1,6 +1,6 @@
 .filter_translations_btn_translate.icon {
     display: inline;
-    z-index: 9999;
+    z-index: 999;
 }
 
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label {
