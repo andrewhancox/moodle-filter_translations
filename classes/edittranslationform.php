@@ -44,7 +44,7 @@ class edittranslationform extends persistent {
 
         $mform = $this->_form;
 
-        $mform->addElement('textarea', 'rawtext', get_string('rawtext', 'filter_translations'));
+        $mform->addElement('hidden', 'rawtext', get_string('rawtext', 'filter_translations'));
         $mform->setType('rawtext', PARAM_TEXT);
 
         $mform->addElement('text', 'md5key', get_string('md5key', 'filter_translations'), 'maxlength="32" size="32"');
@@ -54,6 +54,15 @@ class edittranslationform extends persistent {
         $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $translations);
         $mform->setDefault('targetlanguage', current_language());
 
+        $mform->addElement('html', "<div class='row'>");
+
+        $mform->addElement('html', "<div class='col-lg-6'>");
+        $mform->addElement('html', "<div><h4>" . get_string('rawtext', 'filter_translations') . "</h4></div>");
+        $mform->addElement('html', $this->get_persistent()->get('rawtext'));
+        $mform->addElement('html', "</div>");
+
+        $mform->addElement('html', "<div class='col-lg-6'>");
+        $mform->addElement('html', "<div><h4>" . get_string('substitutetext', 'filter_translations') . "</h4></div>");
         switch ($this->_customdata['formtype']) {
             case self::FORMTYPE_RICH:
                 $mform->addElement('editor', 'substitutetext_editor', get_string('substitutetext', 'filter_translations'), null,
@@ -71,6 +80,9 @@ class edittranslationform extends persistent {
             default:
                 print_error('Unknown form type');
         }
+        $mform->addElement('html', "</div>");
+
+        $mform->addElement('html', "</div>");
 
         $mform->addElement('hidden', 'contextid', $context->id);
 

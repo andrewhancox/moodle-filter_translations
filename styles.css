@@ -1,3 +1,7 @@
 .filter_translations_btn_translate.icon {
     display: inline;
 }
+
+#page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label {
+    display: none!important;
+}
