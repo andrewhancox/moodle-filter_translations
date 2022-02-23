@@ -138,7 +138,7 @@ class filter_translations extends moodle_text_filter {
         }
 
         if (!self::$jsinited) {
-            $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init');
+            $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
             self::$jsinited = true;
         }
 

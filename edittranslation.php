@@ -33,6 +33,7 @@ $id = optional_param('id', null, PARAM_INT);
 $generatedhash = optional_param('generatedhash', null, PARAM_TEXT);
 $foundhash = optional_param('foundhash', null, PARAM_TEXT);
 $rawtext = optional_param('rawtext', null, PARAM_RAW);
+$returnurl = optional_param('returnurl', new moodle_url('/filter/translations/managetranslations.php'), PARAM_URL);
 
 if (empty($id)) {
     $title = get_string('createtranslation', 'filter_translations');
@@ -45,7 +46,11 @@ $context = context_system::instance();
 require_capability('filter/translations:edittranslations', $context);
 
 $url = new moodle_url('/filter/translations/edittranslation.php');
-$return_url = new moodle_url('/filter/translations/managetranslations.php');
+
+$PAGE->set_context($context);
+$PAGE->set_url($url);
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
 
 $persistent = null;
 if (empty($id)) {
@@ -64,11 +69,6 @@ if (!empty($generatedhash)) {
 if (!empty($rawtext)) {
     $persistent->set('rawtext', $rawtext);
 }
-
-$PAGE->set_context($context);
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
-$PAGE->set_url($url);
 
 if (!isset($rawtext) || $rawtext !== strip_tags($rawtext)) {
     $formtype = edittranslationform::FORMTYPE_RICH;
@@ -98,10 +98,11 @@ if ($data = $form->get_data()) {
         $persistent->update();
     }
 
-    redirect($return_url);
+    redirect($returnurl);
 } else if ($form->is_cancelled()) {
-    redirect($return_url);
+    redirect($returnurl);
 }
+$form->set_data(['returnurl' => $returnurl]);
 
 echo $OUTPUT->header();
 

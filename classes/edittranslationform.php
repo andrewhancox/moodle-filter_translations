@@ -37,15 +37,22 @@ class edittranslationform extends persistent {
     /** @var string Persistent class name. */
     protected static $persistentclass = 'filter_translations\\translation';
 
-    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust'];
+    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl'];
 
     function definition() {
         $context = context_system::instance();
 
         $mform = $this->_form;
 
-        $mform->addElement('hidden', 'rawtext', get_string('rawtext', 'filter_translations'));
-        $mform->setType('rawtext', PARAM_TEXT);
+        $mform->addElement('hidden', 'rawtext');
+        if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
+            $mform->setType('rawtext', PARAM_RAW);
+        } else {
+            $mform->setType('rawtext', PARAM_TEXT);
+        }
+
+        $mform->addElement('hidden', 'returnurl');
+        $mform->setType('returnurl', PARAM_URL);
 
         $mform->addElement('text', 'md5key', get_string('md5key', 'filter_translations'), 'maxlength="32" size="32"');
         $mform->setType('md5key', PARAM_TEXT);

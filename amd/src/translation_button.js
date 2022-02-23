@@ -24,7 +24,9 @@
 
 define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function ($, ModalFactory, Str, templates) {
     var translation_button = {
-        'init': function () {
+        'returnurl': '',
+        'init': function (returnurl) {
+            translation_button.returnurl = returnurl;
             translation_button.findandinjectbuttons();
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
             $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
@@ -61,6 +63,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
             event.preventDefault();
 
             var context = translation_button.objects[$(this).data('inpagetranslationid')];
+            context.returnurl = translation_button.returnurl;
 
             Str.get_strings([{
                 key: 'translationdetails',
