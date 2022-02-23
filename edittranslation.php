@@ -57,6 +57,7 @@ if (empty($id)) {
     $persistent = new translation();
     $persistent->set('md5key', empty($foundhash) ? $generatedhash : $foundhash);
     $persistent->set('targetlanguage', current_language());
+    $persistent->set('substitutetext', $rawtext);
 } else {
     $persistent = new translation($id);
     $url->param('id', $id);
