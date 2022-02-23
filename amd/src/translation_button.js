@@ -27,7 +27,6 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
         'returnurl': '',
         'init': function (returnurl) {
             translation_button.returnurl = returnurl;
-            translation_button.findandinjectbuttons();
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
             $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
         },

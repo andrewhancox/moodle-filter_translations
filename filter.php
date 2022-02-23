@@ -144,11 +144,11 @@ class filter_translations extends moodle_text_filter {
                 'goodtranslation'  => !empty($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
         ];
         $translationkey = md5(print_r($obj, true));
-        $obj->inpagetranslationid = $translationkey;
-        $jsobj = json_encode($obj);
 
         if (!key_exists($translationkey, self::$registeredtranslations)) {
             $id = self::get_next_inpagetranslationid();
+            $obj->inpagetranslationid = $id;
+            $jsobj = json_encode($obj);
             self::$translationstoinject[$id] = $jsobj;
             self::$registeredtranslations[$translationkey] = $id;
         } else {
