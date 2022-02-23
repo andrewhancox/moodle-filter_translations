@@ -60,7 +60,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
             event.stopPropagation();
             event.preventDefault();
 
-            var context = context = translation_button.objects[$(this).data('inpagetranslationid')];
+            var context = translation_button.objects[$(this).data('inpagetranslationid')];
 
             Str.get_strings([{
                 key: 'translationdetails',
