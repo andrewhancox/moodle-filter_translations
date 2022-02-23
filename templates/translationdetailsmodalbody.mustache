@@ -12,7 +12,7 @@
     <dd>{{#translationid}}{{translationid}}{{/translationid}}{{^translationid}}{{#str}}notranslation, filter_translations{{/str}}{{/translationid}}</dd>
 </dl>
 <form action="{{config.wwwroot}}/filter/translations/edittranslation.php" method="post">
-    <input type="hidden" name="rawtext" value="{{{rawtext}}}">
+    <input type="hidden" name="rawtext" value="{{rawtext}}">
     <input type="hidden" name="generatedhash" value="{{{generatedhash}}}">
     <input type="hidden" name="foundhash" value="{{{foundhash}}}">
     <input type="hidden" name="id" value="{{{translationid}}}">
