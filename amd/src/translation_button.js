@@ -45,16 +45,10 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
 
                 var binary = matches.exec($(elem).html())[1].replace(regexone, '1').replace(regexzero, '0');
                 var key = parseInt(binary, 2);
+                var translationinfo = translation_button.objects[key];
 
-                templates.render('filter_translations/translatebutton', {'inpagetranslationid': key}).done(function (html) {
+                templates.render('filter_translations/translatebutton', translationinfo).done(function (html) {
                     $(elem).append(html);
-
-                    var translationinfo = translation_button.objects[key];
-                    if (translationinfo.staletranslation) {
-                        $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-warning');
-                    } else if (translationinfo.goodtranslation) {
-                        $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-success');
-                    }
                 });
             });
         },
