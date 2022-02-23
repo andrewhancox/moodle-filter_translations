@@ -58,6 +58,7 @@ abstract class translationprovider {
         $translation->set('translationsource', translation::SOURCE_AUTOMATIC);
         $translation->set('lastgeneratedhash', $generatedhash);
         $translation->set('substitutetext', $translatedtext);
+        $translation->set('rawtext', $text);
         $translation->save();
 
         return $translation;
