@@ -80,7 +80,12 @@ class filter_translations extends moodle_text_filter {
                 );
             }
 
-            $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translation);
+            if ($translation->get('targetlanguage') != $targetlanguage && $translation->get('targetlanguage') == 'en') {
+                $translationforbutton = null;
+            } else {
+                $translationforbutton = $translation;
+            }
+            $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
         $translatedtextcache->set($cachekey, $translatedtext);
