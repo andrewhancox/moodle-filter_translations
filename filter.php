@@ -121,8 +121,8 @@ class filter_translations extends moodle_text_filter {
         }
     }
 
-    private static $jsinited = false;
     private static $registeredtranslations = [];
+    public static $translationstoinject = [];
 
     private static $inpagetranslationid = 0;
     private static function get_next_inpagetranslationid() {
@@ -131,15 +131,8 @@ class filter_translations extends moodle_text_filter {
     }
 
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
-        global $PAGE;
-
         if (!self::checkinlinestranslation()) {
             return '';
-        }
-
-        if (!self::$jsinited) {
-            $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
-            self::$jsinited = true;
         }
 
         $obj = (object) [
@@ -155,7 +148,7 @@ class filter_translations extends moodle_text_filter {
 
         if (!key_exists($translationkey, self::$registeredtranslations)) {
             $id = self::get_next_inpagetranslationid();
-            $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
+            self::$translationstoinject[$id] = $jsobj;
             self::$registeredtranslations[$translationkey] = $id;
         } else {
             $id =  self::$registeredtranslations[$translationkey];
