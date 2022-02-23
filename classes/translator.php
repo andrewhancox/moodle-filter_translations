@@ -41,12 +41,12 @@ class translator {
         $optionsforbestlanguage = $this->filter_options_by_best_language($options, $prioritisedlanguages);
         $translation = $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
 
-        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash) {
+        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
             $languagestrings = new languagestringreverse();
             $translation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
         }
 
-        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash) {
+        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
             $google = new googletranslate();
             $translation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
         }
