@@ -78,14 +78,14 @@ class filter_translations extends moodle_text_filter {
                     'substitutetext',
                     $translation->get('id')
                 );
-            }
 
-            if ($translation->get('targetlanguage') != $targetlanguage && $translation->get('targetlanguage') == 'en') {
-                $translationforbutton = null;
-            } else {
-                $translationforbutton = $translation;
+                if ($translation->get('targetlanguage') != $targetlanguage && $translation->get('targetlanguage') == 'en') {
+                    $translationforbutton = null;
+                } else {
+                    $translationforbutton = $translation;
+                }
+                $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
             }
-            $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
         $translatedtextcache->set($cachekey, $translatedtext);

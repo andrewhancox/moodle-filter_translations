@@ -58,7 +58,12 @@ class googletranslate extends translationprovider {
 
         $url = new moodle_url(get_config('filter_translations', 'google_apiendpoint'), $params);
 
-        $resp = $curl->post($url->out(false));
+        try {
+            $resp = $curl->post($url->out(false));
+        } catch (\Exception $ex) {
+            error_log("Error calling Google Translate: \n" . $ex->getMessage());
+            return null;
+        }
 
         $resp = json_decode($resp);
 
