@@ -67,6 +67,7 @@ class filter_translations extends moodle_text_filter {
 
             if (empty($translation)) {
                 $translatedtext = $text;
+                $translationforbutton = null;
             } else {
                 $this->grantaccesstotranslationfiles($translation);
 
@@ -84,8 +85,8 @@ class filter_translations extends moodle_text_filter {
                 } else {
                     $translationforbutton = $translation;
                 }
-                $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
             }
+            $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
         $translatedtextcache->set($cachekey, $translatedtext);
