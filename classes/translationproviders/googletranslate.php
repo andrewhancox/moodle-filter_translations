@@ -65,6 +65,12 @@ class googletranslate extends translationprovider {
             return null;
         }
 
+        $info = $curl->get_info();
+        if ($info['http_code'] != 200) {
+            error_log("Error calling Google Translate: \n" . $info['http_code']);
+            return null;
+        }
+
         $resp = json_decode($resp);
 
         if (empty($resp->data->translations[0]->translatedText)) {
