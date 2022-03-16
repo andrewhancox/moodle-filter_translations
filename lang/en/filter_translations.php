@@ -26,10 +26,27 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cachedef_translatedtext'] = 'Translated text';
-$string['clihelptext'] = 'This tool will copy translations from the filter_fulltranslate plugin into the filter_translations plugin.
+$string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
+To execute the task run this command again specifying a mode e.g:
+php cli/insert_spans.php --mode=listcolumns
+
+Valid modes are:
+process - Actually do it...
+listcolumns - List the tables and columns that will be impacted
+
+Suggested use is to list out the columns that will could be modified:
+php filter/translations/cli/insert_spans.php --mode=listcolumns > /Users/moodleadmin/cols.json
+
+Edit the file using a text editor to remove any that should be ignored.
+Then run to process those columns:
+
+php filter/translations/cli/insert_spans.php --mode=process --file=/Users/moodleadmin/cols.json
+';
+$string['clihelptext_migrate_filter_fulltranslate'] = 'This tool will copy translations from the filter_fulltranslate plugin into the filter_translations plugin.
 Any entries previously copied using this tool will be removed.
 To execute the task run this command again specifying --confirm e.g:
 php cli/migrate_filter_fulltranslate.php --confirm';
+$string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
 $string['createtranslation'] = 'Create translation';
 $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';

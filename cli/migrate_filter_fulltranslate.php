@@ -49,7 +49,7 @@ if ($unrecognized) {
 }
 
 if (empty($options['confirm'])) {
-    cli_writeln(get_string('clihelptext', 'filter_translations'));
+    cli_writeln(get_string('clihelptext_migrate_filter_fulltranslate', 'filter_translations'));
     die();
 }
 

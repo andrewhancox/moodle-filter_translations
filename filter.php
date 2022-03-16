@@ -94,7 +94,7 @@ class filter_translations extends moodle_text_filter {
         return $translatedtext;
     }
 
-    protected function generatehash($text) {
+    public function generatehash($text) {
         return md5(trim($text));
     }
 
