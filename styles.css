@@ -3,7 +3,8 @@
     z-index: 999;
 }
 
-#page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label {
+#page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label,
+#page-filter-translations-edittranslation #fitem_id_substitutetext_plain .col-form-label {
     display: none!important;
 }
 

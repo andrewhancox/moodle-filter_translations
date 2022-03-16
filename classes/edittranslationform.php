@@ -81,7 +81,7 @@ class edittranslationform extends persistent {
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
                 break;
             case self::FORMTYPE_PLAIN:
-                $mform->addElement('text', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'));
+                $mform->addElement('text', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'), 'maxlength="48" size="48"');
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
                 break;
             default:
