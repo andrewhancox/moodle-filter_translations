@@ -23,9 +23,24 @@
  * @copyright 2021, Andrew Hancox
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace filter_translations\event;
 
-$plugin->version   = 2022022303;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020061506;        // Requires this Moodle version
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_STABLE;
+class translation_deleted extends translation_base {
+
+    protected function init() {
+        parent::init();
+        $this->data['crud'] = 'd';
+    }
+
+    public static function get_name() {
+        return get_string('translationdeleted', 'filter_translations');
+    }
+
+    public function get_description() {
+        return "The user with id '$this->userid' deleted the translation with id '$this->objectid'.";
+    }
+
+    public function get_url() {
+        return new \moodle_url('/mod/assign/managetranslations.php');
+    }
+}

@@ -23,9 +23,42 @@
  * @copyright 2021, Andrew Hancox
  */
 
+use filter_translations\translation;
+use filter_translations\translation_testable;
+use filter_translations\translator_testable;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022022303;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020061506;        // Requires this Moodle version
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_STABLE;
+class events_test extends advanced_testcase {
+
+    public function setUp() {parent::setUp();
+
+        $this->resetAfterTest(true);
+    }
+
+    public function test_events() {
+        $generatedhash = md5('generatedhash');
+
+        $contextid = context_system::instance()->id;
+
+        $sink = $this->redirectEvents();
+
+        $translation = new translation(0, (object) [
+                'targetlanguage'    => 'de',
+                'lastgeneratedhash' => $generatedhash,
+                'md5key'            => $generatedhash,
+                'contextid'         => $contextid,
+                'substitutetext'    => 'some text'
+        ]);
+        $translation->save();
+
+
+        $translation->set('substitutetext', 'changed text');
+        $translation->save();
+
+        $translation->delete();
+
+        $events = $sink->get_events();
+        $this->assertCount(3, $events);
+    }
+}

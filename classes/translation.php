@@ -26,6 +26,9 @@
 namespace filter_translations;
 
 use core\persistent;
+use filter_translations\event\translation_created;
+use filter_translations\event\translation_deleted;
+use filter_translations\event\translation_updated;
 
 class translation extends persistent {
     const TABLE = 'filter_translations';
@@ -66,5 +69,32 @@ class translation extends persistent {
                     'default' => self::SOURCE_MANUAL
                 ]
         );
+    }
+
+    private $previous = null;
+
+    protected function before_update() {
+        parent::before_update();
+        $this->previous = self::get_record(['id' => $this->get('id')]);
+    }
+
+    protected function before_delete() {
+        parent::before_delete();
+        $this->previous = self::get_record(['id' => $this->get('id')]);
+    }
+
+    protected function after_create() {
+        parent::after_create();
+        translation_created::trigger_from_translation($this);
+    }
+
+    protected function after_delete($result) {
+        parent::after_delete($result);
+        translation_deleted::trigger_from_translation($this->previous);
+    }
+
+    protected function after_update($result) {
+        parent::after_update($result);
+        translation_updated::trigger_from_translation($this, $this->previous);
     }
 }
