@@ -1,7 +1,10 @@
 <i
         role="button"
-        class="icon fa fa-language fa-fw filter_translations_btn_translate alert {{#staletranslation}}alert-warning{{/staletranslation}}{{#goodtranslation}}alert-success{{/goodtranslation}}"
+        class="icon filter_translations_btn_translate "
         title="{{#staletranslation}}{{#str}}translate_stale, filter_translations{{/str}}{{/staletranslation}}{{#goodtranslation}}{{#str}}translate_good, filter_translations{{/str}}{{/goodtranslation}}{{^translationid}}{{#str}}translate_none, filter_translations{{/str}}{{/translationid}}"
         data-inpagetranslationid="{{{inpagetranslationid}}}"
 >
+    {{#staletranslation}} {{#pix}} translation-action-edit, filter_translations {{/pix}}{{/staletranslation}}
+    {{#goodtranslation}} {{#pix}} translation-action-tick, filter_translations {{/pix}}{{/goodtranslation}}
+    {{#notranslation}} {{#pix}} translation-action-cross, filter_translations {{/pix}}{{/notranslation}}
 </i>

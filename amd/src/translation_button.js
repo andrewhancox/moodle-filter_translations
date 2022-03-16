@@ -75,12 +75,6 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
         },
         'register': function (key, translationinfo) {
             translation_button.objects[key] = translationinfo;
-
-            if (translationinfo.staletranslation) {
-                $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-warning');
-            } else if (translationinfo.goodtranslation) {
-                $('.filter_translations_btn_translate[data-inpagetranslationid=' + key + ']').addClass('alert-success');
-            }
         },
         'findElementsDirectlyContainingText': function (ancestor, text) {
             var elements = [];

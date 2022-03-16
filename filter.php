@@ -148,6 +148,7 @@ class filter_translations extends moodle_text_filter {
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',
                 'staletranslation' => !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash'),
                 'goodtranslation'  => !empty($translation) && $generatedhash === $translation->get('lastgeneratedhash'),
+                'notranslation'  => empty($translation),
         ];
         $translationkey = md5(print_r($obj, true));
 

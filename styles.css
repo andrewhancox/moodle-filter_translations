@@ -6,3 +6,9 @@
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label {
     display: none!important;
 }
+
+.filter_translations_btn_translate .icon {
+    width: auto;
+    margin: 0;
+    height: 14px;
+}
