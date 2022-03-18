@@ -30,6 +30,10 @@ if ($ADMIN->fulltree) {
         html_writer::link(new moodle_url('/filter/translations/managetranslations.php'),
             get_string('managetranslations', 'filter_translations'), ['class' => "btn btn-primary"])));
 
+    $settings->add(new admin_setting_heading('managetranslationissues', '',
+        html_writer::link(new moodle_url('/filter/translations/managetranslationissues.php'),
+            get_string('managetranslationissues', 'filter_translations'), ['class' => "btn btn-primary"])));
+
     $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
