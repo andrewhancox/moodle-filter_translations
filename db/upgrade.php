@@ -52,7 +52,7 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022012400, 'filter', 'translations');
     }
 
-    if ($oldversion < 2022022309) {
+    if ($oldversion < 2022022312) {
         $table = new xmldb_table('filter_translation_issues');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('issue', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
@@ -60,10 +60,13 @@ function xmldb_filter_translations_upgrade($oldversion) {
         $table->add_field('md5key', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
         $table->add_field('targetlanguage', XMLDB_TYPE_CHAR, '30', null, XMLDB_NOTNULL);
         $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('translationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('rawtext', XMLDB_TYPE_TEXT);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('generatedhash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
+        $table->add_field('translationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
 
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
@@ -71,17 +74,7 @@ function xmldb_filter_translations_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 2022022309, 'filter', 'translations');
-    }
-
-    if ($oldversion < 2022022310) {
-        $table = new xmldb_table('filter_translation_issues');
-        $field = new xmldb_field('generatedhash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        upgrade_plugin_savepoint(true, 2022022310, 'filter', 'translations');
+        upgrade_plugin_savepoint(true, 2022022312, 'filter', 'translations');
     }
 
     return true;
