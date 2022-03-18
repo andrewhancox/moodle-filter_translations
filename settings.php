@@ -38,6 +38,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('filter_translations/logstale',
         get_string('logstale', 'filter_translations'), '', false));
 
+    $settings->add(new admin_setting_configduration('filter_translations/logdebounce',
+        get_string('logdebounce', 'filter_translations'), '', DAYSECS));
+
     $settings->add(new admin_setting_heading('languagestringreverseapi', get_string('languagestringreverse', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/languagestringreverse_enable',

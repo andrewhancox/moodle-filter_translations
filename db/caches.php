@@ -44,4 +44,11 @@ $definitions = [
         'simpledata' => false,
         'staticacceleration' => false
     ],
+    'translationissues' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 100,
+    ],
 ];

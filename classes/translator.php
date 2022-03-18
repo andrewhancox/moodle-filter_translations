@@ -25,6 +25,7 @@
 
 namespace filter_translations;
 
+use cache;
 use filter_translations\translationproviders\googletranslate;
 use filter_translations\translationproviders\languagestringreverse;
 
@@ -86,6 +87,11 @@ class translator {
         }
 
         $config = get_config('filter_translations');
+        if (empty($config->logmissing) && empty($config->logstale)) {
+            return;
+        }
+
+        $translationissuescache = cache::make('filter_translations', 'translationissues');
 
         $issueproperties = [
             'url' => $PAGE->url->out_as_local_url(false),
@@ -105,8 +111,18 @@ class translator {
             return;
         }
 
-        if ($issues = translation_issue::get_records($issueproperties)) {
+        $cachekey = md5(json_encode($issueproperties));
+        $issue = $translationissuescache->get($cachekey);
+        if (!empty($issue) && $issue->get('timemodified') >= time() - $config->logdebounce) {
+            return;
+        }
+
+        if (empty($issue)) {
+            $issues = translation_issue::get_records($issueproperties);
             $issue = reset($issues);
+        }
+
+        if (!empty($issue)) {
             $issue->update();
         } else {
             $issueproperties['rawtext'] = $text;
@@ -114,6 +130,8 @@ class translator {
             $issue->from_record((object)$issueproperties);
             $issue->save();
         }
+
+        $translationissuescache->set($cachekey, $issue);
     }
 
     private function filter_options_by_best_hash($options, $generatedhash, $foundhash) {

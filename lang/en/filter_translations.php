@@ -59,6 +59,7 @@ $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
 $string['languagestringreverse'] = 'Reverse look up language strings';
 $string['languagestringreverse_enable'] = 'Enable reverse look up language strings';
+$string['logdebounce'] = 'Debounce log duration';
 $string['logging'] = 'Logging';
 $string['logmissing'] = 'Log missing translations';
 $string['logstale'] = 'Log stale translations';

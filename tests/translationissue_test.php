@@ -42,6 +42,7 @@ class translationissue_test extends advanced_testcase {
 
         set_config('logmissing', true, 'filter_translations');
         set_config('logstale', true, 'filter_translations');
+        set_config('logdebounce', 0, 'filter_translations');
 
         $PAGE->set_url('/my/index.php');
     }
@@ -86,7 +87,15 @@ class translationissue_test extends advanced_testcase {
         $translator->get_best_translation('de', md5('new hash'), $foundhash, 'new text');
         $issues = translation_issue::get_records();
         $this->assertCount(1, $issues);
-        $this->assertGreaterThan($translation_issue->get('timemodified'), $issues[0]->get('timemodified'));
+        $updatedissue = $issues[0];
+        $this->assertGreaterThan($translation_issue->get('timemodified'), $updatedissue->get('timemodified'));
+
+        set_config('logdebounce', 5, 'filter_translations');
+        $this->waitForSecond();
+        $translator->get_best_translation('de', md5('new hash'), $foundhash, 'new text');
+        $issues = translation_issue::get_records();
+        $this->assertCount(1, $issues);
+        $this->assertEquals($updatedissue->get('timemodified'), $issues[0]->get('timemodified'));
 
         $translation->save();
         $issues = translation_issue::get_records();
