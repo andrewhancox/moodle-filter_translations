@@ -23,6 +23,7 @@
  * @copyright 2021, Andrew Hancox
  */
 
+use filter_translations\translation_issue;
 use filter_translations\translator;
 
 defined('MOODLE_INTERNAL') || die();

@@ -65,7 +65,55 @@ class translator {
             }
         }
 
+        $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
+
         return $translation;
+    }
+
+    /**
+     * @param $foundhash
+     * @param string $generatedhash
+     * @param string $targetlanguage
+     * @param string $text
+     * @param $translation
+     * @return void
+     */
+    private function checkforandlogissue($foundhash, string $generatedhash, string $targetlanguage, string $text, $translation): void {
+        global $PAGE;
+
+        if (!$PAGE->has_set_url()) {
+            return;
+        }
+
+        $config = get_config('filter_translations');
+
+        $issueproperties = [
+            'url' => $PAGE->url->out_as_local_url(false),
+            'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
+            'targetlanguage' => $targetlanguage,
+            'contextid' => $PAGE->context->id,
+            'generatedhash' => $generatedhash
+        ];
+
+        if (!empty($config->logmissing) && empty($translation)) {
+            $issueproperties['issue'] = translation_issue::ISSUE_MISSING;
+            $issueproperties['translationid'] = 0;
+        } else if (!empty($config->logstale) && $generatedhash !== $translation->get('lastgeneratedhash')) {
+            $issueproperties['issue'] = translation_issue::ISSUE_STALE;
+            $issueproperties['translationid'] = $translation->get('id');
+        } else {
+            return;
+        }
+
+        if ($issues = translation_issue::get_records($issueproperties)) {
+            $issue = reset($issues);
+            $issue->update();
+        } else {
+            $issueproperties['rawtext'] = $text;
+            $issue = new translation_issue();
+            $issue->from_record((object)$issueproperties);
+            $issue->save();
+        }
     }
 
     private function filter_options_by_best_hash($options, $generatedhash, $foundhash) {

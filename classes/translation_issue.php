@@ -23,9 +23,42 @@
  * @copyright 2021, Andrew Hancox
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace filter_translations;
 
-$plugin->version   = 2022022310;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2020061506;        // Requires this Moodle version
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_STABLE;
+use core\persistent;
+
+class translation_issue extends persistent {
+    const TABLE = 'filter_translation_issues';
+
+    const ISSUE_STALE = 10;
+    const ISSUE_MISSING = 20;
+
+    protected static function define_properties() {
+        return array(
+            'issue' => [
+                'type' => PARAM_INT,
+            ],
+            'url' => [
+                'type' => PARAM_URL,
+            ],
+            'md5key' => [
+                'type' => PARAM_TEXT,
+            ],
+            'targetlanguage' => [
+                'type' => PARAM_TEXT,
+            ],
+            'contextid' => [
+                'type' => PARAM_INT,
+            ],
+            'generatedhash' => [
+                'type' => PARAM_TEXT,
+            ],
+            'rawtext' => [
+                'type' => PARAM_RAW,
+            ],
+            'translationid' => [
+                'type' => PARAM_INT,
+            ],
+        );
+    }
+}

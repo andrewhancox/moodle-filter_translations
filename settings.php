@@ -27,8 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('managetranslations', '',
-            html_writer::link(new moodle_url('/filter/translations/managetranslations.php'),
-                    get_string('managetranslations', 'filter_translations'), ['class' => "btn btn-primary"])));
+        html_writer::link(new moodle_url('/filter/translations/managetranslations.php'),
+            get_string('managetranslations', 'filter_translations'), ['class' => "btn btn-primary"])));
+
+    $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
+        get_string('logmissing', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/logstale',
+        get_string('logstale', 'filter_translations'), '', false));
 
     $settings->add(new admin_setting_heading('languagestringreverseapi', get_string('languagestringreverse', 'filter_translations'), ''));
 
