@@ -33,6 +33,13 @@ class translation_issue extends persistent {
     const ISSUE_STALE = 10;
     const ISSUE_MISSING = 20;
 
+    public static function get_issue_types() {
+        return [
+            self::ISSUE_STALE => get_string('issue_' . self::ISSUE_STALE, 'filter_translations'),
+            self::ISSUE_MISSING => get_string('issue_' . self::ISSUE_MISSING, 'filter_translations'),
+        ];
+    }
+
     protected static function define_properties() {
         return array(
             'issue' => [

@@ -55,9 +55,23 @@ class managetranslationissues_table extends table_sql {
         $this->is_downloadable(true);
         $this->sort_default_column = $sortcolumn;
 
+        $wheres = [];
+        $params = [];
+
+        if (!empty($this->filterparams->issue) && $this->filterparams->issue !== 'all') {
+            $wheres[] = "ti.issue = :issue";
+            $params['issue'] = $this->filterparams->issue;
+        }
+
+        if (empty($wheres)) {
+            $wheres[] = '1=1';
+        }
+
         $this->set_sql('ti.id, ti.issue, ti.url, ti.targetlanguage, ti.rawtext, ti.contextid, ti.generatedhash, ti.md5key, ti.translationid',
             '{filter_translation_issues} ti',
-            '1=1');
+            implode(' AND ', $wheres),
+            $params
+        );
     }
 
     public function col_url($row) {

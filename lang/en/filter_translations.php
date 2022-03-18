@@ -51,6 +51,7 @@ $string['createtranslation'] = 'Create translation';
 $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';
 $string['filtername'] = 'Content translations';
+$string['filteroptions'] = 'Filter options';
 $string['foundhash'] = 'Found hash';
 $string['generatedhash'] = 'Generated hash';
 $string['google_apiendpoint'] = 'API Endpoint';

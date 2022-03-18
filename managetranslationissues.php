@@ -23,6 +23,7 @@
  * @copyright 2021, Andrew Hancox
  */
 
+use filter_translations\managetranslationissues_filterform;
 use filter_translations\managetranslationissues_table;
 
 require_once(dirname(__FILE__) . '/../../config.php');
@@ -38,10 +39,34 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 $PAGE->set_url(new moodle_url('/filter/translations/managetranslationissues.php'));
 
+
+$issue = optional_param('issue', '', PARAM_INT);
+
+$form = new managetranslationissues_filterform();
+$formdata = $form->get_data();
+
+if ($formdata) {
+    $urlparams = array(
+        'issue' => $issue,
+    );
+    $url = $PAGE->url;
+    $url->params($urlparams);
+    redirect($url);
+}
+
 echo $OUTPUT->header();
 
-$table = new managetranslationissues_table(null, 'translationsname');
-$table->define_baseurl('');
+$data = new stdClass();
+$data->issue = $issue;
+$data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
+$form->set_data($data);
+
+$baseurl = $PAGE->url;
+$baseurl->params((array)$data);
+
+$table = new managetranslationissues_table($data, 'translationsname');
+$table->define_baseurl($baseurl);
+echo $form->render();
 $table->out(100, true);
 
 echo $OUTPUT->footer();
