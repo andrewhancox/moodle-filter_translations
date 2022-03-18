@@ -13,9 +13,8 @@
     font-family: "translation-plugin";
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 16px!important;
     speak: never;
-    display: inline-block;
     text-decoration: inherit;
     width: 2.2em;
     text-align: center;
