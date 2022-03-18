@@ -87,5 +87,9 @@ class translationissue_test extends advanced_testcase {
         $issues = translation_issue::get_records();
         $this->assertCount(1, $issues);
         $this->assertGreaterThan($translation_issue->get('timemodified'), $issues[0]->get('timemodified'));
+
+        $translation->save();
+        $issues = translation_issue::get_records();
+        $this->assertCount(0, $issues);
     }
 }

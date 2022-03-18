@@ -86,6 +86,7 @@ class translation extends persistent {
     protected function after_create() {
         parent::after_create();
         translation_created::trigger_from_translation($this);
+        translation_issue::remove_records_for_translation($this);
     }
 
     protected function after_delete($result) {
@@ -96,5 +97,6 @@ class translation extends persistent {
     protected function after_update($result) {
         parent::after_update($result);
         translation_updated::trigger_from_translation($this, $this->previous);
+        translation_issue::remove_records_for_translation($this);
     }
 }

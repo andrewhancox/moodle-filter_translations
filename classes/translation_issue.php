@@ -61,4 +61,15 @@ class translation_issue extends persistent {
             ],
         );
     }
+
+    public static function remove_records_for_translation($translation) {
+        $issues = self::get_records([
+            'md5key' => $translation->get('md5key'),
+            'targetlanguage' => $translation->get('targetlanguage')
+        ]);
+
+        foreach ($issues as $issue) {
+            $issue->delete();
+        }
+    }
 }
