@@ -29,7 +29,7 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
     $itemid = array_shift($args); // Ignore revision - designed to prevent caching problems only...
 
     if (!isset($SESSION->filter_translations_usedtranslations) ||
-            !in_array($itemid, $SESSION->filter_translations_usedtranslations)) {
+        !in_array($itemid, $SESSION->filter_translations_usedtranslations)) {
         return false;
     }
 
@@ -72,9 +72,9 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         redirect($PAGE->url);
     }
 
-    return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object) [
-            'url'                           => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
-            'inlinetranslationstate' => $currentinlinetranslationstate
+    return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
+        'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
+        'inlinetranslationstate' => $currentinlinetranslationstate
     ]);
 }
 

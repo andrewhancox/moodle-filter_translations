@@ -1,3 +1,7 @@
-<a class="nav-link popover-region" title="{{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}{{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}" href="{{{url}}}">
-    <i role="button" class="icon icon-translate-default"></i>
-</a>
+<div class="nav-link popover-region dropdown">
+    <i class="icon icon-translate-default" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    </i>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="{{{toogleinlinetranslationurl}}}">{{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}{{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}</a>
+    </div>
+</div>
