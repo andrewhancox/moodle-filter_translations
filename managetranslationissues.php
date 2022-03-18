@@ -41,6 +41,7 @@ $PAGE->set_url(new moodle_url('/filter/translations/managetranslationissues.php'
 
 
 $issue = optional_param('issue', '', PARAM_INT);
+$filterurl = optional_param('url', '', PARAM_URL);
 
 $form = new managetranslationissues_filterform();
 $formdata = $form->get_data();
@@ -48,6 +49,7 @@ $formdata = $form->get_data();
 if ($formdata) {
     $urlparams = array(
         'issue' => $issue,
+        'url' => $filterurl
     );
     $url = $PAGE->url;
     $url->params($urlparams);
@@ -58,6 +60,7 @@ echo $OUTPUT->header();
 
 $data = new stdClass();
 $data->issue = $issue;
+$data->url = $filterurl;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 

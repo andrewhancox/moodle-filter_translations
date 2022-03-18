@@ -63,6 +63,11 @@ class managetranslationissues_table extends table_sql {
             $params['issue'] = $this->filterparams->issue;
         }
 
+        if (!empty($this->filterparams->url)) {
+            $wheres[] = "ti.url = :url";
+            $params['url'] = $this->filterparams->url;
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }
