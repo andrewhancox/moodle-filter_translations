@@ -1,10 +1,7 @@
 <i
         role="button"
-        class="icon filter_translations_btn_translate "
+        class="filter_translations_btn_translate alert {{#staletranslation}}text-warning icon-translate-cross{{/staletranslation}}{{#goodtranslation}}text-success icon-translate-tick{{/goodtranslation}}{{#notranslation}}icon-translate-cross{{/notranslation}}"
         title="{{#staletranslation}}{{#str}}translate_stale, filter_translations{{/str}}{{/staletranslation}}{{#goodtranslation}}{{#str}}translate_good, filter_translations{{/str}}{{/goodtranslation}}{{^translationid}}{{#str}}translate_none, filter_translations{{/str}}{{/translationid}}"
         data-inpagetranslationid="{{{inpagetranslationid}}}"
 >
-    {{#staletranslation}} {{#pix}} translation-action-edit, filter_translations {{/pix}}{{/staletranslation}}
-    {{#goodtranslation}} {{#pix}} translation-action-tick, filter_translations {{/pix}}{{/goodtranslation}}
-    {{#notranslation}} {{#pix}} translation-action-cross, filter_translations {{/pix}}{{/notranslation}}
 </i>
