@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+use filter_translations\translation_issue;
 
 /**
  * @package filter_translations
@@ -72,8 +73,20 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         redirect($PAGE->url);
     }
 
+    $missingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'url' => $PAGE->url->out_as_local_url(false),
+        'issue' => translation_issue::ISSUE_MISSING
+    ]);
+
+    $staletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'url' => $PAGE->url->out_as_local_url(false),
+        'issue' => translation_issue::ISSUE_STALE
+    ]);
+
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
         'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
+        'missingtranslationsurl' => $missingtranslationsurl->out(false),
+        'staletranslationsurl' => $staletranslationsurl->out(false),
         'inlinetranslationstate' => $currentinlinetranslationstate
     ]);
 }
