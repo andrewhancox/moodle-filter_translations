@@ -49,12 +49,20 @@ class translator {
 
         if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
             $languagestrings = new languagestringreverse();
-            $translation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+            $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+
+            if (!empty($languagestringtranslation)) {
+                $translation = $languagestringtranslation;
+            }
         }
 
         if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
             $google = new googletranslate();
-            $translation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+            $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+
+            if (!empty($googletranslation)) {
+                $translation = $googletranslation;
+            }
         }
 
         return $translation;
