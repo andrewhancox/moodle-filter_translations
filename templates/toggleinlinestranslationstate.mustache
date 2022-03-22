@@ -1,6 +1,8 @@
-<div class="nav-link popover-region dropdown">
-    <i class="icon {{^inlinetranslationstate}}icon-translate-default{{/inlinetranslationstate}}{{#inlinetranslationstate}}icon-translate-default-circle{{/inlinetranslationstate}}" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    </i>
+<div class="popover-region dropdown translation-icon-wrapper">
+    <a class="nav-link d-inline-block position-relative icon-no-margin" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" role="button">
+        <i class="icon {{^inlinetranslationstate}}icon-translate-default{{/inlinetranslationstate}}{{#inlinetranslationstate}}icon-translate-default-circle{{/inlinetranslationstate}}">
+        </i>
+    </a>
     <div class="dropdown-menu dropdown-menu-right menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" href="{{{toogleinlinetranslationurl}}}">{{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}{{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}</a>
         <a class="dropdown-item" href="{{{missingtranslationsurl}}}">{{#str}}translationissuesinpagemissing, filter_translations{{/str}}</a>
