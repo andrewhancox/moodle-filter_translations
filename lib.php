@@ -83,10 +83,20 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'issue' => translation_issue::ISSUE_STALE
     ]);
 
+    $allmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'issue' => translation_issue::ISSUE_MISSING
+    ]);
+
+    $allstaletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'issue' => translation_issue::ISSUE_STALE
+    ]);
+
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
         'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
         'missingtranslationsurl' => $missingtranslationsurl->out(false),
         'staletranslationsurl' => $staletranslationsurl->out(false),
+        'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),
+        'allstaletranslationsurl' => $allstaletranslationsurl->out(false),
         'inlinetranslationstate' => $currentinlinetranslationstate
     ]);
 }
