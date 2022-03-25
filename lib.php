@@ -111,7 +111,9 @@ function filter_translations_after_config() {
 }
 
 function filter_translations_before_footer() {
-    global $PAGE;
+    global $PAGE, $CFG;
+
+    require_once("$CFG->dirroot/filter/translations/filter.php");
 
     if (empty(\filter_translations::$translationstoinject)) {
         return;
