@@ -20,6 +20,14 @@ You can then copy the translations from filter_fulltranslate into filter_transla
 php cli/migrate_filter_fulltranslate.php --confirm
 ````
 
+# To add translation span tags to existing data #
+A CLI tool is available to automatically add span tags to existing data. Please use with extreme caution.
+
+You can run the tool as follows which will show help text:
+````
+php cli/insert_spans.php
+````
+
 Author
 ------
 
