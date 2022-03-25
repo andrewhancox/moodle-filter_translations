@@ -86,6 +86,11 @@ if (
 $form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype]);
 
 if ($data = $form->get_data()) {
+    if (!empty($data->deletebutton)) {
+        $persistent->delete();
+        redirect($returnurl);
+    }
+
     if ($formtype !== edittranslationform::FORMTYPE_RICH) {
         $persistent->set('substitutetext', $data->substitutetext_plain);
     }

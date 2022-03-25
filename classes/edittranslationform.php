@@ -37,7 +37,7 @@ class edittranslationform extends persistent {
     /** @var string Persistent class name. */
     protected static $persistentclass = 'filter_translations\\translation';
 
-    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl'];
+    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
 
     function definition() {
         $context = context_system::instance();
@@ -95,7 +95,17 @@ class edittranslationform extends persistent {
 
         $mform->addElement('hidden', 'lastgeneratedhash');
 
-        $this->add_action_buttons(true);
+        $buttonarray = [
+            $mform->createElement('submit', 'submitbutton', get_string('savechanges'))
+        ];
+
+        $buttonarray[] = $mform->createElement('cancel');
+
+        if (!empty($this->get_persistent()->get('id'))) {
+            $buttonarray[] = $mform->createElement('submit', 'deletebutton', get_string('delete'));
+        }
+
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
 
     protected function get_default_data() {
