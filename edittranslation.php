@@ -71,7 +71,11 @@ if (!empty($rawtext)) {
     $persistent->set('rawtext', $rawtext);
 }
 
-if (!isset($rawtext) || $rawtext !== strip_tags($rawtext)) {
+if (
+    (!isset($rawtext) && empty($persistent->get('substitutetext')))
+    ||
+    $rawtext != strip_tags($rawtext) || $persistent->get('substitutetext') != strip_tags($persistent->get('substitutetext'))
+) {
     $formtype = edittranslationform::FORMTYPE_RICH;
 } else if (strpos($rawtext, "\n") !== false) {
     $formtype = edittranslationform::FORMTYPE_PLAINMULTILINE;
