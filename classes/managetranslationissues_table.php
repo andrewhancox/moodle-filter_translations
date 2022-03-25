@@ -101,7 +101,7 @@ class managetranslationissues_table extends table_sql {
                 'generatedhash' => $row->generatedhash,
                 'foundhash' => $row->md5key,
                 'id' => $row->translationid,
-                'returnurl' => $PAGE->url
+                'returnurl' => $this->baseurl
             ]),
             get_string('edittranslation', 'filter_translations'),
             'post'
