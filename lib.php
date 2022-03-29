@@ -52,7 +52,7 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
  * @return string The HTML
  */
 function filter_translations_render_navbar_output(\renderer_base $renderer) {
-    global $PAGE, $CFG;
+    global $PAGE, $CFG, $DB;
 
     if (!filter_is_enabled('translations')) {
         return '';
@@ -114,7 +114,9 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'staletranslationsurl' => $staletranslationsurl->out(false),
         'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),
         'allstaletranslationsurl' => $allstaletranslationsurl->out(false),
-        'inlinetranslationstate' => $currentinlinetranslationstate
+        'inlinetranslationstate' => $currentinlinetranslationstate,
+        'missingcount' => translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING]),
+        'stalecount' => translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE]),
     ]);
 }
 
