@@ -45,6 +45,9 @@ class managetranslationissues_filterform extends \moodleform {
         $mform->addElement('text', 'url', get_string('url', 'filter_translations'));
         $mform->setType('url', PARAM_URL);
 
+        $mform->addElement('hidden', 'contextid');
+        $mform->setType('contextid', PARAM_INT);
+
         $mform->addElement('submit', 'submit', get_string('update'));
     }
 }

@@ -47,6 +47,7 @@ Any entries previously copied using this tool will be removed.
 To execute the task run this command again specifying --confirm e.g:
 php cli/migrate_filter_fulltranslate.php --confirm';
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
+$string['context'] = 'Context';
 $string['createtranslation'] = 'Create translation';
 $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';
@@ -84,8 +85,10 @@ $string['translate_stale'] = 'Translate - translation needs updating';
 $string['translate_good'] = 'Translate - translation is up to date';
 $string['translation'] = 'Translation';
 $string['translationissuesinpagemissing'] = 'Missing on this page';
+$string['translationissuesincoursemissing'] = 'Missing in this course';
 $string['translationissuesinpagemissingall'] = 'All missing translations';
 $string['translationissuesinpagestale'] = 'Stale on this page';
+$string['translationissuesincoursestale'] = 'Stale in this course';
 $string['translationissuesinpagestaleall'] = 'All stale translations';
 $string['translationdetails'] = 'Translation details';
 $string['translationid'] = 'Translation ID';

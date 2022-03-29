@@ -28,20 +28,28 @@ use filter_translations\managetranslationissues_table;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
-$context = context_system::instance();
+$issue = optional_param('issue', '', PARAM_INT);
+$filterurl = optional_param('url', '', PARAM_URL);
+$contextid = optional_param('contextid', 0, PARAM_INT);
 
+if (empty($contextid)) {
+    $context = context_system::instance();
+} else {
+    $context = context::instance_by_id($contextid);
+}
 require_capability('filter/translations:edittranslations', $context);
 
 $PAGE->set_context($context);
+
+$coursecontext = $PAGE->context->get_course_context(false);
+if (!empty($coursecontext)) {
+    $PAGE->set_course(get_course($coursecontext->instanceid));
+}
 
 $title = get_string('managetranslationissues', 'filter_translations');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 $PAGE->set_url(new moodle_url('/filter/translations/managetranslationissues.php'));
-
-
-$issue = optional_param('issue', '', PARAM_INT);
-$filterurl = optional_param('url', '', PARAM_URL);
 
 $form = new managetranslationissues_filterform();
 $formdata = $form->get_data();
@@ -49,7 +57,8 @@ $formdata = $form->get_data();
 if ($formdata) {
     $urlparams = array(
         'issue' => $issue,
-        'url' => $filterurl
+        'url' => $filterurl,
+        'contextid' => $contextid,
     );
     $url = $PAGE->url;
     $url->params($urlparams);
@@ -61,6 +70,7 @@ echo $OUTPUT->header();
 $data = new stdClass();
 $data->issue = $issue;
 $data->url = $filterurl;
+$data->contextid = $contextid;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 

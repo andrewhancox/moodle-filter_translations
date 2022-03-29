@@ -40,8 +40,6 @@ class edittranslationform extends persistent {
     protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
 
     function definition() {
-        $context = context_system::instance();
-
         $mform = $this->_form;
 
         $mform->addElement('hidden', 'rawtext');
@@ -91,7 +89,7 @@ class edittranslationform extends persistent {
 
         $mform->addElement('html', "</div>");
 
-        $mform->addElement('hidden', 'contextid', $context->id);
+        $mform->addElement('hidden', 'contextid');
 
         $mform->addElement('hidden', 'lastgeneratedhash');
 

@@ -138,6 +138,8 @@ class filter_translations extends moodle_text_filter {
     }
 
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
+        global $PAGE;
+
         if (!self::checkinlinestranslation()) {
             return '';
         }
@@ -146,6 +148,7 @@ class filter_translations extends moodle_text_filter {
                 'rawtext'          => $rawtext,
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
+                'contextid'    => !empty($translation) ? $translation->get('contextid') : $PAGE->context->id,
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',
                 'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'),
                 'goodtranslation'  => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'),

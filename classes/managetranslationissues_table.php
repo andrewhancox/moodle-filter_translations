@@ -36,13 +36,16 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 
 class managetranslationissues_table extends table_sql {
     public function __construct($filterparams, $sortcolumn) {
+        global $DB;
+
         parent::__construct('managetranslation_table');
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['issue', 'url', 'targetlanguage', 'rawtext', 'actions']);
+        $this->define_columns(['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'actions']);
         $this->define_headers([
             get_string('issue', 'filter_translations'),
+            get_string('context', 'filter_translations'),
             get_string('url', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
@@ -68,6 +71,16 @@ class managetranslationissues_table extends table_sql {
             $params['url'] = $this->filterparams->url;
         }
 
+        if (!empty($this->filterparams->contextid)) {
+            $context = \context::instance_by_id($this->filterparams->contextid);
+            $contextids = array_keys($context->get_child_contexts(true));
+            $contextids[] = $context->id;
+
+            list($insql, $inparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
+            $wheres[] = "ti.contextid $insql";
+            $params += $inparams;
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }
@@ -80,8 +93,12 @@ class managetranslationissues_table extends table_sql {
     }
 
     public function col_url($row) {
+        return \html_writer::link(new moodle_url($row->url), $row->url);
+    }
+
+    public function col_context($row) {
         $context = \context::instance_by_id($row->contextid);
-        return \html_writer::link(new moodle_url($row->url), $context->get_context_name());
+        return \html_writer::link($context->get_url(), $context->get_context_name());
     }
 
     public function col_rawtext($row) {
@@ -101,6 +118,7 @@ class managetranslationissues_table extends table_sql {
                 'generatedhash' => $row->generatedhash,
                 'foundhash' => $row->md5key,
                 'id' => $row->translationid,
+                'contextid' => $row->contextid,
                 'returnurl' => $this->baseurl
             ]),
             get_string('edittranslation', 'filter_translations'),

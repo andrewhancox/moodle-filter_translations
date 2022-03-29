@@ -30,6 +30,7 @@ use filter_translations\translation;
 require_once(__DIR__ . '../../../config.php');
 
 $id = optional_param('id', null, PARAM_INT);
+$contextid = optional_param('contextid', null, PARAM_INT);
 $generatedhash = optional_param('generatedhash', null, PARAM_TEXT);
 $foundhash = optional_param('foundhash', null, PARAM_TEXT);
 $rawtext = optional_param('rawtext', null, PARAM_RAW);
@@ -41,13 +42,23 @@ if (empty($id)) {
     $title = get_string('edittranslation', 'filter_translations');
 }
 
-$context = context_system::instance();
+if (empty($contextid)) {
+    $context = context_system::instance();
+} else {
+    $context = context::instance_by_id($contextid);
+}
 
 require_capability('filter/translations:edittranslations', $context);
 
 $url = new moodle_url('/filter/translations/edittranslation.php');
 
 $PAGE->set_context($context);
+
+$coursecontext = $PAGE->context->get_course_context(false);
+if (!empty($coursecontext)) {
+    $PAGE->set_course(get_course($coursecontext->instanceid));
+}
+
 $PAGE->set_url($url);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
@@ -62,6 +73,7 @@ if (empty($id)) {
     $persistent = new translation($id);
     $url->param('id', $id);
 }
+$persistent->set('contextid', $contextid);
 
 $istranslationstale = !empty($generatedhash) && !empty($persistent->get('id')) && $persistent->get('lastgeneratedhash') !== $generatedhash;
 if (!empty($generatedhash)) {

@@ -83,6 +83,21 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'issue' => translation_issue::ISSUE_STALE
     ]);
 
+    $context = $PAGE->context->get_course_context(false);
+    if (empty($context)) {
+        $context = context_system::instance();
+    }
+
+    $contextmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'contextid' => $context->id,
+        'issue' => translation_issue::ISSUE_MISSING
+    ]);
+
+    $contextstaletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
+        'contextid' => $context->id,
+        'issue' => translation_issue::ISSUE_STALE
+    ]);
+
     $allmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'issue' => translation_issue::ISSUE_MISSING
     ]);
@@ -93,6 +108,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
 
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
         'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
+        'coursemissingtranslationsurl' => $contextmissingtranslationsurl->out(false),
+        'coursestaletranslationsurl' => $contextstaletranslationsurl->out(false),
         'missingtranslationsurl' => $missingtranslationsurl->out(false),
         'staletranslationsurl' => $staletranslationsurl->out(false),
         'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),

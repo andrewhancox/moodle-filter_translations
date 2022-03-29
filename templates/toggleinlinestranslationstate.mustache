@@ -5,6 +5,8 @@
     </a>
     <div class="dropdown-menu dropdown-menu-right menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" href="{{{toogleinlinetranslationurl}}}">{{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}{{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}</a>
+        <a class="dropdown-item" href="{{{coursemissingtranslationsurl}}}">{{#str}}translationissuesincoursemissing, filter_translations{{/str}}</a>
+        <a class="dropdown-item" href="{{{coursestaletranslationsurl}}}">{{#str}}translationissuesincoursestale, filter_translations{{/str}}</a>
         <a class="dropdown-item" href="{{{missingtranslationsurl}}}">{{#str}}translationissuesinpagemissing, filter_translations{{/str}}</a>
         <a class="dropdown-item" href="{{{staletranslationsurl}}}">{{#str}}translationissuesinpagestale, filter_translations{{/str}}</a>
         <a class="dropdown-item" href="{{{allmissingtranslationsurl}}}">{{#str}}translationissuesinpagemissingall, filter_translations{{/str}}</a>
