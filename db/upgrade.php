@@ -76,14 +76,12 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022022312, 'filter', 'translations');
     }
 
-    if ($oldversion < 2022022318) {
+    if ($oldversion < 2022022319) {
         $table = new xmldb_table('filter_translation_issues');
         $field = new xmldb_field('url', XMLDB_TYPE_TEXT);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->change_field_type($table, $field);
-        }
+        $dbman->change_field_type($table, $field);
 
-        upgrade_plugin_savepoint(true, 2022022318, 'filter', 'translations');
+        upgrade_plugin_savepoint(true, 2022022319, 'filter', 'translations');
     }
 
     return true;
