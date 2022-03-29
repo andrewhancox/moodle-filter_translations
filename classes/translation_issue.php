@@ -79,4 +79,22 @@ class translation_issue extends persistent {
             $issue->delete();
         }
     }
+
+    public static function get_records_sql_compare_text($filters = array(), $sort = '', $order = 'ASC', $skip = 0, $limit = 0) {
+        global $DB;
+
+        $whereclauses = [];
+        $params = [];
+
+        foreach ($filters as $key => $value) {
+            if ($key == 'url') {
+                $whereclauses[] = $DB->sql_compare_text($key) . " = " . $DB->sql_compare_text(":$key");
+            } else {
+                $whereclauses[] = "$key = :$key";
+            }
+            $params[$key] = $value;
+        }
+
+        return translation_issue::get_records_select(implode(' AND ', $whereclauses), $params, $sort, '*', $skip, $limit);
+    }
 }

@@ -80,7 +80,7 @@ class translator {
      * @return void
      */
     private function checkforandlogissue($foundhash, string $generatedhash, string $targetlanguage, string $text, $translation): void {
-        global $PAGE;
+        global $PAGE, $DB;
 
         if (!$PAGE->has_set_url()) {
             return;
@@ -118,7 +118,7 @@ class translator {
         }
 
         if (empty($issue)) {
-            $issues = translation_issue::get_records($issueproperties);
+            $issues = translation_issue::get_records_sql_compare_text($issueproperties);
             $issue = reset($issues);
         }
 
