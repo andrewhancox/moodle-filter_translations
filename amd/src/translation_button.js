@@ -50,6 +50,29 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                     $(elem).append(html);
                 });
             });
+
+            var stalecount = 0;
+            var missingcount = 0;
+            for (var k in translation_button.objects) {
+                if (translation_button.objects[k].staletranslation) {
+                    stalecount += 1;
+                } else if (translation_button.objects[k].notranslation) {
+                    missingcount += 1;
+                }
+            }
+            var totalcount = stalecount + missingcount;
+
+            $('.translation-icon-wrapper i').after(
+                '<div class="count-container " data-region="count-container">' + totalcount + '</div>'
+            );
+
+            $('.translation-icon-wrapper a.missingonthispage').html(
+                $('.translation-icon-wrapper a.missingonthispage').html() + ' (' + missingcount + ')'
+            );
+
+            $('.translation-icon-wrapper a.staleonthispage').html(
+                $('.translation-icon-wrapper a.staleonthispage').html() + ' (' + stalecount + ')'
+            );
         },
         'opentranslation': function (event) {
             event.stopPropagation();
