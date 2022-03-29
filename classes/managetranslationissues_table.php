@@ -73,7 +73,12 @@ class managetranslationissues_table extends table_sql {
 
         if (!empty($this->filterparams->contextid)) {
             $context = \context::instance_by_id($this->filterparams->contextid);
-            $contextids = array_keys($context->get_child_contexts(true));
+
+            if (is_a($context, \context_system::class)) {
+                $contextids = [];
+            } else {
+                $contextids = array_keys($context->get_child_contexts(true));
+            }
             $contextids[] = $context->id;
 
             list($insql, $inparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
