@@ -55,6 +55,10 @@ class edittranslationform extends persistent {
         $mform->addElement('text', 'md5key', get_string('md5key', 'filter_translations'), 'maxlength="32" size="32"');
         $mform->setType('md5key', PARAM_TEXT);
 
+        if (!has_capability('filter/translations:edittranslationhashkeys', context_system::instance())) {
+            $mform->hardFreeze(['md5key']);
+        }
+
         $translations = get_string_manager()->get_list_of_translations();
         $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $translations);
         $mform->setDefault('targetlanguage', current_language());
@@ -62,12 +66,39 @@ class edittranslationform extends persistent {
         $mform->addElement('html', "<div class='row'>");
 
         $mform->addElement('html', "<div class='col-lg-6'>");
-        $mform->addElement('html', "<div><h4>" . get_string('rawtext', 'filter_translations') . "</h4></div>");
-        $mform->addElement('html', $this->get_persistent()->get('rawtext'));
+
+        $mform->addElement('html', '<ul class="nav nav-tabs" id="" role="tablist">');
+
+        $this->addtablink($mform, 'rawtext', get_string('rawtext', 'filter_translations'), true);
+
+        if (!empty($this->_customdata['showdiff'])) {
+            $this->addtablink($mform, 'diff', get_string('diff', 'filter_translations'));
+        }
+
+        if (!empty($this->_customdata['old'])) {
+            $this->addtablink($mform, 'old', get_string('old', 'filter_translations'));
+        }
+
+        $mform->addElement('html', '</ul>');
+
+        $mform->addElement('html', '<div class="tab-content" id="">');
+
+        $this->addtabcontents($mform, 'rawtext', $this->get_persistent()->get('rawtext'), true);
+
+        if (!empty($this->_customdata['showdiff'])) {
+            $this->addtabcontents($mform, 'diff', '<div class="translationdiff" id="translationdiff"></div>');
+        }
+
+        if (!empty($this->_customdata['old'])) {
+            $this->addtabcontents($mform, 'old', $this->_customdata['old']);
+        }
+
+        $mform->addElement('html', "</div>");
+
         $mform->addElement('html', "</div>");
 
         $mform->addElement('html', "<div class='col-lg-6'>");
-        $mform->addElement('html', "<div><h4>" . get_string('substitutetext', 'filter_translations') . "</h4></div>");
+        $mform->addElement('html', "<div><h4 class='pb-3'>" . get_string('substitutetext', 'filter_translations') . "</h4></div>");
         switch ($this->_customdata['formtype']) {
             case self::FORMTYPE_RICH:
                 $mform->addElement('editor', 'substitutetext_editor', get_string('substitutetext', 'filter_translations'), null,
@@ -127,6 +158,32 @@ class edittranslationform extends persistent {
         }
 
         return $data;
+    }
+
+    private function addtablink($mform, $name, $label, $selected = false) {
+        if ($selected) {
+            $selectedariaattr = 'true';
+            $selectedclass = 'active';
+        } else {
+            $selectedariaattr = 'false';
+            $selectedclass = '';
+        }
+        $mform->addElement('html', '<li class="nav-item">
+                                                    <a class="nav-link '. $selectedclass . '" id="diff-tab" data-toggle="tab" href="#'. $name . '" role="tab" aria-selected="' . $selectedariaattr . '">
+                                                        <h4>'. $label . '</h4>
+                                                    </a>
+                                                </li>');
+    }
+
+    private function addtabcontents($mform, $name, $contents, $selected = false) {
+        if ($selected) {
+            $selectedattr = 'show active';
+        } else {
+            $selectedattr = '';
+        }
+        $mform->addElement('html', '<div class="tab-pane fade ' . $selectedattr . '" id="'. $name . '" role="tabpanel" aria-labelledby="'. $name . '-tab">');
+        $mform->addElement('html', $contents);
+        $mform->addElement('html', "</div>");
     }
 
     // Override function visiblity.

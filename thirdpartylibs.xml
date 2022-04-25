@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>lib/diff</location>
+    <name>sebastian/diff</name>
+    <license>Custom</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>lib/diff2html.js</location>
+    <name>jQuery-QueryBuilder</name>
+    <license>MIT</license>
+    <licenseversion>2014</licenseversion>
+  </library>
+</libraries>

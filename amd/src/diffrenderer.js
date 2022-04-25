@@ -1,5 +1,3 @@
-<?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,18 +22,22 @@
  * @copyright 2021, Andrew Hancox
  */
 
-$capabilities = [
-    'filter/translations:edittranslations' => [
-        'captype' => 'write',
-        'riskbitmaskt' => 'RISK_CONFIG',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ],
-    'filter/translations:edittranslationhashkeys' => [
-        'captype' => 'write',
-        'riskbitmaskt' => 'RISK_CONFIG',
-        'contextlevel' => CONTEXT_SYSTEM
-    ]
-];
+define(['Diff2Html'
+], function(Diff2Html) {
+
+    "use strict";
+
+    return {
+        /**
+         * Factory method returning instance of the formenhancements
+         *
+         * @return {formenhancements}
+         */
+        init: function(diffString) {
+
+            var diffHtml = Diff2Html.html(diffString);
+
+            document.getElementById('translationdiff').innerHTML = diffHtml;
+        }
+    };
+});

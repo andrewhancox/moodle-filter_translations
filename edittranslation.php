@@ -26,6 +26,7 @@
 use core\notification;
 use filter_translations\edittranslationform;
 use filter_translations\translation;
+use filter_translations\unifieddiff;
 
 require_once(__DIR__ . '../../../config.php');
 
@@ -79,6 +80,16 @@ $istranslationstale = !empty($generatedhash) && !empty($persistent->get('id')) &
 if (!empty($generatedhash)) {
     $persistent->set('lastgeneratedhash', $generatedhash);
 }
+
+$showdiff = false;
+$old = false;
+if (!empty($rawtext) && !empty($persistent->get('rawtext')) && $rawtext != $persistent->get('rawtext')) {
+    $PAGE->requires->js_call_amd('filter_translations/diffrenderer', 'init',
+        ['changeset' => unifieddiff::generatediff($rawtext, $persistent->get('rawtext'))]);
+    $showdiff = true;
+    $old = $persistent->get('rawtext');
+}
+
 if (!empty($rawtext)) {
     $persistent->set('rawtext', $rawtext);
 }
@@ -95,7 +106,7 @@ if (
     $formtype = edittranslationform::FORMTYPE_PLAIN;
 }
 
-$form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype]);
+$form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype, 'showdiff' => $showdiff, 'old' => $old]);
 
 if ($data = $form->get_data()) {
     if (!empty($data->deletebutton)) {
@@ -125,6 +136,9 @@ if ($data = $form->get_data()) {
     redirect($returnurl);
 }
 $form->set_data(['returnurl' => $returnurl]);
+
+$PAGE->requires->js(new moodle_url('/filter/translations/lib/diff2html.js'));
+$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css'));
 
 echo $OUTPUT->header();
 
