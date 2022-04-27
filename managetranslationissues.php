@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 $issue = optional_param('issue', '', PARAM_INT);
 $filterurl = optional_param('url', '', PARAM_URL);
 $contextid = optional_param('contextid', 0, PARAM_INT);
-$targetlanguage = optional_param('targetlanguage', '', PARAM_TEXT);
+$targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 
 if (empty($contextid)) {
     $context = context_system::instance();

@@ -29,6 +29,7 @@ use filter_translations\managetranslations_table;
 require_once(dirname(__FILE__) . '/../../config.php');
 
 $rawtext = optional_param('rawtext', '', PARAM_TEXT);
+$targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 
 $context = context_system::instance();
 
@@ -47,6 +48,7 @@ $formdata = $form->get_data();
 if ($formdata) {
     $urlparams = array(
         'rawtext' => $rawtext,
+        'targetlanguage' => $targetlanguage
     );
     $url = $PAGE->url;
     $url->params($urlparams);
@@ -57,6 +59,7 @@ echo $OUTPUT->header();
 
 $data = new stdClass();
 $data->rawtext = $rawtext;
+$data->targetlanguage = $targetlanguage;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 

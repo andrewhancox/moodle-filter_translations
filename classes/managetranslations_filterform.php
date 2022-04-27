@@ -39,6 +39,9 @@ class managetranslations_filterform extends \moodleform {
 
         $mform->addElement('header', 'filteroptions', get_string('filteroptions', 'filter_translations'));
 
+        $languages = [0 => get_string('any')] + get_string_manager()->get_list_of_translations();
+        $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $languages);
+
         $mform->addElement('text', 'rawtext', get_string('rawtext', 'filter_translations'));
         $mform->setType('rawtext', PARAM_TEXT);
 

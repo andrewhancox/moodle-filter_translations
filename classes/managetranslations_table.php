@@ -64,6 +64,11 @@ class managetranslations_table extends table_sql {
             $wheres[] = $DB->sql_like('t.rawtext', ':rawtext', false);
         }
 
+        if (!empty($this->filterparams->targetlanguage)) {
+            $params['targetlanguage'] = $this->filterparams->targetlanguage;
+            $wheres[] = 't.targetlanguage = :targetlanguage';
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }
