@@ -63,15 +63,15 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
             var totalcount = stalecount + missingcount;
 
             $('.translation-icon-wrapper i').after(
-                '<div class="count-container " data-region="count-container">' + totalcount + '</div>'
+                '<div class="count-container " data-region="count-container">' + translation_button.cap_count(totalcount) + '</div>'
             );
 
             $('.translation-icon-wrapper a.missingonthispage').html(
-                $('.translation-icon-wrapper a.missingonthispage').html() + ' (' + missingcount + ')'
+                $('.translation-icon-wrapper a.missingonthispage').html() + ' (' +  translation_button.cap_count(missingcount) + ')'
             );
 
             $('.translation-icon-wrapper a.staleonthispage').html(
-                $('.translation-icon-wrapper a.staleonthispage').html() + ' (' + stalecount + ')'
+                $('.translation-icon-wrapper a.staleonthispage').html() + ' (' +  translation_button.cap_count(stalecount) + ')'
             );
         },
         'opentranslation': function (event) {
@@ -119,6 +119,13 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                         walk(child);
                     }
                 }
+            }
+        },
+        'cap_count': function (count) {
+            if (count < 100) {
+                return count;
+            } else {
+                return '99+';
             }
         },
         objects: {}

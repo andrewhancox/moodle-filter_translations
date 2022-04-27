@@ -115,9 +115,17 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),
         'allstaletranslationsurl' => $allstaletranslationsurl->out(false),
         'inlinetranslationstate' => $currentinlinetranslationstate,
-        'missingcount' => translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING]),
-        'stalecount' => translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE]),
+        'missingcount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING])),
+        'stalecount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE])),
     ]);
+}
+
+function filter_translations_cap_count($count) {
+    if ($count < 100) {
+        return $count;
+    } else {
+        return '99+';
+    }
 }
 
 function filter_translations_after_config() {
