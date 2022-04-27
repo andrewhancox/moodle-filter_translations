@@ -69,6 +69,12 @@ class managetranslations_table extends table_sql {
             $wheres[] = 't.targetlanguage = :targetlanguage';
         }
 
+        if (!empty($this->filterparams->hash)) {
+            $params['hash'] = $this->filterparams->hash;
+            $params['hash2'] = $this->filterparams->hash;
+            $wheres[] = '(t.lastgeneratedhash = :hash OR t.md5key = :hash2)';
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }

@@ -61,6 +61,7 @@ $string['google_apiendpoint'] = 'API Endpoint';
 $string['google_apikey'] = 'API key';
 $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
+$string['hash'] = 'Hash';
 $string['issue'] = 'Status';
 $string['issue_10'] = 'Stale';
 $string['issue_20'] = 'Missing';

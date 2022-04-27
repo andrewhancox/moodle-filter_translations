@@ -32,6 +32,7 @@ $issue = optional_param('issue', '', PARAM_INT);
 $filterurl = optional_param('url', '', PARAM_URL);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
+$hash = optional_param('hash', '', PARAM_TEXT);
 
 if (empty($contextid)) {
     $context = context_system::instance();
@@ -60,7 +61,8 @@ if ($formdata) {
         'issue' => $issue,
         'url' => $filterurl,
         'contextid' => $contextid,
-        'targetlanguage' => $targetlanguage
+        'targetlanguage' => $targetlanguage,
+        'hash' => $hash,
     );
     $url = $PAGE->url;
     $url->params($urlparams);
@@ -74,6 +76,7 @@ $data->issue = $issue;
 $data->url = $filterurl;
 $data->contextid = $contextid;
 $data->targetlanguage = $targetlanguage;
+$data->hash = $hash;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 

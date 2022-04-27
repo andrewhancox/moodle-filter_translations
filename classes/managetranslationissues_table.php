@@ -91,6 +91,11 @@ class managetranslationissues_table extends table_sql {
             $wheres[] = 'ti.targetlanguage = :targetlanguage';
         }
 
+        if (!empty($this->filterparams->hash)) {
+            $params['hash'] = $this->filterparams->hash;
+            $wheres[] = 'ti.generatedhash = :hash';
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }
