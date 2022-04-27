@@ -86,6 +86,11 @@ class managetranslationissues_table extends table_sql {
             $params += $inparams;
         }
 
+        if (!empty($this->filterparams->targetlanguage)) {
+            $params['targetlanguage'] = $this->filterparams->targetlanguage;
+            $wheres[] = 'ti.targetlanguage = :targetlanguage';
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }

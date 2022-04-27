@@ -31,6 +31,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 $issue = optional_param('issue', '', PARAM_INT);
 $filterurl = optional_param('url', '', PARAM_URL);
 $contextid = optional_param('contextid', 0, PARAM_INT);
+$targetlanguage = optional_param('targetlanguage', '', PARAM_TEXT);
 
 if (empty($contextid)) {
     $context = context_system::instance();
@@ -59,6 +60,7 @@ if ($formdata) {
         'issue' => $issue,
         'url' => $filterurl,
         'contextid' => $contextid,
+        'targetlanguage' => $targetlanguage
     );
     $url = $PAGE->url;
     $url->params($urlparams);
@@ -71,6 +73,7 @@ $data = new stdClass();
 $data->issue = $issue;
 $data->url = $filterurl;
 $data->contextid = $contextid;
+$data->targetlanguage = $targetlanguage;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 

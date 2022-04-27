@@ -73,14 +73,18 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         redirect($PAGE->url);
     }
 
+    $targetlanguage = current_language();
+
     $missingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'url' => $PAGE->url->out_as_local_url(false),
-        'issue' => translation_issue::ISSUE_MISSING
+        'issue' => translation_issue::ISSUE_MISSING,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     $staletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'url' => $PAGE->url->out_as_local_url(false),
-        'issue' => translation_issue::ISSUE_STALE
+        'issue' => translation_issue::ISSUE_STALE,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     $context = $PAGE->context->get_course_context(false);
@@ -90,20 +94,24 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
 
     $contextmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'contextid' => $context->id,
-        'issue' => translation_issue::ISSUE_MISSING
+        'issue' => translation_issue::ISSUE_MISSING,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     $contextstaletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'contextid' => $context->id,
-        'issue' => translation_issue::ISSUE_STALE
+        'issue' => translation_issue::ISSUE_STALE,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     $allmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
-        'issue' => translation_issue::ISSUE_MISSING
+        'issue' => translation_issue::ISSUE_MISSING,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     $allstaletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
-        'issue' => translation_issue::ISSUE_STALE
+        'issue' => translation_issue::ISSUE_STALE,
+        'targetlanguage' => $targetlanguage,
     ]);
 
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
@@ -115,8 +123,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),
         'allstaletranslationsurl' => $allstaletranslationsurl->out(false),
         'inlinetranslationstate' => $currentinlinetranslationstate,
-        'missingcount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING])),
-        'stalecount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE])),
+        'missingcount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING, 'targetlanguage' => $targetlanguage])),
+        'stalecount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE, 'targetlanguage' => $targetlanguage])),
     ]);
 }
 
