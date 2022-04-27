@@ -36,6 +36,8 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 
 class managetranslations_table extends table_sql {
     public function __construct($filterparams, $sortcolumn) {
+        global $DB;
+
         parent::__construct('managetranslation_table');
 
         $this->filterparams = $filterparams;
@@ -54,9 +56,22 @@ class managetranslations_table extends table_sql {
         $this->is_downloadable(true);
         $this->sort_default_column = $sortcolumn;
 
+        $wheres = [];
+        $params = [];
+
+        if (!empty($this->filterparams->rawtext)) {
+            $params['rawtext'] = '%' . $DB->sql_like_escape($this->filterparams->rawtext) . '%';
+            $wheres[] = $DB->sql_like('t.rawtext', ':rawtext', false);
+        }
+
+        if (empty($wheres)) {
+            $wheres[] = '1=1';
+        }
+
         $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext',
                 '{filter_translations} t',
-        '1=1');
+            implode(' AND ', $wheres),
+            $params);
     }
 
     public function col_rawtext($row) {

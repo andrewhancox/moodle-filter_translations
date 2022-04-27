@@ -23,9 +23,12 @@
  * @copyright 2021, Andrew Hancox
  */
 
+use filter_translations\managetranslations_filterform;
 use filter_translations\managetranslations_table;
 
 require_once(dirname(__FILE__) . '/../../config.php');
+
+$rawtext = optional_param('rawtext', '', PARAM_TEXT);
 
 $context = context_system::instance();
 
@@ -38,10 +41,31 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 $PAGE->set_url(new moodle_url('/filter/translations/managetranslations.php'));
 
+$form = new managetranslations_filterform();
+$formdata = $form->get_data();
+
+if ($formdata) {
+    $urlparams = array(
+        'rawtext' => $rawtext,
+    );
+    $url = $PAGE->url;
+    $url->params($urlparams);
+    redirect($url);
+}
+
 echo $OUTPUT->header();
 
-$table = new managetranslations_table(null, 'translationsname');
-$table->define_baseurl('');
+$data = new stdClass();
+$data->rawtext = $rawtext;
+$data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
+$form->set_data($data);
+
+$baseurl = $PAGE->url;
+$baseurl->params((array)$data);
+
+$table = new managetranslations_table($data, 'translationsname');
+$table->define_baseurl($baseurl);
+echo $form->render();
 $table->out(100, true);
 
 echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
