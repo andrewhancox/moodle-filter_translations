@@ -73,6 +73,10 @@ if (empty($id)) {
 } else {
     $persistent = new translation($id);
     $url->param('id', $id);
+
+    if ($persistent->get('targetlanguage') == $CFG->lang) {
+        require_capability('filter/translations:editsitedefaulttranslations', $context);
+    }
 }
 $persistent->set('contextid', $contextid);
 

@@ -40,6 +40,8 @@ class edittranslationform extends persistent {
     protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
 
     function definition() {
+        global $PAGE, $CFG;
+
         $mform = $this->_form;
 
         $mform->addElement('hidden', 'rawtext');
@@ -60,6 +62,11 @@ class edittranslationform extends persistent {
         }
 
         $translations = get_string_manager()->get_list_of_translations();
+
+        if (!has_capability('filter/translations:editsitedefaulttranslations', $PAGE->context) && isset($translations[$CFG->lang])) {
+            unset($translations[$CFG->lang]);
+        }
+
         $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $translations);
         $mform->setDefault('targetlanguage', current_language());
 

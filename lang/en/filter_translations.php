@@ -98,5 +98,6 @@ $string['translationissuesinpagestaleall'] = 'All stale translations';
 $string['translationdetails'] = 'Translation details';
 $string['translationid'] = 'Translation ID';
 $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
+$string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
 $string['url'] = 'Page';

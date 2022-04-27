@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 
 class managetranslationissues_table extends table_sql {
     public function __construct($filterparams, $sortcolumn) {
-        global $DB;
+        global $DB, $PAGE, $CFG;
 
         parent::__construct('managetranslation_table');
 
@@ -89,6 +89,9 @@ class managetranslationissues_table extends table_sql {
         if (!empty($this->filterparams->targetlanguage)) {
             $params['targetlanguage'] = $this->filterparams->targetlanguage;
             $wheres[] = 'ti.targetlanguage = :targetlanguage';
+        } else if (!has_capability('filter/translations:editsitedefaulttranslations', $PAGE->context)) {
+            $params['targetlanguage'] = $CFG->lang;
+            $wheres[] = 'ti.targetlanguage <> :targetlanguage';
         }
 
         if (!empty($this->filterparams->hash)) {

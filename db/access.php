@@ -33,6 +33,11 @@ $capabilities = [
             'manager' => CAP_ALLOW
         )
     ],
+    'filter/translations:editsitedefaulttranslations' => [
+        'captype' => 'write',
+        'riskbitmaskt' => 'RISK_CONFIG',
+        'contextlevel' => CONTEXT_SYSTEM
+    ],
     'filter/translations:edittranslationhashkeys' => [
         'captype' => 'write',
         'riskbitmaskt' => 'RISK_CONFIG',

@@ -62,6 +62,12 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         return '';
     }
 
+    $targetlanguage = current_language();
+
+    if ($targetlanguage == $CFG->lang && !has_capability('filter/translations:editsitedefaulttranslations', $PAGE->context)) {
+        return '';
+    }
+
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
     $currentinlinetranslationstate = filter_translations::checkinlinestranslation();
@@ -72,8 +78,6 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         \filter_translations::toggleinlinestranslation($inlinetransationtate);
         redirect($PAGE->url);
     }
-
-    $targetlanguage = current_language();
 
     $missingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'url' => $PAGE->url->out_as_local_url(false),
