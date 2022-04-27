@@ -40,10 +40,11 @@ class managetranslations_table extends table_sql {
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['md5key', 'targetlanguage', 'actions']);
+        $this->define_columns(['md5key', 'targetlanguage', 'rawtext', 'actions']);
         $this->define_headers([
                 get_string('md5key', 'filter_translations'),
                 get_string('targetlanguage', 'filter_translations'),
+                get_string('rawtext', 'filter_translations'),
                 get_string('actions'),
                 '',
         ]);
@@ -53,9 +54,13 @@ class managetranslations_table extends table_sql {
         $this->is_downloadable(true);
         $this->sort_default_column = $sortcolumn;
 
-        $this->set_sql('t.id, t.md5key, t.targetlanguage',
+        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext',
                 '{filter_translations} t',
         '1=1');
+    }
+
+    public function col_rawtext($row) {
+        return shorten_text(strip_tags($row->rawtext));
     }
 
     public function col_actions($translation) {
