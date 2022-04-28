@@ -52,7 +52,6 @@ if (isset($cm)) {
 $title = get_string('managetranslationissues', 'filter_translations');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
-$PAGE->set_url(new moodle_url('/filter/translations/managetranslationissues.php'));
 
 $form = new managetranslationissues_filterform();
 $formdata = $form->get_data();
@@ -70,8 +69,6 @@ if ($formdata) {
     redirect($url);
 }
 
-echo $OUTPUT->header();
-
 $data = new stdClass();
 $data->issue = $issue;
 $data->url = $filterurl;
@@ -81,8 +78,12 @@ $data->hash = $hash;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 
-$baseurl = $PAGE->url;
+$baseurl = new moodle_url('/filter/translations/managetranslationissues.php');
 $baseurl->params((array)$data);
+$baseurl->param('page', optional_param('page', '', PARAM_INT));
+$PAGE->set_url($baseurl);
+
+echo $OUTPUT->header();
 
 $table = new managetranslationissues_table($data, 'translationsname');
 $table->define_baseurl($baseurl);

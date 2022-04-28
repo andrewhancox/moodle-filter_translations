@@ -41,7 +41,6 @@ $PAGE->set_context($context);
 $title = get_string('managetranslations', 'filter_translations');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
-$PAGE->set_url(new moodle_url('/filter/translations/managetranslations.php'));
 
 $form = new managetranslations_filterform();
 $formdata = $form->get_data();
@@ -57,8 +56,6 @@ if ($formdata) {
     redirect($url);
 }
 
-echo $OUTPUT->header();
-
 $data = new stdClass();
 $data->rawtext = $rawtext;
 $data->targetlanguage = $targetlanguage;
@@ -66,13 +63,17 @@ $data->hash = $hash;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 
-$baseurl = $PAGE->url;
+$baseurl = new moodle_url('/filter/translations/managetranslations.php');
 $baseurl->params((array)$data);
+$baseurl->param('page', optional_param('page', '', PARAM_INT));
+$PAGE->set_url($baseurl);
+
+echo $OUTPUT->header();
 
 $table = new managetranslations_table($data, 'translationsname');
 $table->define_baseurl($baseurl);
 echo $form->render();
-$table->out(100, true);
+$table->out(2, true);
 
 echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
 

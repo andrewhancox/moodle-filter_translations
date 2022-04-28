@@ -149,7 +149,7 @@ class managetranslationissues_table extends table_sql {
                 'foundhash' => $row->md5key,
                 'id' => $row->translationid,
                 'contextid' => $row->contextid,
-                'returnurl' => $this->baseurl
+                'returnurl' => $PAGE->url
             ]),
             get_string('edittranslation', 'filter_translations'),
             'post'

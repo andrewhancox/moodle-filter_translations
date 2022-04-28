@@ -104,15 +104,16 @@ class managetranslations_table extends table_sql {
         return $row->targetlanguage;
     }
 
-    public function col_actions($translation) {
-        global $OUTPUT;
+    public function col_actions($row) {
+        global $OUTPUT, $PAGE;
 
-        $out = '';
-
-        $icon = $OUTPUT->pix_icon('t/edit', get_string('edittranslation', 'filter_translations'));
-        $url = new moodle_url('/filter/translations/edittranslation.php', ['id' => $translation->id]);
-        $out .= $OUTPUT->action_link($url, $icon);
-
-        return $out;
+        return $OUTPUT->single_button(
+            new moodle_url('/filter/translations/edittranslation.php', [
+                'id' => $row->id,
+                'returnurl' => $PAGE->url
+            ]),
+            get_string('edittranslation', 'filter_translations'),
+            'post'
+        );
     }
 }
