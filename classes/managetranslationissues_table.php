@@ -35,10 +35,14 @@ require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
 class managetranslationissues_table extends table_sql {
+    private $languages = null;
+
     public function __construct($filterparams, $sortcolumn) {
         global $DB, $PAGE, $CFG;
 
         parent::__construct('managetranslation_table');
+
+        $this->languages = get_string_manager()->get_list_of_translations();
 
         $this->filterparams = $filterparams;
 
@@ -121,6 +125,14 @@ class managetranslationissues_table extends table_sql {
 
     public function col_rawtext($row) {
         return shorten_text(strip_tags($row->rawtext));
+    }
+
+    public function col_targetlanguage($row) {
+        if (isset($this->languages[$row->targetlanguage])) {
+            return $this->languages[$row->targetlanguage];
+        }
+
+        return $row->targetlanguage;
     }
 
     public function col_issue($row) {
