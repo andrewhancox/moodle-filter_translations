@@ -86,6 +86,10 @@ class edittranslationform extends persistent {
             $this->addtablink($mform, 'old', get_string('old', 'filter_translations'));
         }
 
+        if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
+            $this->addtablink($mform, 'rawhtml', get_string('rawhtml', 'filter_translations'));
+        }
+
         $mform->addElement('html', '</ul>');
 
         $mform->addElement('html', '<div class="tab-content" id="">');
@@ -98,6 +102,10 @@ class edittranslationform extends persistent {
 
         if (!empty($this->_customdata['old'])) {
             $this->addtabcontents($mform, 'old', $this->_customdata['old']);
+        }
+
+        if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
+            $this->addtabcontents($mform, 'rawhtml', \html_writer::tag('xmp', $this->get_persistent()->get('rawtext')));
         }
 
         $mform->addElement('html', "</div>");

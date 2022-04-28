@@ -80,6 +80,7 @@ $string['old'] = 'Old';
 $string['pluginname'] = 'Content translations';
 $string['privacy:metadata'] = 'The content translations plugin does not store any personal data.';
 $string['rawtext'] = 'Original content';
+$string['rawhtml'] = 'Original raw HTML';
 $string['staletranslation'] = 'Translation was created based on different source text. Please update the translation.';
 $string['startinlinetranslation'] = 'Start in-line translation';
 $string['stopinlinetranslation'] = 'Stop in-line translation';
