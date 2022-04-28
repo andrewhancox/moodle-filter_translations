@@ -37,15 +37,16 @@ $hash = optional_param('hash', '', PARAM_TEXT);
 if (empty($contextid)) {
     $context = context_system::instance();
 } else {
-    $context = context::instance_by_id($contextid);
+    list($context, $course, $cm) = get_context_info_array($contextid);
 }
 require_capability('filter/translations:edittranslations', $context);
 
 $PAGE->set_context($context);
 
-$coursecontext = $PAGE->context->get_course_context(false);
-if (!empty($coursecontext)) {
-    $PAGE->set_course(get_course($coursecontext->instanceid));
+if (isset($cm)) {
+    $PAGE->set_cm($cm, $course);
+} else if (isset($course)) {
+    $PAGE->set_course($course);
 }
 
 $title = get_string('managetranslationissues', 'filter_translations');

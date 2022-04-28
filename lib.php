@@ -79,22 +79,30 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         redirect($PAGE->url);
     }
 
+    if (!empty($PAGE->cm->id)) {
+        $context = context_module::instance($PAGE->cm->id);
+    } else if (!empty($PAGE->course->id) && $PAGE->course->id != SITEID) {
+        $context = context_course::instance($PAGE->course->id);
+    } else {
+        $context = $PAGE->context->get_course_context(false);
+    }
+    if (empty($context)) {
+        $context = context_system::instance();
+    }
+
     $missingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'url' => $PAGE->url->out_as_local_url(false),
         'issue' => translation_issue::ISSUE_MISSING,
         'targetlanguage' => $targetlanguage,
+        'contextid' => $context->id,
     ]);
 
     $staletranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'url' => $PAGE->url->out_as_local_url(false),
         'issue' => translation_issue::ISSUE_STALE,
         'targetlanguage' => $targetlanguage,
+        'contextid' => $context->id,
     ]);
-
-    $context = $PAGE->context->get_course_context(false);
-    if (empty($context)) {
-        $context = context_system::instance();
-    }
 
     $contextmissingtranslationsurl = new moodle_url("/filter/translations/managetranslationissues.php", [
         'contextid' => $context->id,
