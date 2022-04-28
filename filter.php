@@ -140,10 +140,6 @@ class filter_translations extends moodle_text_filter {
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
         global $PAGE;
 
-        if (!self::checkinlinestranslation()) {
-            return '';
-        }
-
         $obj = (object) [
                 'rawtext'          => $rawtext,
                 'generatedhash'    => $generatedhash,
@@ -164,6 +160,10 @@ class filter_translations extends moodle_text_filter {
             self::$registeredtranslations[$translationkey] = $id;
         } else {
             $id =  self::$registeredtranslations[$translationkey];
+        }
+
+        if (!self::checkinlinestranslation()) {
+            return '';
         }
 
         return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR;
