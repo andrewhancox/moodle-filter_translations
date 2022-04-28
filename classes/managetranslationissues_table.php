@@ -111,7 +111,7 @@ class managetranslationissues_table extends table_sql {
     }
 
     public function col_url($row) {
-        return \html_writer::link(new moodle_url($row->url), $row->url);
+        return \html_writer::link(new moodle_url($row->url), shorten_text($row->url, 90));
     }
 
     public function col_context($row) {
