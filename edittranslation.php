@@ -147,7 +147,7 @@ $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/diff2html/bund
 echo $OUTPUT->header();
 
 if ($istranslationstale) {
-    echo $OUTPUT->notification(get_string('staletranslation', 'filter_translations'), notification::WARNING);
+    echo html_writer::div(get_string('staletranslation', 'filter_translations'), 'alert alert-warning');
 }
 
 echo html_writer::tag('h2', get_string('translation', 'filter_translations'));
