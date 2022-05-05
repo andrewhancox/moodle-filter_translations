@@ -184,12 +184,12 @@ class filter_translations extends moodle_text_filter {
         $SESSION->filter_translations_toggleinlinestranslation = $state;
     }
 
-    public static function checkinlinestranslation() {
+    public static function checkinlinestranslation($skipcapabilitycheck = false) {
         global $SESSION, $CFG, $PAGE;
 
         static $has_capability;
 
-        if (!isset($has_capability)) {
+        if (empty($skipcapabilitycheck) && !isset($has_capability)) {
             $targetlanguage = current_language();
             if ($targetlanguage == $CFG->lang) {
                 $has_capability = has_capability('filter/translations:editsitedefaulttranslations', $PAGE->context);
@@ -198,6 +198,6 @@ class filter_translations extends moodle_text_filter {
             }
         }
 
-        return $has_capability && !empty($SESSION->filter_translations_toggleinlinestranslation);
+        return !empty($has_capability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
     }
 }

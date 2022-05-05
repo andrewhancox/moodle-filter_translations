@@ -152,11 +152,7 @@ function filter_translations_after_config() {
     global $CFG;
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
-    if (!empty(WS_SERVER) || isset($CFG->upgraderunning) || during_initial_install()) {
-        return;
-    }
-
-    if (filter_translations::checkinlinestranslation()) {
+    if (filter_translations::checkinlinestranslation(true)) {
         $CFG->formatstringstriptags = false;
     }
 }
