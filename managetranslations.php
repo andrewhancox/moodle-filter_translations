@@ -45,15 +45,16 @@ $PAGE->set_heading($title);
 $form = new managetranslations_filterform();
 $formdata = $form->get_data();
 
+$baseurl = new moodle_url('/filter/translations/managetranslations.php');
+
 if ($formdata) {
     $urlparams = array(
         'rawtext' => $rawtext,
         'targetlanguage' => $targetlanguage,
         'hash' => $hash,
     );
-    $url = $PAGE->url;
-    $url->params($urlparams);
-    redirect($url);
+    $baseurl->params($urlparams);
+    redirect($baseurl);
 }
 
 $data = new stdClass();
@@ -63,7 +64,6 @@ $data->hash = $hash;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 
-$baseurl = new moodle_url('/filter/translations/managetranslations.php');
 $baseurl->params((array)$data);
 $baseurl->param('page', optional_param('page', '', PARAM_INT));
 $PAGE->set_url($baseurl);
