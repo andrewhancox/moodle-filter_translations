@@ -140,11 +140,19 @@ class filter_translations extends moodle_text_filter {
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
         global $PAGE;
 
+        if (!empty($translation) && !empty($translation->get('contextid'))){
+            $contextid = $translation->get('contextid');
+        } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
+            $contextid = context_system::instance()->id;
+        } else {
+            $contextid = $PAGE->context->id;
+        }
+
         $obj = (object) [
                 'rawtext'          => $rawtext,
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
-                'contextid'    => !empty($translation) ? $translation->get('contextid') : $PAGE->context->id,
+                'contextid'    => $contextid,
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',
                 'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'),
                 'goodtranslation'  => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'),
