@@ -104,7 +104,7 @@ class translator {
         if (!empty($config->logmissing) && empty($translation)) {
             $issueproperties['issue'] = translation_issue::ISSUE_MISSING;
             $issueproperties['translationid'] = 0;
-        } else if (!empty($config->logstale) && $generatedhash !== $translation->get('lastgeneratedhash')) {
+        } else if (!empty($config->logstale) && !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash')) {
             $issueproperties['issue'] = translation_issue::ISSUE_STALE;
             $issueproperties['translationid'] = $translation->get('id');
         } else {
