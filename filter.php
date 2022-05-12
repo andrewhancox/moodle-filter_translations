@@ -199,13 +199,26 @@ class filter_translations extends moodle_text_filter {
 
         if (empty($skipcapabilitycheck) && !isset($has_capability)) {
             $targetlanguage = current_language();
-            if ($targetlanguage == $CFG->lang) {
-                $has_capability = has_capability('filter/translations:editsitedefaulttranslations', $PAGE->context);
+
+            if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
+                $contextid = context_system::instance();
             } else {
-                $has_capability = has_capability('filter/translations:edittranslations', $PAGE->context);
+                $contextid = $PAGE->context;
+            }
+
+            if ($targetlanguage == $CFG->lang) {
+                $has_capability = has_capability('filter/translations:editsitedefaulttranslations',$contextid);
+            } else {
+                $has_capability = has_capability('filter/translations:edittranslations', $contextid);
             }
         }
 
-        return !empty($has_capability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
+        $val = !empty($has_capability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
+
+        if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
+            unset($has_capability);
+        }
+
+        return $val;
     }
 }
