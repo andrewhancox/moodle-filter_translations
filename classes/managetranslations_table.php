@@ -46,11 +46,12 @@ class managetranslations_table extends table_sql {
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['md5key', 'targetlanguage', 'rawtext', 'actions']);
+        $this->define_columns(['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'actions']);
         $this->define_headers([
                 get_string('md5key', 'filter_translations'),
                 get_string('targetlanguage', 'filter_translations'),
                 get_string('rawtext', 'filter_translations'),
+                get_string('substitutetext', 'filter_translations'),
                 get_string('actions'),
                 '',
         ]);
@@ -86,7 +87,7 @@ class managetranslations_table extends table_sql {
             $wheres[] = '1=1';
         }
 
-        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext',
+        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext, t.substitutetext',
                 '{filter_translations} t',
             implode(' AND ', $wheres),
             $params);
@@ -94,6 +95,10 @@ class managetranslations_table extends table_sql {
 
     public function col_rawtext($row) {
         return shorten_text(strip_tags($row->rawtext));
+    }
+
+    public function col_substitutetext($row) {
+        return shorten_text(strip_tags($row->substitutetext));
     }
 
     public function col_targetlanguage($row) {

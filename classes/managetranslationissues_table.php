@@ -46,13 +46,14 @@ class managetranslationissues_table extends table_sql {
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'actions']);
+        $this->define_columns(['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'substitutetext', 'actions']);
         $this->define_headers([
             get_string('issue', 'filter_translations'),
             get_string('context', 'filter_translations'),
             get_string('url', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
+            get_string('substitutetext', 'filter_translations'),
             get_string('actions'),
             '',
         ]);
@@ -107,8 +108,8 @@ class managetranslationissues_table extends table_sql {
             $wheres[] = '1=1';
         }
 
-        $this->set_sql('ti.id, ti.issue, ti.url, ti.targetlanguage, ti.rawtext, ti.contextid, ti.generatedhash, ti.md5key, ti.translationid',
-            '{filter_translation_issues} ti',
+        $this->set_sql('ti.id, ti.issue, ti.url, ti.targetlanguage, ti.rawtext, ti.contextid, ti.generatedhash, ti.md5key, ti.translationid, t.substitutetext',
+            '{filter_translation_issues} ti left join {filter_translations} t on ti.translationid = t.id',
             implode(' AND ', $wheres),
             $params
         );
@@ -125,6 +126,10 @@ class managetranslationissues_table extends table_sql {
 
     public function col_rawtext($row) {
         return shorten_text(strip_tags($row->rawtext));
+    }
+
+    public function col_substitutetext($row) {
+        return shorten_text(strip_tags($row->substitutetext));
     }
 
     public function col_targetlanguage($row) {
