@@ -60,3 +60,8 @@
     padding: 2px;
     margin: 2px;
 }
+
+pre.filter_translations_rawhtml {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

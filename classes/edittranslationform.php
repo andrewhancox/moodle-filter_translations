@@ -105,7 +105,12 @@ class edittranslationform extends persistent {
         }
 
         if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
-            $this->addtabcontents($mform, 'rawhtml', \html_writer::tag('xmp', $this->get_persistent()->get('rawtext')));
+            $this->addtabcontents($mform, 'rawhtml', \html_writer::tag('pre',
+                str_replace('>', '&gt;', str_replace('<', '&lt;',
+                    unifieddiff::tidyhtml($this->get_persistent()->get('rawtext'))
+                )),
+                ['class' => 'filter_translations_rawhtml']
+            ));
         }
 
         $mform->addElement('html', "</div>");

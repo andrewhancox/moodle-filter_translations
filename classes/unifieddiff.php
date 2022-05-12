@@ -51,11 +51,12 @@ class unifieddiff {
         return $differ->diff(self::tidyhtml($original), self::tidyhtml($new));
     }
 
-    private static function tidyhtml($buffer) {
+    public static function tidyhtml($buffer) {
         $dom = new DOMDocument();
         $dom->preserveWhiteSpace = false;
-        $dom->loadHTML($buffer);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $buffer);
         $dom->formatOutput = true;
-        return($dom->saveHTML());
+        $htmlinbodytags = $dom->saveHTML($dom->getElementsByTagName('body')->item(0));
+        return substr($htmlinbodytags, '6', strlen($htmlinbodytags) - 13);
     }
 }
