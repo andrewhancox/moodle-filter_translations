@@ -73,7 +73,7 @@ echo $OUTPUT->header();
 $table = new managetranslations_table($data, 'translationsname');
 $table->define_baseurl($baseurl);
 echo $form->render();
-$table->out(2, true);
+$table->out(100, true);
 
 echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
 
