@@ -29,6 +29,7 @@ use filter_translations\managetranslations_table;
 require_once(dirname(__FILE__) . '/../../config.php');
 
 $rawtext = optional_param('rawtext', '', PARAM_TEXT);
+$substitutetext = optional_param('substitutetext', '', PARAM_TEXT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 $hash = optional_param('hash', '', PARAM_TEXT);
 
@@ -50,6 +51,7 @@ $baseurl = new moodle_url('/filter/translations/managetranslations.php');
 if ($formdata) {
     $urlparams = array(
         'rawtext' => $rawtext,
+        'substitutetext' => $substitutetext,
         'targetlanguage' => $targetlanguage,
         'hash' => $hash,
     );
@@ -59,6 +61,7 @@ if ($formdata) {
 
 $data = new stdClass();
 $data->rawtext = $rawtext;
+$data->substitutetext = $substitutetext;
 $data->targetlanguage = $targetlanguage;
 $data->hash = $hash;
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);

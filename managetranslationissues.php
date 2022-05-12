@@ -28,6 +28,8 @@ use filter_translations\managetranslationissues_table;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
+$rawtext = optional_param('rawtext', '', PARAM_TEXT);
+$substitutetext = optional_param('substitutetext', '', PARAM_TEXT);
 $issue = optional_param('issue', '', PARAM_INT);
 $filterurl = optional_param('url', '', PARAM_URL);
 $contextid = optional_param('contextid', 0, PARAM_INT);
@@ -60,6 +62,8 @@ $baseurl = new moodle_url('/filter/translations/managetranslationissues.php');
 
 if ($formdata) {
     $urlparams = array(
+        'rawtext' => $rawtext,
+        'substitutetext' => $substitutetext,
         'issue' => $issue,
         'url' => $filterurl,
         'contextid' => $contextid,
@@ -71,6 +75,8 @@ if ($formdata) {
 }
 
 $data = new stdClass();
+$data->rawtext = $rawtext;
+$data->substitutetext = $substitutetext;
 $data->issue = $issue;
 $data->url = $filterurl;
 $data->contextid = $contextid;

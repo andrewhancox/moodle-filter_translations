@@ -66,6 +66,16 @@ class managetranslationissues_table extends table_sql {
         $wheres = [];
         $params = [];
 
+        if (!empty($this->filterparams->rawtext)) {
+            $params['rawtext'] = '%' . $DB->sql_like_escape($this->filterparams->rawtext) . '%';
+            $wheres[] = $DB->sql_like('ti.rawtext', ':rawtext', false);
+        }
+
+        if (!empty($this->filterparams->substitutetext)) {
+            $params['substitutetext'] = '%' . $DB->sql_like_escape($this->filterparams->substitutetext) . '%';
+            $wheres[] = $DB->sql_like('t.substitutetext', ':substitutetext', false);
+        }
+
         if (!empty($this->filterparams->issue) && $this->filterparams->issue !== 'all') {
             $wheres[] = "ti.issue = :issue";
             $params['issue'] = $this->filterparams->issue;
