@@ -30,7 +30,7 @@ use filter_translations\translator_testable;
 defined('MOODLE_INTERNAL') || die();
 
 class languagestrings_test extends advanced_testcase {
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
 
         $this->resetAfterTest(true);

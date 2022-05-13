@@ -22,6 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
  */
+namespace filter_translations;
 
 use filter_translations\translation;
 use filter_translations\translation_testable;
@@ -29,9 +30,10 @@ use filter_translations\translator_testable;
 
 defined('MOODLE_INTERNAL') || die();
 
-class events_test extends advanced_testcase {
+class events_test extends \advanced_testcase {
 
-    public function setUp() {parent::setUp();
+    public function setUp(): void {
+        parent::setUp();
 
         $this->resetAfterTest(true);
     }

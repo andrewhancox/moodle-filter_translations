@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class filter_test extends advanced_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         global $CFG;
 
         parent::setUp();
