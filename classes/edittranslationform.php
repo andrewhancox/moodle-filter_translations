@@ -219,8 +219,11 @@ class edittranslationform extends persistent {
 
         $context = context_system::instance();
 
-        $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES,
-                               'maxbytes' => $SITE->maxbytes, 'context' => $context);
+        $editoroptions = ['maxfiles' => EDITOR_UNLIMITED_FILES,
+            'maxbytes' => $SITE->maxbytes,
+            'trusttext' => false,
+            'noclean' => true,
+            'context' => $context];
         return $editoroptions;
     }
 }
