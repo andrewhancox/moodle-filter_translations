@@ -27,7 +27,6 @@ namespace filter_translations;
 
 use context_system;
 use core\form\persistent;
-use core_user;
 
 class edittranslationform extends persistent {
     const FORMTYPE_RICH = 10;
@@ -189,8 +188,8 @@ class edittranslationform extends persistent {
             $selectedclass = '';
         }
         $mform->addElement('html', '<li class="nav-item">
-                                                    <a class="nav-link '. $selectedclass . '" id="diff-tab" data-toggle="tab" href="#'. $name . '" role="tab" aria-selected="' . $selectedariaattr . '">
-                                                        <h4>'. $label . '</h4>
+                                                    <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name . '" role="tab" aria-selected="' . $selectedariaattr . '">
+                                                        <h4>' . $label . '</h4>
                                                     </a>
                                                 </li>');
     }
@@ -201,7 +200,7 @@ class edittranslationform extends persistent {
         } else {
             $selectedattr = '';
         }
-        $mform->addElement('html', '<div class="tab-pane fade ' . $selectedattr . '" id="'. $name . '" role="tabpanel" aria-labelledby="'. $name . '-tab">');
+        $mform->addElement('html', '<div class="tab-pane fade ' . $selectedattr . '" id="' . $name . '" role="tabpanel" aria-labelledby="' . $name . '-tab">');
         $mform->addElement('html', $contents);
         $mform->addElement('html', "</div>");
     }
