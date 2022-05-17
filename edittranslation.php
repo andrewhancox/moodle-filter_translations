@@ -130,8 +130,8 @@ if ($data = $form->get_data()) {
             'filter_translations',
             'substitutetext', $persistent->get('id'));
 
-        $persistent->set('substitutetext', $data->substitutetext_editor['text']);
-        $persistent->set('substitutetextformat', $data->substitutetext_editor['format']);
+        $persistent->set('substitutetext', $data->substitutetext);
+        $persistent->set('substitutetextformat', $data->substitutetextformat);
         $persistent->update();
     }
 
