@@ -58,6 +58,9 @@ class managetranslations_filterform extends \moodleform {
         $mform->addElement('text', 'hash', get_string('hash', 'filter_translations'));
         $mform->setType('hash', PARAM_TEXT);
 
+        $mform->addElement('text', 'usermodified', get_string('userid', 'filter_translations'));
+        $mform->setType('usermodified', PARAM_INT);
+
         $mform->addElement('submit', 'submit', get_string('update'));
     }
 }

@@ -46,12 +46,13 @@ class managetranslations_table extends table_sql {
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'actions']);
+        $this->define_columns(['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'usermodified', 'actions']);
         $this->define_headers([
                 get_string('md5key', 'filter_translations'),
                 get_string('targetlanguage', 'filter_translations'),
                 get_string('rawtext', 'filter_translations'),
                 get_string('substitutetext', 'filter_translations'),
+                get_string('translatedby', 'filter_translations'),
                 get_string('actions'),
                 '',
         ]);
@@ -88,12 +89,20 @@ class managetranslations_table extends table_sql {
             $wheres[] = '(t.lastgeneratedhash = :hash OR t.md5key = :hash2)';
         }
 
+        if (!empty($this->filterparams->usermodified)) {
+            $params['userid'] = $this->filterparams->usermodified;
+            $wheres[] = '(t.usermodified = :userid)';
+        }
+
         if (empty($wheres)) {
             $wheres[] = '1=1';
         }
 
-        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext, t.substitutetext',
-                '{filter_translations} t',
+        $userfieldsapi = \core_user\fields::for_name()->including('username', 'deleted');
+        $userfields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+
+        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext, t.substitutetext, t.usermodified, ' . $userfields,
+                '{filter_translations} t LEFT JOIN {user} u on t.usermodified = u.id',
             implode(' AND ', $wheres),
             $params);
     }
@@ -112,6 +121,13 @@ class managetranslations_table extends table_sql {
         }
 
         return $row->targetlanguage;
+    }
+
+    public function col_usermodified($row) {
+        return \html_writer::link(
+            new moodle_url('/user/view.php',
+            array('id' => $row->usermodified)), fullname($row)
+        );
     }
 
     public function col_actions($row) {
