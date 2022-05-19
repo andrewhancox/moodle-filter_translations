@@ -34,6 +34,7 @@ $id = optional_param('id', null, PARAM_INT);
 $contextid = optional_param('contextid', null, PARAM_INT);
 $generatedhash = optional_param('generatedhash', null, PARAM_TEXT);
 $foundhash = optional_param('foundhash', null, PARAM_TEXT);
+$targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 $rawtext = optional_param('rawtext', null, PARAM_RAW);
 $returnurl = optional_param('returnurl', new moodle_url('/filter/translations/managetranslations.php'), PARAM_URL);
 
@@ -68,7 +69,7 @@ $persistent = null;
 if (empty($id)) {
     $persistent = new translation();
     $persistent->set('md5key', empty($foundhash) ? $generatedhash : $foundhash);
-    $persistent->set('targetlanguage', current_language());
+    $persistent->set('targetlanguage', $targetlanguage);
     $persistent->set('substitutetext', $rawtext);
 } else {
     $persistent = new translation($id);
