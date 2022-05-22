@@ -35,14 +35,25 @@ class translator {
     }
 
     public function get_best_translation($language, $generatedhash, $foundhash, $text) {
+        global $CFG;
+
         $translations = $this->get_string_manager()->get_list_of_translations(true);
         $translationnames = array_values($translations);
         if (in_array($text, $translationnames)) {
             return null;
         }
 
-        $prioritisedlanguages =
-                array_reverse(array_merge(['en'], $this->get_string_manager()->get_language_dependencies($language)));
+        $dependencies = $this->get_string_manager()->get_language_dependencies($language);
+
+        // Workplace compatibility.
+        if (isset($CFG->wphideparentlang) && $CFG->wphideparentlang) {
+            // Parent language is hidden, so add dependency to WP language.
+            if (isset($translations[$dependencies[0] . '_wp'])) {
+                array_splice($dependencies, 1, 0, $dependencies[0] . '_wp');
+            }
+        }
+
+        $prioritisedlanguages = array_reverse(array_merge(['en'], $dependencies));
 
         $options = $this->get_usable_translations($prioritisedlanguages, $generatedhash, $foundhash);
         $optionsforbestlanguage = $this->filter_options_by_best_language($options, $prioritisedlanguages);
