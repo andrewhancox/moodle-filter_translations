@@ -101,7 +101,7 @@ class managetranslations_table extends table_sql {
         $userfieldsapi = \core_user\fields::for_name()->including('username', 'deleted');
         $userfields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 
-        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext, t.substitutetext, t.usermodified, ' . $userfields,
+        $this->set_sql('t.id, t.md5key, t.targetlanguage, t.rawtext, t.substitutetext, t.usermodified, t.contextid, ' . $userfields,
                 '{filter_translations} t LEFT JOIN {user} u on t.usermodified = u.id',
             implode(' AND ', $wheres),
             $params);
@@ -136,6 +136,7 @@ class managetranslations_table extends table_sql {
         return $OUTPUT->single_button(
             new moodle_url('/filter/translations/edittranslation.php', [
                 'id' => $row->id,
+                'contextid' => $row->contextid,
                 'targetlanguage' => $row->targetlanguage,
                 'returnurl' => $PAGE->url
             ]),
