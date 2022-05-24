@@ -124,7 +124,22 @@ if ($data = $form->get_data()) {
     }
 
     $persistent->from_record($form->filter_data_for_persistent($data));
-    $persistent->save();
+
+    // Before saving, ensure we are not overwriting existing translation.
+    $record = $DB->get_record('filter_translations',
+            array('targetlanguage' => $targetlanguage, 'md5key' => $persistent->get('md5key'))
+        );
+
+    if (!$record) {
+        // Nothing found, OK to add new entry.
+        $persistent->set('id', 0); // Unset id.
+        $persistent->create();
+    } else if ($record->id == $persistent->get('id') && $record->targetlanguage == $persistent->get('targetlanguage')) {
+        // Updating the translation in the same language, OK to update.
+        $persistent->update();
+    } else {
+        notice(get_string('translationalreadyexists', 'filter_translations', $targetlanguage), $returnurl);
+    }
 
     if ($formtype == edittranslationform::FORMTYPE_RICH) {
         $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_test_editoroptions(), $context,
@@ -140,7 +155,7 @@ if ($data = $form->get_data()) {
 } else if ($form->is_cancelled()) {
     redirect($returnurl);
 }
-$form->set_data(['returnurl' => $returnurl]);
+$form->set_data(['returnurl' => $returnurl, 'targetlanguage' => $targetlanguage]);
 
 $PAGE->requires->js(new moodle_url('/filter/translations/lib/diff2html.js'));
 $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css'));

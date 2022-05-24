@@ -136,6 +136,7 @@ class managetranslations_table extends table_sql {
         return $OUTPUT->single_button(
             new moodle_url('/filter/translations/edittranslation.php', [
                 'id' => $row->id,
+                'targetlanguage' => $row->targetlanguage,
                 'returnurl' => $PAGE->url
             ]),
             get_string('edittranslation', 'filter_translations'),

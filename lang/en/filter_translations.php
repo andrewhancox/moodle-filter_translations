@@ -91,6 +91,7 @@ $string['translate_stale'] = 'Translate - translation needs updating';
 $string['translate_good'] = 'Translate - translation is up to date';
 $string['translatedby'] = 'Translated by';
 $string['translation'] = 'Translation';
+$string['translationalreadyexists'] = 'Translation cannot be saved. A Translation for language "{$a}" already exists.';
 $string['translationissuesinpagemissing'] = 'Missing on this page';
 $string['translationissuesincoursemissing'] = 'Missing in this course';
 $string['translationissuesinpagemissingall'] = 'All missing translations';
