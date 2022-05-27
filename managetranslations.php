@@ -85,6 +85,7 @@ $table->define_baseurl($baseurl);
 echo $form->render();
 $table->out(100, true);
 
-echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
+echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php', ['returnurl' => $PAGE->url]),
+    get_string('createtranslation', 'filter_translations'));
 
 echo $OUTPUT->footer();
