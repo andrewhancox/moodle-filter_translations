@@ -42,5 +42,10 @@ $capabilities = [
         'captype' => 'write',
         'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM
-    ]
+    ],
+    'filter/translations:bulkdeletetranslations' => [
+        'captype' => 'write',
+        'riskbitmask' => RISK_DATALOSS,
+        'contextlevel' => CONTEXT_SYSTEM
+    ],
 ];
