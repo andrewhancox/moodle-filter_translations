@@ -22,8 +22,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
  */
+namespace filter_translations;
 
-use filter_translations\filter_translations_testable;
+use advanced_testcase;
+use context_system;
 
 defined('MOODLE_INTERNAL') || die();
 

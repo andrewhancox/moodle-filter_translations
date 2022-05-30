@@ -24,10 +24,6 @@
  */
 namespace filter_translations;
 
-use filter_translations\translation;
-use filter_translations\translation_testable;
-use filter_translations\translator_testable;
-
 defined('MOODLE_INTERNAL') || die();
 
 class events_test extends \advanced_testcase {
@@ -41,7 +37,7 @@ class events_test extends \advanced_testcase {
     public function test_events() {
         $generatedhash = md5('generatedhash');
 
-        $contextid = context_system::instance()->id;
+        $contextid = \context_system::instance()->id;
 
         $sink = $this->redirectEvents();
 
