@@ -32,6 +32,7 @@ $rawtext = optional_param('rawtext', '', PARAM_TEXT);
 $substitutetext = optional_param('substitutetext', '', PARAM_TEXT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 $hash = optional_param('hash', '', PARAM_TEXT);
+$usermodified = optional_param('usermodified', -1, PARAM_INT);
 
 $context = context_system::instance();
 
@@ -54,6 +55,7 @@ if ($formdata) {
         'substitutetext' => $substitutetext,
         'targetlanguage' => $targetlanguage,
         'hash' => $hash,
+        'usermodified' => $usermodified,
     );
     $baseurl->params($urlparams);
     redirect($baseurl);
@@ -64,6 +66,11 @@ $data->rawtext = $rawtext;
 $data->substitutetext = $substitutetext;
 $data->targetlanguage = $targetlanguage;
 $data->hash = $hash;
+
+if($usermodified > 0) {
+    $data->usermodified = $usermodified;
+}
+
 $data->tsort = optional_param('tsort', 'id', PARAM_ALPHA);
 $form->set_data($data);
 
@@ -78,6 +85,7 @@ $table->define_baseurl($baseurl);
 echo $form->render();
 $table->out(100, true);
 
-echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php'), get_string('createtranslation', 'filter_translations'));
+echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php', ['returnurl' => $PAGE->url]),
+    get_string('createtranslation', 'filter_translations'));
 
 echo $OUTPUT->footer();

@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class translationissue_test extends advanced_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         global $CFG, $PAGE;
 
         require_once("$CFG->dirroot/filter/translations/tests/fixtures/translator_testable.php");

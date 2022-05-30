@@ -27,7 +27,7 @@
 $capabilities = [
     'filter/translations:edittranslations' => [
         'captype' => 'write',
-        'riskbitmaskt' => 'RISK_CONFIG',
+        'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
@@ -35,12 +35,17 @@ $capabilities = [
     ],
     'filter/translations:editsitedefaulttranslations' => [
         'captype' => 'write',
-        'riskbitmaskt' => 'RISK_CONFIG',
+        'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM
     ],
     'filter/translations:edittranslationhashkeys' => [
         'captype' => 'write',
-        'riskbitmaskt' => 'RISK_CONFIG',
+        'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM
-    ]
+    ],
+    'filter/translations:bulkdeletetranslations' => [
+        'captype' => 'write',
+        'riskbitmask' => RISK_DATALOSS,
+        'contextlevel' => CONTEXT_SYSTEM
+    ],
 ];

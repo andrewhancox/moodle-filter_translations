@@ -81,7 +81,7 @@ class filter_translations extends moodle_text_filter {
                     $translation->get('id')
                 );
 
-                if ($translation->get('targetlanguage') != $targetlanguage && $translation->get('targetlanguage') == 'en') {
+                if ($translation->get('targetlanguage') != current_language() && $translation->get('targetlanguage') == 'en') {
                     $translationforbutton = null;
                 } else {
                     $translationforbutton = $translation;

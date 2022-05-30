@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['bulkdeleteconfirmation'] = 'Are you absolutely sure you want to completely delete these translations?';
 $string['cachedef_translatedtext'] = 'Translated text';
 $string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
@@ -50,6 +51,7 @@ $string['columndefinitionfileerror'] = 'Missing or invalid column definition fil
 $string['context'] = 'Context';
 $string['createtranslation'] = 'Create translation';
 $string['current'] = 'Current';
+$string['deleteselected'] = 'Delete selected translations';
 $string['diff'] = 'Diff';
 $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';
@@ -89,7 +91,9 @@ $string['targetlanguage'] = 'Translation language';
 $string['translate_none'] = 'Translate - no translation exists';
 $string['translate_stale'] = 'Translate - translation needs updating';
 $string['translate_good'] = 'Translate - translation is up to date';
+$string['translatedby'] = 'Translated by';
 $string['translation'] = 'Translation';
+$string['translationalreadyexists'] = 'Translation cannot be saved. A Translation for language "{$a}" already exists.';
 $string['translationissuesinpagemissing'] = 'Missing on this page';
 $string['translationissuesincoursemissing'] = 'Missing in this course';
 $string['translationissuesinpagemissingall'] = 'All missing translations';
@@ -101,4 +105,6 @@ $string['translationid'] = 'Translation ID';
 $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
 $string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
+$string['translations:bulkdeletetranslations'] = 'Bulk delete translations';
 $string['url'] = 'Page';
+$string['userid'] = 'User ID';
