@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['bulkdeleteconfirmation'] = 'Are you absolutely sure you want to completely delete these translations?';
-$string['cachingmode'] = 'Translations caching mode';
+$string['cachingmode'] = 'Caching mode';
 $string['cachingmode_desc'] = 'For sites with a relatively small number of courses and high volume of users we recommend Application level, for high number of courses we recommend Session, to minimise caching we recommend Request.';
 $string['cachedef_translatedtext_1'] = 'Translated text (Request level)';
 $string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
