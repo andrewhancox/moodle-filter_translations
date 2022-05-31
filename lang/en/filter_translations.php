@@ -26,7 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['bulkdeleteconfirmation'] = 'Are you absolutely sure you want to completely delete these translations?';
-$string['cachedef_translatedtext'] = 'Translated text';
+$string['cachingmode'] = 'Translations caching mode';
+$string['cachingmode_desc'] = 'For sites with a relatively small number of courses and high volume of users we recommend Application level, for high number of courses we recommend Session, to minimise caching we recommend Request.';
+$string['cachedef_translatedtext_1'] = 'Translated text (Request level)';
+$string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
+$string['cachedef_translatedtext_4'] = 'Translated text (Application level)';
 $string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
 php cli/insert_spans.php --mode=listcolumns

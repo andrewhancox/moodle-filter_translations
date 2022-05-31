@@ -30,6 +30,21 @@ defined('MOODLE_INTERNAL') || die();
 
 class filter_translations extends moodle_text_filter {
 
+    public static function cache() {
+        static $cache = null;
+
+        if (!isset($cache)) {
+            $mode = get_config('filter_translations', 'cachingmode');
+
+            if (empty($mode)) {
+                $mode = cache_store::MODE_REQUEST;
+            }
+
+            $cache = cache::make('filter_translations', 'translatedtext_' . $mode);
+        }
+        return $cache;
+    }
+
     /**
      * Apply the filter to the text
      *
@@ -52,11 +67,13 @@ class filter_translations extends moodle_text_filter {
 
         $cachekey = $generatedhash ?? $foundhash;
 
-        $translatedtextcache = cache::make('filter_translations', 'translatedtext');
-        $cachedtranslatedtext = $translatedtextcache->get($cachekey);
+        if (!self::checkinlinestranslation(true)) {
+            $translatedtextcache = self::cache();
+            $cachedtranslatedtext = $translatedtextcache->get($cachekey);
 
-        if ($cachedtranslatedtext !== false) {
-            return $cachedtranslatedtext;
+            if ($cachedtranslatedtext !== false) {
+                return $cachedtranslatedtext;
+            }
         }
 
         if (empty($text)) {
@@ -90,7 +107,9 @@ class filter_translations extends moodle_text_filter {
             $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
-        $translatedtextcache->set($cachekey, $translatedtext);
+        if (!self::checkinlinestranslation(true)) {
+            $translatedtextcache->set($cachekey, $translatedtext);
+        }
 
         return $translatedtext;
     }

@@ -34,6 +34,13 @@ if ($ADMIN->fulltree) {
         html_writer::link(new moodle_url('/filter/translations/managetranslationissues.php'),
             get_string('managetranslationissues', 'filter_translations'), ['class' => "btn btn-primary"])));
 
+    $options = [];
+    foreach ([cache_store::MODE_REQUEST, cache_store::MODE_SESSION, cache_store::MODE_APPLICATION] as $mode) {
+        $options[$mode] = get_string('mode_' . $mode, 'cache');
+    }
+    $settings->add(new admin_setting_configselect('filter_translations/cachingmode',
+        get_string('cachingmode', 'filter_translations'), get_string('cachingmode_desc', 'filter_translations'), cache_store::MODE_REQUEST, $options));
+
     $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',

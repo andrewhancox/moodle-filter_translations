@@ -73,6 +73,10 @@ class translation extends persistent {
 
     private $previous = null;
 
+    protected function dropfromcache() {
+        \filter_translations::cache()->delete($this->get('md5key'));
+    }
+
     protected function before_update() {
         parent::before_update();
         $this->previous = self::get_record(['id' => $this->get('id')]);
@@ -87,16 +91,19 @@ class translation extends persistent {
         parent::after_create();
         translation_created::trigger_from_translation($this);
         translation_issue::remove_records_for_translation($this);
+        $this->dropfromcache();
     }
 
     protected function after_delete($result) {
         parent::after_delete($result);
         translation_deleted::trigger_from_translation($this->previous);
+        $this->dropfromcache();
     }
 
     protected function after_update($result) {
         parent::after_update($result);
         translation_updated::trigger_from_translation($this, $this->previous);
         translation_issue::remove_records_for_translation($this);
+        $this->dropfromcache();
     }
 }
