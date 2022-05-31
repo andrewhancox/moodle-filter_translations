@@ -45,6 +45,22 @@ class filter_translations extends moodle_text_filter {
         return $cache;
     }
 
+    public static function skiptranslations() {
+        global $SCRIPT;
+
+        static $skip = null;
+
+        if (!isset($skip)) {
+            $pagestoskip = get_config('filter_translations', 'untranslatedpages');
+            if (!empty($pagestoskip)) {
+                $pagestoskip = preg_split("/\r?\n/", $pagestoskip);
+                $skip = in_array($SCRIPT, $pagestoskip);
+            }
+        }
+
+        return $skip;
+    }
+
     /**
      * Apply the filter to the text
      *
@@ -54,11 +70,11 @@ class filter_translations extends moodle_text_filter {
      * @see filter_manager::apply_filter_chain()
      */
     public function filter($text, array $options = []) {
-        global $CFG;
+        global $CFG, $SCRIPT;
         require_once($CFG->libdir . '/filelib.php');
 
         // Prevent double translation when adding the button.
-        if (strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
+        if (self::skiptranslations() || strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
             return $text;
         }
 
