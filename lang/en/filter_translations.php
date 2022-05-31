@@ -65,6 +65,7 @@ $string['foundhash'] = 'Found hash';
 $string['generatedhash'] = 'Generated hash';
 $string['google_apiendpoint'] = 'API Endpoint';
 $string['google_apikey'] = 'API key';
+$string['google_backoffonerror'] = 'Back off from erroring API';
 $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
 $string['hash'] = 'Hash';

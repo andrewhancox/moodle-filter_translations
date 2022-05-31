@@ -33,14 +33,32 @@ use filter_translations\translation;
 use moodle_url;
 
 class googletranslate extends translationprovider {
-    protected function generate_translation($text, $targetlanguage) {
-        $config = get_config('filter_translations');
+    private static function config() {
+        static $config = null;
 
-        if (
-                empty($config->google_enable)
+        if (!isset($config)) {
+            $config = get_config('filter_translations');
+
+            if (!empty($config->google_backoffonerror) && $config->google_backoffonerror_time < time() - HOURSECS) {
+                $config->google_backoffonerror = false;
+                set_config('google_backoffonerror', false, 'filter_translations');
+            }
+
+            if (empty($config->google_enable)
                 || empty($config->google_apikey)
                 || empty($config->google_apiendpoint)
-        ) {
+                || !empty($config->google_backoffonerror)) {
+                $config = false;
+            }
+        }
+
+        return $config;
+    }
+
+    protected function generate_translation($text, $targetlanguage) {
+        $config = self::config();
+
+        if (empty($config)) {
             return null;
         }
 
@@ -52,22 +70,24 @@ class googletranslate extends translationprovider {
 
         $params = [
                 'target' => $targetlanguage,
-                'key'    => get_config('filter_translations', 'google_apikey'),
+                'key'    => $config->google_apikey,
                 'q'      => $text
         ];
 
-        $url = new moodle_url(get_config('filter_translations', 'google_apiendpoint'), $params);
+        $url = new moodle_url($config->google_apiendpoint, $params);
 
         try {
             $resp = $curl->post($url->out(false));
         } catch (\Exception $ex) {
             error_log("Error calling Google Translate: \n" . $ex->getMessage());
+            $this->backoff();
             return null;
         }
 
         $info = $curl->get_info();
         if ($info['http_code'] != 200) {
             error_log("Error calling Google Translate: \n" . $info['http_code']);
+            $this->backoff();
             return null;
         }
 
@@ -78,5 +98,10 @@ class googletranslate extends translationprovider {
         }
 
         return $resp->data->translations[0]->translatedText;
+    }
+
+    private function backoff() {
+        set_config('google_backoffonerror', true, 'filter_translations');
+        set_config('google_backoffonerror_time', time(), 'filter_translations');
     }
 }

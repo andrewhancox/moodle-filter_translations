@@ -62,6 +62,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('filter_translations/google_enable',
         get_string('google_enable', 'filter_translations'), '', false));
 
+    $settings->add(new admin_setting_configcheckbox('filter_translations/google_backoffonerror',
+        get_string('google_backoffonerror', 'filter_translations'), '', false));
+
     $settings->add(new admin_setting_configtext('filter_translations/google_apiendpoint',
         get_string('google_apiendpoint', 'filter_translations')
         , '', 'https://translation.googleapis.com/language/translate/v2',
