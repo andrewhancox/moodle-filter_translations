@@ -42,6 +42,7 @@ class edittranslationform extends persistent {
         global $PAGE, $CFG;
 
         $mform = $this->_form;
+        $data = $this->get_default_data();
 
         $mform->addElement('hidden', 'rawtext');
         if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
@@ -53,11 +54,13 @@ class edittranslationform extends persistent {
         $mform->addElement('hidden', 'returnurl');
         $mform->setType('returnurl', PARAM_URL);
 
-        $mform->addElement('text', 'md5key', get_string('md5key', 'filter_translations'), 'maxlength="32" size="32"');
-        $mform->setType('md5key', PARAM_TEXT);
-
-        if (!has_capability('filter/translations:edittranslationhashkeys', context_system::instance())) {
-            $mform->hardFreeze(['md5key']);
+        if (has_capability('filter/translations:edittranslationhashkeys', context_system::instance())) {
+            $mform->addElement('text', 'md5key', get_string('md5key', 'filter_translations'), 'maxlength="32" size="32"');
+            $mform->setType('md5key', PARAM_TEXT);
+        } else {
+            $mform->addElement('static', 'md5keyval', get_string('md5key', 'filter_translations'), $data->md5key);
+            $mform->addElement('hidden', 'md5key');
+            $mform->setType('md5key', PARAM_TEXT);
         }
 
         $translations = get_string_manager()->get_list_of_translations();
