@@ -126,6 +126,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'targetlanguage' => $targetlanguage,
     ]);
 
+    $alltranslationsurl = new moodle_url("/filter/translations/managetranslations.php");
+
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
         'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
         'coursemissingtranslationsurl' => $contextmissingtranslationsurl->out(false),
@@ -137,6 +139,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'inlinetranslationstate' => $currentinlinetranslationstate,
         'missingcount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_MISSING, 'targetlanguage' => $targetlanguage])),
         'stalecount' => filter_translations_cap_count(translation_issue::count_records(['issue' => translation_issue::ISSUE_STALE, 'targetlanguage' => $targetlanguage])),
+        'alltranslationsurl' => $alltranslationsurl->out(false),
+        'translateall' => (has_capability('filter/translations:editsitedefaulttranslations', $context)) ? true : false,
     ]);
 }
 
