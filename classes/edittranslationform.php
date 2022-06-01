@@ -152,7 +152,7 @@ class edittranslationform extends persistent {
 
         $buttonarray[] = $mform->createElement('cancel');
 
-        if (!empty($this->get_persistent()->get('id'))) {
+        if (!empty($this->get_persistent()->get('id')) && has_capability('filter/translations:deletetranslations', $PAGE->context)) {
             $buttonarray[] = $mform->createElement('submit', 'deletebutton', get_string('delete'));
         }
 
