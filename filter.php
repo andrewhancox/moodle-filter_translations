@@ -30,6 +30,37 @@ defined('MOODLE_INTERNAL') || die();
 
 class filter_translations extends moodle_text_filter {
 
+    public static function cache() {
+        static $cache = null;
+
+        if (!isset($cache)) {
+            $mode = get_config('filter_translations', 'cachingmode');
+
+            if (empty($mode)) {
+                $mode = cache_store::MODE_REQUEST;
+            }
+
+            $cache = cache::make('filter_translations', 'translatedtext_' . $mode);
+        }
+        return $cache;
+    }
+
+    public static function skiptranslations() {
+        global $SCRIPT;
+
+        static $skip = null;
+
+        if (!isset($skip)) {
+            $pagestoskip = get_config('filter_translations', 'untranslatedpages');
+            if (!empty($pagestoskip)) {
+                $pagestoskip = preg_split("/\r?\n/", $pagestoskip);
+                $skip = in_array($SCRIPT, $pagestoskip);
+            }
+        }
+
+        return $skip;
+    }
+
     /**
      * Apply the filter to the text
      *
@@ -39,11 +70,11 @@ class filter_translations extends moodle_text_filter {
      * @see filter_manager::apply_filter_chain()
      */
     public function filter($text, array $options = []) {
-        global $CFG;
+        global $CFG, $SCRIPT;
         require_once($CFG->libdir . '/filelib.php');
 
         // Prevent double translation when adding the button.
-        if (strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
+        if (self::skiptranslations() || strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
             return $text;
         }
 
@@ -52,11 +83,13 @@ class filter_translations extends moodle_text_filter {
 
         $cachekey = $generatedhash ?? $foundhash;
 
-        $translatedtextcache = cache::make('filter_translations', 'translatedtext');
-        $cachedtranslatedtext = $translatedtextcache->get($cachekey);
+        if (!self::checkinlinestranslation(true)) {
+            $translatedtextcache = self::cache();
+            $cachedtranslatedtext = $translatedtextcache->get($cachekey);
 
-        if ($cachedtranslatedtext !== false) {
-            return $cachedtranslatedtext;
+            if ($cachedtranslatedtext !== false) {
+                return $cachedtranslatedtext;
+            }
         }
 
         if (empty($text)) {
@@ -90,7 +123,9 @@ class filter_translations extends moodle_text_filter {
             $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
-        $translatedtextcache->set($cachekey, $translatedtext);
+        if (!self::checkinlinestranslation(true)) {
+            $translatedtextcache->set($cachekey, $translatedtext);
+        }
 
         return $translatedtext;
     }

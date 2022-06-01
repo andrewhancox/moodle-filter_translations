@@ -25,12 +25,22 @@
  */
 
 $definitions = [
-    'translatedtext' => [
+    'translatedtext_' . cache_store::MODE_REQUEST => [
         'mode' => cache_store::MODE_REQUEST,
         'simplekeys' => true,
         'simpledata' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 100,
+    ],
+    'translatedtext_' . cache_store::MODE_SESSION => [
+        'mode' => cache_store::MODE_SESSION,
+        'simplekeys' => true,
+        'simpledata' => true,
+    ],
+    'translatedtext_' . cache_store::MODE_APPLICATION => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
     ],
     'flippedstringsbycomponent' => [
         'mode' => cache_store::MODE_APPLICATION,

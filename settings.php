@@ -34,6 +34,22 @@ if ($ADMIN->fulltree) {
         html_writer::link(new moodle_url('/filter/translations/managetranslationissues.php'),
             get_string('managetranslationissues', 'filter_translations'), ['class' => "btn btn-primary"])));
 
+
+    $settings->add(new admin_setting_heading('performance', get_string('performance', 'admin'), ''));
+
+    $options = [];
+    foreach ([cache_store::MODE_REQUEST, cache_store::MODE_SESSION, cache_store::MODE_APPLICATION] as $mode) {
+        $options[$mode] = get_string('mode_' . $mode, 'cache');
+    }
+    $settings->add(new admin_setting_configselect('filter_translations/cachingmode',
+        get_string('cachingmode', 'filter_translations'), get_string('cachingmode_desc', 'filter_translations'), cache_store::MODE_REQUEST, $options));
+
+    $settings->add(new admin_setting_configtextarea('filter_translations/untranslatedpages',
+        new lang_string('untranslatedpages', 'filter_translations'),
+        new lang_string('untranslatedpages_desc', 'filter_translations'),
+        '/blocks/configurable_reports/viewreport.php')
+    );
+
     $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
@@ -54,6 +70,9 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/google_enable',
         get_string('google_enable', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/google_backoffonerror',
+        get_string('google_backoffonerror', 'filter_translations'), '', false));
 
     $settings->add(new admin_setting_configtext('filter_translations/google_apiendpoint',
         get_string('google_apiendpoint', 'filter_translations')

@@ -26,7 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['bulkdeleteconfirmation'] = 'Are you absolutely sure you want to completely delete these translations?';
-$string['cachedef_translatedtext'] = 'Translated text';
+$string['cachingmode'] = 'Caching mode';
+$string['cachingmode_desc'] = 'For sites with a relatively small number of courses and high volume of users we recommend Application level, for high number of courses we recommend Session, to minimise caching we recommend Request.';
+$string['cachedef_translatedtext_1'] = 'Translated text (Request level)';
+$string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
+$string['cachedef_translatedtext_4'] = 'Translated text (Application level)';
 $string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
 php cli/insert_spans.php --mode=listcolumns
@@ -61,6 +65,7 @@ $string['foundhash'] = 'Found hash';
 $string['generatedhash'] = 'Generated hash';
 $string['google_apiendpoint'] = 'API Endpoint';
 $string['google_apikey'] = 'API key';
+$string['google_backoffonerror'] = 'Back off from erroring API';
 $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
 $string['hash'] = 'Hash';
@@ -106,5 +111,7 @@ $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
 $string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
 $string['translations:bulkdeletetranslations'] = 'Bulk delete translations';
+$string['untranslatedpages'] = 'Pages to leave untranslated';
+$string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
 $string['userid'] = 'User ID';
