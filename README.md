@@ -1,3 +1,7 @@
+This plugin is part of a set, which also includes [Moodle Atto Translations](https://github.com/andrewhancox/moodle-atto_translations)
+
+Full documentation available at: https://docs.moodle.org/311/en/Content_translation_plugin_set
+
 # To Install it manually #
 - Unzip the plugin in the moodle .../filter/translations directory.
 
