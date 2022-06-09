@@ -1,5 +1,6 @@
 # To Install it manually #
 - Unzip the plugin in the moodle .../filter/translations directory.
+- Also install the Atto plugin from: https://github.com/andrewhancox/moodle-atto_translations
 
 # To Enable it #
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the 'Content translations' plugin there.
