@@ -80,8 +80,9 @@ class filter_translations extends moodle_text_filter {
 
         $foundhash = $this->findandremovehash($text);
         $generatedhash = $this->generatehash($text);
+        $targetlanguage = current_language();
 
-        $cachekey = $generatedhash ?? $foundhash;
+        $cachekey = $targetlanguage . ($generatedhash ?? $foundhash);
 
         if (!self::checkinlinestranslation(true)) {
             $translatedtextcache = self::cache();
@@ -96,7 +97,6 @@ class filter_translations extends moodle_text_filter {
             $translatedtext = '';
         } else {
             $translator = new translator();
-            $targetlanguage = current_language();
             $translation = $translator->get_best_translation($targetlanguage, $generatedhash, $foundhash, $text);
 
             if (empty($translation)) {
