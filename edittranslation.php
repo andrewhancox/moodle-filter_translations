@@ -114,7 +114,7 @@ if (
 $form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype, 'showdiff' => $showdiff, 'old' => $old]);
 
 if ($data = $form->get_data()) {
-    if (!empty($data->deletebutton)) {
+    if (!empty($data->deletebutton) && has_capability('filter/translations:deletetranslations', $context)) {
         $persistent->delete();
         redirect($returnurl);
     }

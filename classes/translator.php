@@ -48,7 +48,7 @@ class translator {
         // Workplace compatibility.
         if (isset($CFG->wphideparentlang) && $CFG->wphideparentlang) {
             // Parent language is hidden, so add dependency to WP language.
-            if (isset($translations[$dependencies[0] . '_wp'])) {
+            if (isset($translations[$dependencies[0] . '_wp']) && !in_array($dependencies[0] . '_wp', $dependencies)) {
                 array_splice($dependencies, 1, 0, $dependencies[0] . '_wp');
             }
         }
