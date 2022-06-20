@@ -33,6 +33,7 @@ $substitutetext = optional_param('substitutetext', '', PARAM_TEXT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 $hash = optional_param('hash', '', PARAM_TEXT);
 $usermodified = optional_param('usermodified', -1, PARAM_INT);
+$download = optional_param('download', '', PARAM_ALPHA);
 
 $context = context_system::instance();
 
@@ -41,13 +42,10 @@ require_capability('filter/translations:edittranslations', $context);
 $PAGE->set_context($context);
 
 $title = get_string('managetranslations', 'filter_translations');
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
+$baseurl = new moodle_url('/filter/translations/managetranslations.php');
 
 $form = new managetranslations_filterform();
 $formdata = $form->get_data();
-
-$baseurl = new moodle_url('/filter/translations/managetranslations.php');
 
 if ($formdata) {
     $urlparams = array(
@@ -78,14 +76,23 @@ $baseurl->params((array)$data);
 $baseurl->param('page', optional_param('page', '', PARAM_INT));
 $PAGE->set_url($baseurl);
 
-echo $OUTPUT->header();
-
-$table = new managetranslations_table($data, 'translationsname');
+$table = new managetranslations_table($data, 'translationsname', $download);
 $table->define_baseurl($baseurl);
-echo $form->render();
-$table->out(100, true);
 
-echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php', ['returnurl' => $PAGE->url]),
-    get_string('createtranslation', 'filter_translations'));
+if ($download) {
+    $table->download($download);
+} else {
+    // Only print headers if not asked to download data.
+    $PAGE->set_title($title);
+    $PAGE->set_heading($title);
+    echo $OUTPUT->header();
 
-echo $OUTPUT->footer();
+    echo $form->render();
+
+    $table->out(100, true);
+
+    echo $OUTPUT->single_button(new moodle_url('/filter/translations/edittranslation.php', ['returnurl' => $PAGE->url]),
+        get_string('createtranslation', 'filter_translations'));
+
+    echo $OUTPUT->footer();
+}

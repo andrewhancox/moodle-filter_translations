@@ -38,10 +38,10 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 class managetranslations_table extends table_sql {
     private $languages = null;
 
-    public function __construct($filterparams, $sortcolumn) {
+    public function __construct($filterparams, $sortcolumn, $download) {
         global $DB, $PAGE, $CFG, $OUTPUT;
 
-        parent::__construct('managetranslation_table');
+        parent::__construct('managetranslations_table');
 
         $this->languages = get_string_manager()->get_list_of_translations();
 
@@ -51,7 +51,7 @@ class managetranslations_table extends table_sql {
         $columns = [];
 
         $canbulkdelete = has_capability('filter/translations:bulkdeletetranslations', $PAGE->context);
-        if ($canbulkdelete) {
+        if ($canbulkdelete && empty($download)) {
             $mastercheckbox = new \core\output\checkbox_toggleall('translations-table', true, [
                 'id' => 'select-all-translations',
                 'name' => 'select-all-translations',
@@ -65,16 +65,19 @@ class managetranslations_table extends table_sql {
             $columns[] = 'select';
         }
 
-        $columns += ['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'usermodified', 'actions'];
+        $columns += ['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'usermodified'];
         $headers += [
             get_string('md5key', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
             get_string('substitutetext', 'filter_translations'),
-            get_string('translatedby', 'filter_translations'),
-            get_string('actions'),
-            '',
+            get_string('translatedby', 'filter_translations')
         ];
+
+        if (empty($download)) {
+            $columns[] = 'actions';
+            $headers[] = get_string('actions');
+        }
 
         $this->define_columns($columns);
         $this->define_headers($headers);
@@ -139,6 +142,10 @@ class managetranslations_table extends table_sql {
     public function col_select($row) {
         global $OUTPUT;
 
+        if ($this->is_downloading()) {
+            return;
+        }
+
         $checkbox = new \core\output\checkbox_toggleall('translations-table', false, [
             'classes' => 'translationcheckbox m-1',
             'id' => 'translation' . $row->id,
@@ -153,10 +160,18 @@ class managetranslations_table extends table_sql {
     }
 
     public function col_rawtext($row) {
+        if ($this->is_downloading()) {
+            return $row->rawtext;
+        }
+
         return shorten_text(strip_tags($row->rawtext));
     }
 
     public function col_substitutetext($row) {
+        if ($this->is_downloading()) {
+            return $row->substitutetext;
+        }
+
         return shorten_text(strip_tags($row->substitutetext));
     }
 
@@ -169,6 +184,10 @@ class managetranslations_table extends table_sql {
     }
 
     public function col_usermodified($row) {
+        if ($this->is_downloading()) {
+            return fullname($row);
+        }
+
         return \html_writer::link(
             new moodle_url('/user/view.php',
             array('id' => $row->usermodified)), fullname($row)
@@ -177,6 +196,10 @@ class managetranslations_table extends table_sql {
 
     public function col_actions($row) {
         global $PAGE;
+
+        if ($this->is_downloading()) {
+            return;
+        }
 
         return html_writer::link(
             new moodle_url('/filter/translations/edittranslation.php', [
@@ -230,5 +253,18 @@ class managetranslations_table extends table_sql {
             $PAGE->requires->event_handler('#deletetranslationsbutton', 'click', 'M.util.show_confirm_dialog',
                     array('message' => get_string('bulkdeleteconfirmation', 'filter_translations')));
         }
+    }
+
+    /**
+     * Download the data in the selected format.
+     *
+     * @param string $format The format to download the report.
+     */
+    public function download($format) {
+        $filename = 'filter_translations_' . userdate(time(), get_string('backupnameformat', 'langconfig'),
+                99, false);
+
+        $this->is_downloading($format, $filename, get_string('translations', 'filter_translations'));
+        $this->out(100, false);
     }
 }

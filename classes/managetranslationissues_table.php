@@ -37,26 +37,32 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 class managetranslationissues_table extends table_sql {
     private $languages = null;
 
-    public function __construct($filterparams, $sortcolumn) {
+    public function __construct($filterparams, $sortcolumn, $download) {
         global $DB, $PAGE, $CFG;
 
-        parent::__construct('managetranslation_table');
+        parent::__construct('managetranslationissues_table');
 
         $this->languages = get_string_manager()->get_list_of_translations();
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'substitutetext', 'actions']);
-        $this->define_headers([
+        $columns = ['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'substitutetext'];
+        $headers = [
             get_string('issue', 'filter_translations'),
             get_string('context', 'filter_translations'),
             get_string('url', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
-            get_string('substitutetext', 'filter_translations'),
-            get_string('actions'),
-            '',
-        ]);
+            get_string('substitutetext', 'filter_translations')
+        ];
+
+        if (empty($download)) {
+            $columns[] = 'actions';
+            $headers[] = get_string('actions');
+        }
+
+        $this->define_columns($columns);
+        $this->define_headers($headers);
         $this->collapsible(false);
         $this->sortable(true);
         $this->pageable(true);
@@ -135,10 +141,18 @@ class managetranslationissues_table extends table_sql {
     }
 
     public function col_rawtext($row) {
+        if ($this->is_downloading()) {
+            return $row->rawtext;
+        }
+
         return shorten_text(strip_tags($row->rawtext));
     }
 
     public function col_substitutetext($row) {
+        if ($this->is_downloading()) {
+            return $row->substitutetext;
+        }
+
         return shorten_text(strip_tags($row->substitutetext));
     }
 
@@ -157,6 +171,10 @@ class managetranslationissues_table extends table_sql {
     public function col_actions($row) {
         global $OUTPUT, $PAGE;
 
+        if ($this->is_downloading()) {
+            return;
+        }
+
         return $OUTPUT->single_button(
             new moodle_url('/filter/translations/edittranslation.php', [
                 'rawtext' => $row->rawtext,
@@ -170,5 +188,18 @@ class managetranslationissues_table extends table_sql {
             get_string('edittranslation', 'filter_translations'),
             'post'
         );
+    }
+
+    /**
+     * Download the data in the selected format.
+     *
+     * @param string $format The format to download the report.
+     */
+    public function download($format) {
+        $filename = 'filter_translation_issues_' . userdate(time(), get_string('backupnameformat', 'langconfig'),
+                99, false);
+
+        $this->is_downloading($format, $filename, get_string('translationissues', 'filter_translations'));
+        $this->out(100, false);
     }
 }
