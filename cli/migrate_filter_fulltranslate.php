@@ -62,7 +62,8 @@ $rs = $DB->get_recordset('filter_fulltranslate', [], '',
     'lang, sourcetext, textformat, translation, automatic');
 
 foreach ($rs as $record) {
-    $hash = md5($record->sourcetext);
+    $filter = new filter_translations(context_system::instance(), []);
+    $hash = $filter->generatehash($record->sourcetext);
     $textformat = $record->textformat == 'html' ? FORMAT_HTML : FORMAT_PLAIN;
     $translationsource = $record->automatic ? translation::SOURCE_AUTOMATIC : translation::SOURCE_MANUAL;
 
