@@ -22,6 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
  */
+
 namespace filter_translations;
 
 use advanced_testcase;
@@ -39,8 +40,49 @@ class filter_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         require_once("$CFG->dirroot/filter/translations/tests/fixtures/filter_translations_testable.php");
+        require_once("$CFG->dirroot/lib/tests/componentlib_test.php");
 
         filter_set_global_state('translations', TEXTFILTER_ON);
+
+        // Fake the installation of the spanish and german language packs.
+        foreach (['de', 'sp'] as $lang) {
+            $langconfig = "<?php\n\$string['decsep'] = 'X';";
+            $langfolder = $CFG->dataroot . '/lang/' . $lang;
+            check_dir_exists($langfolder);
+            file_put_contents($langfolder . '/langconfig.php', $langconfig);
+        }
+    }
+
+    public function test_filter_text() {
+        global $SESSION;
+
+        $generatedhash = md5('some english text');
+
+        $contextid = context_system::instance()->id;
+
+        $translation = new translation(0, (object)[
+            'targetlanguage' => 'de',
+            'lastgeneratedhash' => $generatedhash,
+            'md5key' => $generatedhash,
+            'contextid' => $contextid,
+            'substitutetext' => 'some german text'
+        ]);
+        $translation->save();
+
+        $kidstranslation = new translation(0, (object)[
+            'targetlanguage' => 'sp',
+            'lastgeneratedhash' => $generatedhash,
+            'md5key' => $generatedhash,
+            'contextid' => $contextid,
+            'substitutetext' => 'some spanish text'
+        ]);
+        $kidstranslation->save();
+
+        $SESSION->lang = 'de';
+        $this->assertEquals('some german text', format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_MOODLE, ['noclean' => true, 'trusted' => true]));
+
+        $SESSION->lang = 'sp';
+        $this->assertEquals('some spanish text', format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_HTML, ['noclean' => true, 'trusted' => true]));
     }
 
     public function test_findandremovehash() {
@@ -60,5 +102,47 @@ class filter_test extends advanced_testcase {
         $text = '<span data-translationhash="thenexthash"></span>Some more text with <span>spans</span> in it<span data-translationhash="thenexthash"></span>';
         $this->assertEquals('thenexthash', $filter->findandremovehash($text));
         $this->assertEquals('Some more text with <span>spans</span> in it', $text);
+    }
+
+    public function test_get_best_translation() {
+        $translator = new translator_testable();
+
+        $generatedhash = md5('generatedhash');
+        $foundhash = md5('foundhash');
+
+        $contextid = context_system::instance()->id;
+
+        $translation = new translation(0, (object)[
+            'targetlanguage' => 'de',
+            'lastgeneratedhash' => $generatedhash,
+            'md5key' => $generatedhash,
+            'contextid' => $contextid,
+            'substitutetext' => 'some text'
+        ]);
+        $translation->save();
+
+        $kidstranslation = new translation(0, (object)[
+            'targetlanguage' => 'de_kids',
+            'lastgeneratedhash' => $generatedhash,
+            'md5key' => $generatedhash,
+            'contextid' => $contextid,
+            'substitutetext' => 'some text for kids'
+        ]);
+        $kidstranslation->save();
+
+        $this->assertEquals($kidstranslation->get('id'),
+            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+
+        $kidstranslationmatchonfound = new translation(0, (object)[
+            'targetlanguage' => 'de_kids',
+            'lastgeneratedhash' => $generatedhash,
+            'md5key' => $foundhash,
+            'contextid' => $contextid,
+            'substitutetext' => 'some text for kids'
+        ]);
+        $kidstranslationmatchonfound->save();
+
+        $this->assertEquals($kidstranslationmatchonfound->get('id'),
+            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
     }
 }
