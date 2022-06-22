@@ -35,6 +35,7 @@ $filterurl = optional_param('url', '', PARAM_URL);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 $hash = optional_param('hash', '', PARAM_TEXT);
+$download = optional_param('download', '', PARAM_ALPHA);
 
 if (empty($contextid)) {
     $context = context_system::instance();
@@ -52,13 +53,10 @@ if (isset($cm)) {
 }
 
 $title = get_string('managetranslationissues', 'filter_translations');
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
+$baseurl = new moodle_url('/filter/translations/managetranslationissues.php');
 
 $form = new managetranslationissues_filterform();
 $formdata = $form->get_data();
-
-$baseurl = new moodle_url('/filter/translations/managetranslationissues.php');
 
 if ($formdata) {
     $urlparams = array(
@@ -89,11 +87,20 @@ $baseurl->params((array)$data);
 $baseurl->param('page', optional_param('page', '', PARAM_INT));
 $PAGE->set_url($baseurl);
 
-echo $OUTPUT->header();
-
-$table = new managetranslationissues_table($data, 'translationsname');
+$table = new managetranslationissues_table($data, 'translationsname', $download);
 $table->define_baseurl($baseurl);
-echo $form->render();
-$table->out(100, true);
 
-echo $OUTPUT->footer();
+if ($download) {
+    $table->download($download);
+} else {
+    // Only print headers if not asked to download data.
+    $PAGE->set_title($title);
+    $PAGE->set_heading($title);
+    echo $OUTPUT->header();
+
+    echo $form->render();
+
+    $table->out(100, true);
+
+    echo $OUTPUT->footer();
+}
