@@ -59,6 +59,11 @@ class translator {
         $optionsforbestlanguage = $this->filter_options_by_best_language($options, $prioritisedlanguages);
         $translation = $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
 
+        // Never use stale translations that were auto-generated.
+        if (!empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash') && $translation->get('translationsource') != translation::SOURCE_MANUAL) {
+            $translation = null;
+        }
+
         if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
             $languagestrings = new languagestringreverse();
             $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);

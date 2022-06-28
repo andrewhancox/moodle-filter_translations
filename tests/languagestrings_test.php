@@ -38,13 +38,9 @@ class languagestrings_test extends advanced_testcase {
 
     public function test_get_best_translation() {
         global $CFG;
-        require_once("$CFG->dirroot/lib/tests/componentlib_test.php");
 
         set_config('languagestringreverse_enable', true, 'filter_translations');
         $CFG->langlocalroot = $CFG->dirroot . '/filter/translations/tests/fixtures/lang';
-
-        $installer = new testable_lang_installer(array('de', 'de_kids'));
-        $installer->run();
 
         $languagestrings = new \filter_translations\translationproviders\languagestringreverse();
 
