@@ -134,7 +134,7 @@ class filter_translations extends moodle_text_filter {
         return md5(trim($text));
     }
 
-    protected function findandremovehash(&$text) {
+    public function findandremovehash(&$text) {
         if (strpos($text, 'data-translationhash') === false) {
             return null;
         }

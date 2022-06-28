@@ -39,13 +39,12 @@ class filter_test extends advanced_testcase {
 
         $this->resetAfterTest(true);
 
-        require_once("$CFG->dirroot/filter/translations/tests/fixtures/filter_translations_testable.php");
         require_once("$CFG->dirroot/lib/tests/componentlib_test.php");
 
         filter_set_global_state('translations', TEXTFILTER_ON);
 
         // Fake the installation of the spanish and german language packs.
-        foreach (['de', 'sp'] as $lang) {
+        foreach (['de', 'sp', 'de_kids'] as $lang) {
             $langconfig = "<?php\n\$string['decsep'] = 'X';";
             $langfolder = $CFG->dataroot . '/lang/' . $lang;
             check_dir_exists($langfolder);
@@ -86,7 +85,7 @@ class filter_test extends advanced_testcase {
     }
 
     public function test_findandremovehash() {
-        $filter = new filter_translations_testable(context_system::instance(), []);
+        $filter = new \filter_translations(context_system::instance(), []);
 
         $text = 'No hash in here';
         $this->assertNull($filter->findandremovehash($text));
@@ -105,7 +104,7 @@ class filter_test extends advanced_testcase {
     }
 
     public function test_get_best_translation() {
-        $translator = new translator_testable();
+        $translator = new translator();
 
         $generatedhash = md5('generatedhash');
         $foundhash = md5('foundhash');
