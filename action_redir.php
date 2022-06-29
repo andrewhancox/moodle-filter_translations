@@ -21,6 +21,7 @@
  */
 
 use filter_translations\translation;
+use filter_translations\translation_issue;
 
 require_once("../../config.php");
 
@@ -41,11 +42,23 @@ if (!confirm_sesskey()) {
     print_error('confirmsesskeybad');
 }
 
-if (($data = data_submitted()) && $action == 'bulkdelete') {
-    // Delete each selected translation. This will log delete event.
-    foreach ($translationids as $id) {
-        $persistent = new translation($id);
-        $persistent->delete();
+if ($data = data_submitted()) {
+    switch($action)
+    {
+        case 'bulkdelete':
+            // Delete each selected translation. This will log delete event.
+            foreach ($translationids as $id) {
+                $persistent = new translation($id);
+                $persistent->delete();
+            }
+        break;
+        case 'deleteissues':
+            // Delete each selected translation issue.
+            foreach ($translationids as $id) {
+                $persistent = new translation_issue($id);
+                $persistent->delete();
+            }
+        break;
     }
 }
 
