@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="filter/translations/db" VERSION="2021110900" COMMENT="XMLDB file for Moodle filter/translations"
+<XMLDB PATH="filter/translations/db" VERSION="2022062900" COMMENT="XMLDB file for Moodle filter/translations"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -49,7 +49,7 @@
         <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="targetlanguage_md5key" UNIQUE="false" FIELDS="targetlanguage, md5key"/>
+        <INDEX NAME="targetlanguage_issue" UNIQUE="false" FIELDS="targetlanguage, issue"/>
       </INDEXES>
     </TABLE>
   </TABLES>

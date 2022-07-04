@@ -84,5 +84,28 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022022319, 'filter', 'translations');
     }
 
+    if ($oldversion < 2022042709) {
+
+        // Define index targetlanguage_md5key (not unique) to be dropped from filter_translation_issues.
+        $table = new xmldb_table('filter_translation_issues');
+        $index = new xmldb_index('targetlanguage_md5key', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'md5key']);
+
+        // Conditionally launch drop index targetlanguage_md5key.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Define index targetlanguage_issue (not unique) to be added to filter_translation_issues.
+        $index = new xmldb_index('targetlanguage_issue', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'issue']);
+
+        // Conditionally launch add index targetlanguage_issue.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Translations savepoint reached.
+        upgrade_plugin_savepoint(true, 2022042709, 'filter', 'translations');
+    }
+
     return true;
 }
