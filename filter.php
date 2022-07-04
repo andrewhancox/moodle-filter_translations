@@ -175,6 +175,10 @@ class filter_translations extends moodle_text_filter {
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
         global $PAGE;
 
+        if (!self::checkinlinestranslation()) {
+            return '';
+        }
+
         if (!empty($translation) && !empty($translation->get('contextid'))){
             $contextid = $translation->get('contextid');
         } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
@@ -203,10 +207,6 @@ class filter_translations extends moodle_text_filter {
             self::$registeredtranslations[$translationkey] = $id;
         } else {
             $id =  self::$registeredtranslations[$translationkey];
-        }
-
-        if (!self::checkinlinestranslation()) {
-            return '';
         }
 
         return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR;
