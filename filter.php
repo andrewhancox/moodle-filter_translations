@@ -227,12 +227,32 @@ class filter_translations extends moodle_text_filter {
         $SESSION->filter_translations_toggleinlinestranslation = $state;
     }
 
+    /**
+     * Is the current user session doing in-line translation?
+     *
+     * If $skipcapabilitycheck is true then we check to see if they should be able to do translations as well as if
+     * the session variable is currently set.
+     *
+     * If $skipcapabilitycheck is false then we check they should be able to do translations.
+     *
+     * You need to skip capability checks if you make this call early in the page life-cycle as the context may not be
+     * available.
+     *
+     * @param $skipcapabilitycheck
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public static function checkinlinestranslation($skipcapabilitycheck = false) {
         global $SESSION, $CFG, $PAGE;
 
         static $has_capability;
 
-        if (empty($skipcapabilitycheck) && !isset($has_capability)) {
+        if ($skipcapabilitycheck) {
+            return !empty($SESSION->filter_translations_toggleinlinestranslation);
+        }
+
+        if (!isset($has_capability)) {
             $targetlanguage = current_language();
 
             if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
@@ -251,6 +271,7 @@ class filter_translations extends moodle_text_filter {
         $val = !empty($has_capability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
 
         if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
+            // Don't hold the result in the static variable as it may change later in the page life-cycle.
             unset($has_capability);
         }
 
