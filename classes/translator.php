@@ -110,12 +110,20 @@ class translator {
         $translationissuescache = cache::make('filter_translations', 'translationissues');
 
         $issueproperties = [
-            'url' => $PAGE->url->out_as_local_url(false),
+            'url' => '',
             'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
             'targetlanguage' => $targetlanguage,
-            'contextid' => $PAGE->context->id,
+            'contextid' => 0,
             'generatedhash' => $generatedhash
         ];
+
+        if ($PAGE->state != $PAGE::STATE_BEFORE_HEADER) {
+            // We can't reliably ascertain the context so not going to log it.
+            $issueproperties['contextid'] = $PAGE->context->id;
+        }
+        if ($PAGE->has_set_url()) {
+            $issueproperties['url'] = $PAGE->url->out_as_local_url(false);
+        }
 
         if (!empty($config->logmissing) && empty($translation)) {
             $issueproperties['issue'] = translation_issue::ISSUE_MISSING;
