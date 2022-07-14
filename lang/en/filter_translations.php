@@ -48,7 +48,7 @@ Then run to process those columns:
 php filter/translations/cli/insert_spans.php --mode=process --file=/Users/moodleadmin/cols.json
 ';
 $string['clihelptext_migrate_filter_fulltranslate'] = 'This tool will copy translations from the filter_fulltranslate plugin into the filter_translations plugin.
-Any entries previously copied using this tool will be removed.
+Any entries previously copied using this tool will be duplicated.
 To execute the task run this command again specifying --confirm e.g:
 php cli/migrate_filter_fulltranslate.php --confirm';
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
