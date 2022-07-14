@@ -32,7 +32,16 @@ use curl;
 use filter_translations\translation;
 use moodle_url;
 
+/**
+ * Translation provider to fetch and then retain translations from Google translate.
+ */
 class googletranslate extends translationprovider {
+    /**
+     * If google translate is enabled and configured return config, else return false.
+     *
+     * @return false|mixed|object|string|null
+     * @throws \dml_exception
+     */
     private static function config() {
         static $config = null;
 
@@ -55,6 +64,18 @@ class googletranslate extends translationprovider {
         return $config;
     }
 
+    /**
+     * Get a piece of text translated into a specific language.
+     * The language of the source text is auto-detected by Google.
+     *
+     * Either the translated text or if there is an error start backing off from the API and return null.
+     *
+     * @param $text
+     * @param $targetlanguage
+     * @return string|null
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     protected function generate_translation($text, $targetlanguage) {
         $config = self::config();
 
@@ -100,6 +121,11 @@ class googletranslate extends translationprovider {
         return $resp->data->translations[0]->translatedText;
     }
 
+    /**
+     * Back off from API - used when errors are getting returned.
+     *
+     * @return void
+     */
     private function backoff() {
         set_config('google_backoffonerror', true, 'filter_translations');
         set_config('google_backoffonerror_time', time(), 'filter_translations');

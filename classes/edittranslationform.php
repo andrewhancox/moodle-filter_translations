@@ -28,16 +28,40 @@ namespace filter_translations;
 use context_system;
 use core\form\persistent;
 
+/**
+ * Form for editing translations, includes some additional features for viewing the translation to be edited/created
+ * and the raw text.
+ */
 class edittranslationform extends persistent {
+    /**
+     * Show rich text editing controls
+     */
     const FORMTYPE_RICH = 10;
+    /**
+     * Show multi-line plain text editing controls
+     */
     const FORMTYPE_PLAINMULTILINE = 20;
+    /**
+     * Show single-line plain text editing controls
+     */
     const FORMTYPE_PLAIN = 30;
 
-    /** @var string Persistent class name. */
     protected static $persistentclass = 'filter_translations\\translation';
 
+    /**
+     * Fileds in the form that do not correspond to properties of the persistent class.
+     * @var string[]
+     */
     protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
 
+    /**
+     * Build the form.
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     function definition() {
         global $PAGE, $CFG;
 
@@ -78,34 +102,46 @@ class edittranslationform extends persistent {
 
         $mform->addElement('html', '<ul class="nav nav-tabs" id="" role="tablist">');
 
+        // Build a bunch of tab links:
+
+        // View the raw source text.
         $this->addtablink($mform, 'rawtext', get_string('rawtext', 'filter_translations'), true);
 
+        // For stale translations, a diff showing the text the translation was created for against the new text.
         if (!empty($this->_customdata['showdiff'])) {
             $this->addtablink($mform, 'diff', get_string('diff', 'filter_translations'));
         }
 
+        // For stale translations, the text the translation was created for.
         if (!empty($this->_customdata['old'])) {
             $this->addtablink($mform, 'old', get_string('old', 'filter_translations'));
         }
 
+        // When translating rich HTML show the raw HTML.
         if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
             $this->addtablink($mform, 'rawhtml', get_string('rawhtml', 'filter_translations'));
         }
 
         $mform->addElement('html', '</ul>');
 
-        $mform->addElement('html', '<div class="tab-content" id="">');
+        // Build the contents of each tab.
 
+        // The raw text.
+        $mform->addElement('html', '<div class="tab-content" id="">');
         $this->addtabcontents($mform, 'rawtext', $this->get_persistent()->get('rawtext'), true);
 
+        // The div that the diff2html.js will populate with a nice diff viewer.
         if (!empty($this->_customdata['showdiff'])) {
             $this->addtabcontents($mform, 'diff', '<div class="translationdiff" id="translationdiff"></div>');
         }
 
+        // The old text.
         if (!empty($this->_customdata['old'])) {
             $this->addtabcontents($mform, 'old', $this->_customdata['old']);
         }
 
+        // The raw HTML - run the HTML fragment through an HTML tidying function to indent it neatly etc. and do some
+        // HTML entity encoding.
         if ($this->_customdata['formtype'] == self::FORMTYPE_RICH) {
             $this->addtabcontents($mform, 'rawhtml', \html_writer::tag('pre',
                 str_replace('>', '&gt;', str_replace('<', '&lt;',
@@ -124,7 +160,7 @@ class edittranslationform extends persistent {
         switch ($this->_customdata['formtype']) {
             case self::FORMTYPE_RICH:
                 $mform->addElement('editor', 'substitutetext_editor', get_string('substitutetext', 'filter_translations'), null,
-                    $this->get_substitute_test_editoroptions());
+                    $this->get_substitute_text_editoroptions());
                 $mform->setType('substitutetext_editor', PARAM_RAW);
                 break;
             case self::FORMTYPE_PLAINMULTILINE:
@@ -159,6 +195,13 @@ class edittranslationform extends persistent {
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
 
+    /**
+     * Override the base class implementation to handle the rich text editor.
+     *
+     * @return \stdClass
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     protected function get_default_data() {
         $data = parent::get_default_data();
 
@@ -172,7 +215,7 @@ class edittranslationform extends persistent {
                 $itemid = null;
             }
 
-            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_test_editoroptions(), context_system::instance(),
+            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_text_editoroptions(), context_system::instance(),
                 'filter_translations', 'substitutetext',
                 $itemid);
         } else {
@@ -182,6 +225,15 @@ class edittranslationform extends persistent {
         return $data;
     }
 
+    /**
+     * Add a standard Moodle tab.
+     *
+     * @param $mform
+     * @param $name
+     * @param $label
+     * @param $selected
+     * @return void
+     */
     private function addtablink($mform, $name, $label, $selected = false) {
         if ($selected) {
             $selectedariaattr = 'true';
@@ -197,6 +249,15 @@ class edittranslationform extends persistent {
                                                 </li>');
     }
 
+    /**
+     * Add the contents of a tab.
+     *
+     * @param $mform
+     * @param $name
+     * @param $contents
+     * @param $selected
+     * @return void
+     */
     private function addtabcontents($mform, $name, $contents, $selected = false) {
         if ($selected) {
             $selectedattr = 'show active';
@@ -208,15 +269,21 @@ class edittranslationform extends persistent {
         $mform->addElement('html', "</div>");
     }
 
-    // Override function visiblity.
+    /**
+     * Override function visiblity.
+     *
+     * @param $data
+     * @return object|\stdClass
+     */
     public function filter_data_for_persistent($data) {
         return parent::filter_data_for_persistent($data);
     }
 
     /**
+     * Get the configuration for the rich text editor.
      * @return array
      */
-    public function get_substitute_test_editoroptions(): array {
+    public function get_substitute_text_editoroptions(): array {
         global $SITE;
 
         $context = context_system::instance();

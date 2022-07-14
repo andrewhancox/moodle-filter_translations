@@ -26,13 +26,26 @@
 
 namespace filter_translations\translationproviders;
 
-use admin_setting_configcheckbox;
-use admin_setting_configtext;
-use curl;
+use context_system;
 use filter_translations\translation;
-use moodle_url;
 
+/**
+ * Base class for building automatic translation providers.
+ */
 abstract class translationprovider {
+    /**
+     * Called when no translation can be found locally and we wish to attempt to automatically either create a new one
+     * or update an existing one.
+     *
+     * @param $foundhash
+     * @param $generatedhash
+     * @param $text
+     * @param $targetlanguage
+     * @param $translationtoupdate
+     * @return false|translation
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function createorupdate_translation($foundhash, $generatedhash, $text, $targetlanguage, $translationtoupdate) {
         if (empty($text)) {
             return false;
@@ -52,7 +65,7 @@ abstract class translationprovider {
             $translation = new translation();
             $translation->set('md5key', $besthash);
             $translation->set('targetlanguage', $targetlanguage);
-            $translation->set('contextid', \context_system::instance()->id);
+            $translation->set('contextid', context_system::instance()->id);
         }
 
         $translation->set('translationsource', translation::SOURCE_AUTOMATIC);
@@ -64,5 +77,12 @@ abstract class translationprovider {
         return $translation;
     }
 
+    /**
+     * Get a piece of text translated into a specific language.
+     *
+     * @param $text
+     * @param $targetlanguage
+     * @return mixed
+     */
     protected abstract function generate_translation($text, $targetlanguage);
 }

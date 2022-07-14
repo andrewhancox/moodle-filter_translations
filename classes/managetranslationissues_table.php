@@ -35,9 +35,24 @@ global $CFG;
 require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
+/**
+ * Table to list and manage translations.
+ */
 class managetranslationissues_table extends table_sql {
+    /**
+     * @var array
+     */
     private $languages = null;
 
+    /**
+     * Set up the table, manage filters etc.
+     *
+     * @param $filterparams
+     * @param $sortcolumn
+     * @param $download
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function __construct($filterparams, $sortcolumn, $download) {
         global $DB, $PAGE, $CFG, $OUTPUT;
 
@@ -177,15 +192,37 @@ class managetranslationissues_table extends table_sql {
         return $OUTPUT->render($checkbox);
     }
 
+    /**
+     * Display a link to the page the missing/stale translation was found on.
+     * Use the truncated URL as it's label.
+     *
+     * @param $row
+     * @return string
+     * @throws \moodle_exception
+     */
     public function col_url($row) {
         return \html_writer::link(new moodle_url($row->url), shorten_text($row->url, 90));
     }
 
+    /**
+     * Display a link to the context the missing/stale translation was found on.
+     * Use the context name as the label.
+     *
+     * @param $row
+     * @return string
+     * @throws \coding_exception
+     */
     public function col_context($row) {
         $context = \context::instance_by_id($row->contextid);
         return \html_writer::link($context->get_url(), $context->get_context_name());
     }
 
+    /**
+     * Truncate and deHTML the raw text.
+     *
+     * @param $row
+     * @return string
+     */
     public function col_rawtext($row) {
         if ($this->is_downloading()) {
             return $row->rawtext;
@@ -194,6 +231,12 @@ class managetranslationissues_table extends table_sql {
         return shorten_text(strip_tags($row->rawtext));
     }
 
+    /**
+     * Truncate and deHTML the subtitute text.
+     *
+     * @param $row
+     * @return string
+     */
     public function col_substitutetext($row) {
         if ($this->is_downloading()) {
             return $row->substitutetext;
@@ -202,6 +245,12 @@ class managetranslationissues_table extends table_sql {
         return shorten_text(strip_tags($row->substitutetext));
     }
 
+    /**
+     * Get the full name for ISO language code.
+     *
+     * @param $row
+     * @return mixed
+     */
     public function col_targetlanguage($row) {
         if (isset($this->languages[$row->targetlanguage])) {
             return $this->languages[$row->targetlanguage];
@@ -210,10 +259,24 @@ class managetranslationissues_table extends table_sql {
         return $row->targetlanguage;
     }
 
+    /**
+     * What was the problem (stale/missing).
+     *
+     * @param $row
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public function col_issue($row) {
         return get_string('issue_' . $row->issue, 'filter_translations');
     }
 
+    /**
+     * Show actions - currenly just an edit button.
+     * @param $row
+     * @return string|void
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
     public function col_actions($row) {
         global $PAGE;
 
@@ -236,6 +299,11 @@ class managetranslationissues_table extends table_sql {
         );
     }
 
+    /**
+     * Wrap in a form to power the select checkboxes and related buttons.
+     *
+     * @return void
+     */
     public function wrap_html_start() {
         global $PAGE;
 
@@ -245,6 +313,11 @@ class managetranslationissues_table extends table_sql {
         echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'returnurl', 'value'=> $PAGE->url));
     }
 
+    /**
+     * Finish wrapping the form.
+     *
+     * @return void
+     */
     public function wrap_html_finish() {
         echo html_writer::start_tag('div', array('class' => 'actions my-1'));
         $this->submit_buttons();

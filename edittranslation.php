@@ -142,7 +142,7 @@ if ($data = $form->get_data()) {
     }
 
     if ($formtype == edittranslationform::FORMTYPE_RICH) {
-        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_test_editoroptions(), $context,
+        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_text_editoroptions(), $context,
             'filter_translations',
             'substitutetext', $persistent->get('id'));
 

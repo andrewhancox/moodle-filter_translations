@@ -31,7 +31,17 @@ use core_component;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Translation provider to search installed language packs for a translation.
+ */
 class languagestringreverse extends translationprovider {
+    /**
+     * Get the language strings for a component + language then flip them so 'the text' => 'stringkey'.
+     *
+     * @param $lang
+     * @return array|bool|float|int|mixed|string
+     * @throws \coding_exception
+     */
     private function get_flipped_strings_by_component($lang) {
         $flippedstringscache = cache::make('filter_translations', 'flippedstringsbycomponent');
         $flippedstringsbycomponent = $flippedstringscache->get($lang);
@@ -49,6 +59,13 @@ class languagestringreverse extends translationprovider {
         return $flippedstringsbycomponent;
     }
 
+    /**
+     * Cache wrapper for raw_strings_by_component
+     *
+     * @param $lang
+     * @return array|bool|float|int|mixed|string
+     * @throws \coding_exception
+     */
     private function get_strings_by_component($lang) {
         $stringscache = cache::make('filter_translations', 'stringsbycomponent');
         $stringsbycomponent = $stringscache->get($lang);
@@ -63,39 +80,53 @@ class languagestringreverse extends translationprovider {
         return $stringsbycomponent;
     }
 
+    /**
+     * Get the language strings for a component + language
+     *
+     * @param $lang
+     * @return array
+     */
     private function raw_strings_by_component($lang) {
+        global $CFG;
+
         $stringsbycomponent = [];
         foreach (core_component::get_component_list() as $type => $typecomponents) {
             foreach ($typecomponents as $component => $path) {
-                $stringsbycomponent[$component] = $this->get_raw_lang_strings($component, $type, $path, $lang);
+                $string = [];
+
+                $nonfrankenstyle = substr($component, strlen($type) + 1);
+                if (file_exists("$CFG->langlocalroot/$lang/$nonfrankenstyle.php")) {
+                    include("$CFG->langlocalroot/$lang/$nonfrankenstyle.php");
+                } else if (file_exists("$CFG->langlocalroot/$lang/$component.php")) {
+                    include("$CFG->langlocalroot/$lang/$component.php");
+                } else if (file_exists("$CFG->langotherroot/$lang/$nonfrankenstyle.php")) {
+                    include("$CFG->langotherroot/$lang/$nonfrankenstyle.php");
+                } else if (file_exists("$CFG->langotherroot/$lang/$component.php")) {
+                    include("$CFG->langotherroot/$lang/$nonfrankenstyle.php");
+                } else if (file_exists("$path/lang/$lang/$nonfrankenstyle.php")) {
+                    include("$path/lang/$lang/$nonfrankenstyle.php");
+                } else if (file_exists("$path/lang/$lang/$component.php")) {
+                    include("$path/lang/$lang/$component.php");
+                }
+
+                $stringsbycomponent[$component] = $string;
             }
         }
         return $stringsbycomponent;
     }
 
-    private function get_raw_lang_strings($component, $type, $componentpath, $lang) {
-        global $CFG;
-
-        $string = [];
-
-        $nonfrankenstyle = substr($component, strlen($type) + 1);
-        if (file_exists("$CFG->langlocalroot/$lang/$nonfrankenstyle.php")) {
-            include("$CFG->langlocalroot/$lang/$nonfrankenstyle.php");
-        } else if (file_exists("$CFG->langlocalroot/$lang/$component.php")) {
-            include("$CFG->langlocalroot/$lang/$component.php");
-        } else if (file_exists("$CFG->langotherroot/$lang/$nonfrankenstyle.php")) {
-            include("$CFG->langotherroot/$lang/$nonfrankenstyle.php");
-        } else if (file_exists("$CFG->langotherroot/$lang/$component.php")) {
-            include("$CFG->langotherroot/$lang/$nonfrankenstyle.php");
-        } else if (file_exists("$componentpath/lang/$lang/$nonfrankenstyle.php")) {
-            include("$componentpath/lang/$lang/$nonfrankenstyle.php");
-        } else if (file_exists("$componentpath/lang/$lang/$component.php")) {
-            include("$componentpath/lang/$lang/$component.php");
-        }
-
-        return $string;
-    }
-
+    /**
+     * Get a piece of text translated into a specific language.
+     *
+     * Look for a string in a language pack which exactly matches the text, grab it's key then fetch it
+     * in the desired language.
+     *
+     * @param $text
+     * @param $targetlanguage
+     * @return mixed|string|void|null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     protected function generate_translation($text, $targetlanguage) {
         $config = get_config('filter_translations');
 

@@ -35,9 +35,23 @@ global $CFG;
 require_once($CFG->dirroot . '/lib/tablelib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
 
+/**
+ * Table to list and manage translation issues.
+ */
 class managetranslations_table extends table_sql {
+    /**
+     * @var array
+     */
     private $languages = null;
 
+    /**
+     * Set up the table, manage filters etc.
+     *
+     * @param $filterparams
+     * @param $sortcolumn
+     * @param $download
+     * @throws \coding_exception
+     */
     public function __construct($filterparams, $sortcolumn, $download) {
         global $DB, $PAGE, $CFG, $OUTPUT;
 
@@ -159,6 +173,12 @@ class managetranslations_table extends table_sql {
         return $OUTPUT->render($checkbox);
     }
 
+    /**
+     * Truncate and deHTML the raw text.
+     *
+     * @param $row
+     * @return string
+     */
     public function col_rawtext($row) {
         if ($this->is_downloading()) {
             return $row->rawtext;
@@ -167,6 +187,12 @@ class managetranslations_table extends table_sql {
         return shorten_text(strip_tags($row->rawtext));
     }
 
+    /**
+     * Truncate and deHTML the subtitute text.
+     *
+     * @param $row
+     * @return string
+     */
     public function col_substitutetext($row) {
         if ($this->is_downloading()) {
             return $row->substitutetext;
@@ -175,6 +201,12 @@ class managetranslations_table extends table_sql {
         return shorten_text(strip_tags($row->substitutetext));
     }
 
+    /**
+     * Get the full name for ISO language code.
+     *
+     * @param $row
+     * @return mixed
+     */
     public function col_targetlanguage($row) {
         if (isset($this->languages[$row->targetlanguage])) {
             return $this->languages[$row->targetlanguage];
@@ -183,6 +215,13 @@ class managetranslations_table extends table_sql {
         return $row->targetlanguage;
     }
 
+    /**
+     * Linked name of the user who last modified the translation.
+     *
+     * @param $row
+     * @return \lang_string|string
+     * @throws \moodle_exception
+     */
     public function col_usermodified($row) {
         if ($this->is_downloading()) {
             return fullname($row);
@@ -194,6 +233,13 @@ class managetranslations_table extends table_sql {
         );
     }
 
+    /**
+     * Show actions - currenly just an edit button.
+     * @param $row
+     * @return string|void
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
     public function col_actions($row) {
         global $PAGE;
 
@@ -213,6 +259,11 @@ class managetranslations_table extends table_sql {
         );
     }
 
+    /**
+     * Wrap in a form to power the select checkboxes and related buttons.
+     *
+     * @return void
+     */
     public function wrap_html_start() {
         global $PAGE;
 
@@ -222,6 +273,11 @@ class managetranslations_table extends table_sql {
         echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'returnurl', 'value'=> $PAGE->url));
     }
 
+    /**
+     * Finish wrapping the form.
+     *
+     * @return void
+     */
     public function wrap_html_finish() {
         echo html_writer::start_tag('div', array('class' => 'actions my-1'));
         $this->submit_buttons();

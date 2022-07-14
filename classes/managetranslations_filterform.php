@@ -30,6 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
+/**
+ * Form for filtering the managetranslations_table.
+ */
 class managetranslations_filterform extends \moodleform {
     /**
      * Form definition method.
