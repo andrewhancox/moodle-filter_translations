@@ -23,13 +23,24 @@
  * @copyright 2021, Andrew Hancox
  */
 
-use filter_translations\translation_issue;
+use filter_translations\translation;
 use filter_translations\translator;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * The actual filter class...
+ */
 class filter_translations extends moodle_text_filter {
 
+    /**
+     * Get the cache that will be used to cache translations.
+     * Caching can be handled at application, session or request based on a config setting to allow tuning for
+     * based on likely cardinality.
+     *
+     * @return cache_application|cache_session|cache_store|null
+     * @throws dml_exception
+     */
     public static function cache() {
         static $cache = null;
 
@@ -45,6 +56,13 @@ class filter_translations extends moodle_text_filter {
         return $cache;
     }
 
+    /**
+     * Should the current page be translated.
+     * Must be based on the stript name as PAGE->url will not be set yet.
+     *
+     * @return bool
+     * @throws dml_exception
+     */
     public static function skiptranslations() {
         global $SCRIPT;
 
@@ -70,20 +88,24 @@ class filter_translations extends moodle_text_filter {
      * @see filter_manager::apply_filter_chain()
      */
     public function filter($text, array $options = []) {
-        global $CFG, $SCRIPT;
+        global $CFG;
         require_once($CFG->libdir . '/filelib.php');
 
-        // Prevent double translation when adding the button.
+        // Check to see if the text being filtered has either been translated at some other point in the filter stack
+        // or is on a page that should not be translated.
         if (self::skiptranslations() || strpos($text, self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR) !== false) {
             return $text;
         }
 
+        // Look for a hash in a span tag and remove the span tags.
         $foundhash = $this->findandremovehash($text);
+        // Generate a hash based on the text to be translated.
         $generatedhash = $this->generatehash($text);
         $targetlanguage = current_language();
 
         $cachekey = $targetlanguage . ($generatedhash ?? $foundhash);
 
+        // Look for a cached translation and return it, unless we're doing in-line translations.
         if (!self::checkinlinestranslation(true)) {
             $translatedtextcache = self::cache();
             $cachedtranslatedtext = $translatedtextcache->get($cachekey);
@@ -94,17 +116,20 @@ class filter_translations extends moodle_text_filter {
         }
 
         if (empty($text)) {
+            // If there's nothing to translate then just give back an empty string.
             $translatedtext = '';
         } else {
+            // Get the best translation (object) to use.
             $translator = new translator();
             $translation = $translator->get_best_translation($targetlanguage, $generatedhash, $foundhash, $text);
 
             if (empty($translation)) {
+                // No translation so we'll just return the text unaltered.
                 $translatedtext = $text;
                 $translationforbutton = null;
             } else {
+                // Grant the user access to any files included in the translation and rewrite file URLs.
                 $this->grantaccesstotranslationfiles($translation);
-
                 $translatedtext = file_rewrite_pluginfile_urls(
                     $translation->get('substitutetext'),
                     'pluginfile.php',
@@ -114,15 +139,20 @@ class filter_translations extends moodle_text_filter {
                     $translation->get('id')
                 );
 
+                // If we're using a translation for a different language then when creating the in-line translation button
+                // make it go to a fresh translation.
                 if ($translation->get('targetlanguage') != current_language() && $translation->get('targetlanguage') == 'en') {
                     $translationforbutton = null;
                 } else {
                     $translationforbutton = $translation;
                 }
             }
+
+            // If we're doing in-line translation then add the button.
             $translatedtext .= $this->addinlinetranslation($text, $generatedhash, $foundhash, $translationforbutton);
         }
 
+        // Cache the result - unless we're doing in-line translation.
         if (!self::checkinlinestranslation(true)) {
             $translatedtextcache->set($cachekey, $translatedtext);
         }
@@ -130,27 +160,49 @@ class filter_translations extends moodle_text_filter {
         return $translatedtext;
     }
 
+    /**
+     * Trim and MD5 hash a string.
+     *
+     * @param $text
+     * @return string
+     */
     public function generatehash($text) {
         return md5(trim($text));
     }
 
+    /**
+     * Look for an empty span tag which can be used to link a piece of text to a specific translation.
+     *
+     * @param $text
+     * @return mixed|null
+     */
     public function findandremovehash(&$text) {
+        // Quick and dirty check.
         if (strpos($text, 'data-translationhash') === false) {
             return null;
         }
 
+        // Get the actual hash.
         $translationhashes = [];
         preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
-
         if (empty($translationhashes[1])) {
             return null;
         }
 
+        // Remove the span tag from the text.
         $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
 
         return $translationhashes[1];
     }
 
+    /**
+     * As translations can be used in a wide variety of contexts and we do not want all related files to be
+     * accessible to everyone we maintain a list of translations that have been used to render pages for a given
+     * user in a session variable which we check in filter_translations_pluginfile to allow/deny access.
+     *
+     * @param $translation
+     * @return void
+     */
     protected function grantaccesstotranslationfiles($translation) {
         global $SESSION;
 
@@ -163,22 +215,32 @@ class filter_translations extends moodle_text_filter {
         }
     }
 
-    private static $registeredtranslations = [];
+    // De duped list of parameters to be used to call translation_button.register javascript function.
     public static $translationstoinject = [];
 
-    private static $inpagetranslationid = 0;
-    private static function get_next_inpagetranslationid() {
-        self::$inpagetranslationid++;
-        return self::$inpagetranslationid;
-    }
-
+    /**
+     * Do work required to power the in-line translation button.
+     *
+     * @param string $rawtext
+     * @param string $generatedhash
+     * @param string $foundhash
+     * @param translation $translation
+     * @return string
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     protected function addinlinetranslation($rawtext, $generatedhash, $foundhash, $translation = null) {
         global $PAGE;
 
+        static $registeredtranslations = [];
+        static $inpagetranslationid = 0;
+
+        // If we're not doing in-line translation then do nothing.
         if (!self::checkinlinestranslation()) {
             return '';
         }
 
+        // Get the context if of the translation, page if possible, or fall back to system.
         if (!empty($translation) && !empty($translation->get('contextid'))){
             $contextid = $translation->get('contextid');
         } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
@@ -187,34 +249,50 @@ class filter_translations extends moodle_text_filter {
             $contextid = $PAGE->context->id;
         }
 
+        // Build an object containing all the data that the AMD module will need to render the button.
         $obj = (object) [
                 'rawtext'          => $rawtext,
                 'generatedhash'    => $generatedhash,
                 'foundhash'        => $foundhash,
                 'contextid'    => $contextid,
                 'translationid'    => !empty($translation) ? $translation->get('id') : '',
-                'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'),
-                'goodtranslation'  => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'),
-                'notranslation'  => empty($translation),
+                'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'), // is it stale
+                'goodtranslation'  => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'), // is it fresh
+                'notranslation'  => empty($translation), // is it not found
         ];
+        // Hash the object as a key to dedupe.
         $translationkey = md5(print_r($obj, true));
 
-        if (!key_exists($translationkey, self::$registeredtranslations)) {
-            $id = self::get_next_inpagetranslationid();
+        // Check to see if we've already got this translation in the list, if not, add it.
+        if (!key_exists($translationkey, $registeredtranslations)) {
+            $inpagetranslationid++;
+            $id = $inpagetranslationid;
             $obj->inpagetranslationid = $id;
             $jsobj = json_encode($obj);
             self::$translationstoinject[$id] = $jsobj;
-            self::$registeredtranslations[$translationkey] = $id;
+            $registeredtranslations[$translationkey] = $id;
         } else {
-            $id =  self::$registeredtranslations[$translationkey];
+            $id =  $registeredtranslations[$translationkey];
         }
 
+        // Return the encoded inpagetranslationid to be appended to the text ready for it to be found by the javascript
+        // and turned in to a button when cross-referenced with the data from $registeredtranslations.
         return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR;
     }
 
-    const ENCODEDONE = "\u{200B}"; // Zero-Width Space
-    const ENCODEDZERO = "\u{200C}"; // Zero-Width Non-Joiner
-    const ENCODEDSEPERATOR = "\u{200D}"; // Zero-Width Joiner
+    /**
+     * Zero-width characters used to hide information about the translation in plain text.
+     */
+    const ENCODEDONE = "\u{200B}"; // Zero-Width Space - used to encode 1
+    const ENCODEDZERO = "\u{200C}"; // Zero-Width Non-Joiner - used to encode 0
+    const ENCODEDSEPERATOR = "\u{200D}"; // Zero-Width Joiner - used to delimit the encoded text.
+
+    /**
+     * Binary encode an integer and then encode it using zero-width characters.
+     *
+     * @param $int
+     * @return array|string|string[]
+     */
     private function encodeintegerashiddenchars($int) {
         $bin = decbin($int);
         $bin = str_replace('1', self::ENCODEDONE, $bin);
@@ -222,6 +300,12 @@ class filter_translations extends moodle_text_filter {
         return $bin;
     }
 
+    /**
+     * Enable/disable in-line translation.
+     *
+     * @param $state
+     * @return void
+     */
     public static function toggleinlinestranslation($state) {
         global $SESSION;
         $SESSION->filter_translations_toggleinlinestranslation = $state;

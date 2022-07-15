@@ -45,12 +45,28 @@ require_once($CFG->dirroot . '/filter/translations/lib/diff/src/TimeEfficientLon
 use DOMDocument;
 use \SebastianBergmann\Diff\Differ;
 
+/**
+ * Wrapper for the unified diff generator https://github.com/sebastianbergmann/diff
+ */
 class unifieddiff {
+    /**
+     * Create unified diff of two pieces of HTML.
+     *
+     * @param string $original
+     * @param string $new
+     * @return string
+     */
     public static function generatediff($original, $new) {
         $differ = new Differ;
         return $differ->diff(self::tidyhtml($original), self::tidyhtml($new));
     }
 
+    /**
+     * Reformat HTML to align handling of whitespace etc. to allow creation of a clean diff.
+     *
+     * @param $buffer
+     * @return false|string
+     */
     public static function tidyhtml($buffer) {
         $dom = new DOMDocument();
         $dom->preserveWhiteSpace = false;

@@ -29,6 +29,7 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
 
     $itemid = array_shift($args); // Ignore revision - designed to prevent caching problems only...
 
+    // Check the translation has been used to render a page for the user before allowing them to get the file.
     if (!isset($SESSION->filter_translations_usedtranslations) ||
         !in_array($itemid, $SESSION->filter_translations_usedtranslations)) {
         return false;
@@ -46,7 +47,7 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
 }
 
 /**
- * Renders the popup.
+ * Render the drop-down menu to manage in-line translation functionality.
  *
  * @param renderer_base $renderer
  * @return string The HTML
@@ -144,6 +145,10 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
     ]);
 }
 
+/**
+ * @param $count
+ * @return mixed|string
+ */
 function filter_translations_cap_count($count) {
     if ($count < 100) {
         return $count;
@@ -152,6 +157,10 @@ function filter_translations_cap_count($count) {
     }
 }
 
+/**
+ * If we're doing in-line translation then don't strip tags from text or we'll loose
+ * information we need for the buttons.
+ */
 function filter_translations_after_config() {
     global $CFG;
     require_once("$CFG->dirroot/filter/translations/filter.php");
@@ -161,6 +170,11 @@ function filter_translations_after_config() {
     }
 }
 
+/**
+ * If we're going in-line translation then call the some functions on the translation_button AMD module:
+ * init - register click handlers for the button
+ * translation_button.register - do this for all trans
+ */
 function filter_translations_before_footer() {
     global $PAGE, $CFG;
 
@@ -170,11 +184,14 @@ function filter_translations_before_footer() {
         return;
     }
 
+    // init - register click handlers for the button
     $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
 
+    // register - the objects required to inject and power the buttons.
     foreach (\filter_translations::$translationstoinject as $id => $jsobj) {
         $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
     }
 
+    // findandinjectbuttons - add the actual buttons.
     $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.findandinjectbuttons();});");
 }

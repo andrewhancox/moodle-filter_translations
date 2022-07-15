@@ -29,34 +29,44 @@ use cache;
 use filter_translations\translationproviders\googletranslate;
 use filter_translations\translationproviders\languagestringreverse;
 
+/**
+ *
+ */
 class translator {
+    /**
+     * Wrapper function to allow overriding in translator_testable.
+     * @return \core_string_manager
+     */
     protected function get_string_manager() {
         return get_string_manager();
     }
 
+    /**
+     * Get the 'best' translation to use.
+     *
+     * @param string $language
+     * @param string $generatedhash
+     * @param string $foundhash
+     * @param string $text
+     * @return false|translation|mixed|null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function get_best_translation($language, $generatedhash, $foundhash, $text) {
-        global $CFG;
-
         $translations = $this->get_string_manager()->get_list_of_translations(true);
-        $translationnames = array_values($translations);
-        if (in_array($text, $translationnames)) {
+
+        // Don't translate names of languages.
+        if (in_array($text, array_values($translations))) {
             return null;
         }
 
-        $dependencies = $this->get_string_manager()->get_language_dependencies($language);
-
-        // Workplace compatibility.
-        if (isset($CFG->wphideparentlang) && $CFG->wphideparentlang) {
-            // Parent language is hidden, so add dependency to WP language.
-            if (isset($translations[$dependencies[0] . '_wp']) && !in_array($dependencies[0] . '_wp', $dependencies)) {
-                array_splice($dependencies, 1, 0, $dependencies[0] . '_wp');
-            }
-        }
-
-        $prioritisedlanguages = array_reverse(array_merge(['en'], $dependencies));
-
+        // Get a prioritised list of the languages we could translate into - including the target language, any parent languages etc.
+        $prioritisedlanguages = $this->get_prioritised_languages($language, $translations);
+        // Get all translations that fit any of the prioritised languages.
         $options = $this->get_usable_translations($prioritisedlanguages, $generatedhash, $foundhash);
+        // Get the translation that fits the highest priority language.
         $optionsforbestlanguage = $this->filter_options_by_best_language($options, $prioritisedlanguages);
+        // Pick the best translation based on it's hashes.
         $translation = $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
 
         // Never use stale translations that were auto-generated.
@@ -64,44 +74,47 @@ class translator {
             $translation = null;
         }
 
+        // If no translation can be found, or the only translation is either stale or for a lower priority language then
+        // try automated translations.
         if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
+            // First try reverse language string look up.
             $languagestrings = new languagestringreverse();
             $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
 
             if (!empty($languagestringtranslation)) {
+                // Got one, use it.
                 $translation = $languagestringtranslation;
+            } else {
+                // No dice... try google translate.
+                $google = new googletranslate();
+                $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+
+                if (!empty($googletranslation)) {
+                    $translation = $googletranslation;
+                }
             }
         }
 
-        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
-            $google = new googletranslate();
-            $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
-
-            if (!empty($googletranslation)) {
-                $translation = $googletranslation;
-            }
-        }
-
+        // Check to see if there is an issue that needs logging (e.g. missing or stale translation).
         $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
 
         return $translation;
     }
 
     /**
-     * @param $foundhash
+     * If there's an issue with the translation then log it.
+     *
+     * @param string $foundhash
      * @param string $generatedhash
      * @param string $targetlanguage
      * @param string $text
-     * @param $translation
+     * @param translation $translation
      * @return void
      */
-    private function checkforandlogissue($foundhash, string $generatedhash, string $targetlanguage, string $text, $translation): void {
-        global $PAGE, $DB;
+    private function checkforandlogissue($foundhash, $generatedhash, $targetlanguage, $text, $translation) {
+        global $PAGE;
 
-        if (!$PAGE->has_set_url()) {
-            return;
-        }
-
+        // Is the logging all disabled?
         $config = get_config('filter_translations');
         if (empty($config->logmissing) && empty($config->logstale)) {
             return;
@@ -109,6 +122,7 @@ class translator {
 
         $translationissuescache = cache::make('filter_translations', 'translationissues');
 
+        // Build an array of properties for the issue we've encountered.
         $issueproperties = [
             'url' => '',
             'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
@@ -118,57 +132,82 @@ class translator {
         ];
 
         if ($PAGE->state != $PAGE::STATE_BEFORE_HEADER) {
-            // We can't reliably ascertain the context so not going to log it.
+            // We can't be certain the context has been set so are not going to log it.
+            // In a perfect world we'd be able to check directly to see if the context has been set yet...
             $issueproperties['contextid'] = $PAGE->context->id;
         }
         if ($PAGE->has_set_url()) {
+            // If the page has had it's url set then we can log it.
             $issueproperties['url'] = $PAGE->url->out_as_local_url(false);
         }
 
         if (!empty($config->logmissing) && empty($translation)) {
+            // Log it as a missing translation.
             $issueproperties['issue'] = translation_issue::ISSUE_MISSING;
             $issueproperties['translationid'] = 0;
         } else if (!empty($config->logstale) && !empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash')) {
+            // It's a stale translations.
             $issueproperties['issue'] = translation_issue::ISSUE_STALE;
             $issueproperties['translationid'] = $translation->get('id');
         } else {
+            // Nothing to log.
             return;
         }
 
+        // Check in the cache and see if we've already logged the problem.
         $cachekey = md5(json_encode($issueproperties));
         $issue = $translationissuescache->get($cachekey);
+
+        // Did we log it recently? - recently being defined by the logdebounce config setting.
+        // If so don't log it again.
         if (!empty($issue) && $issue->get('timemodified') >= time() - $config->logdebounce) {
             return;
         }
 
+        // Grb the existing issue record if it exists.
         if (empty($issue)) {
             $issues = translation_issue::get_records_sql_compare_text($issueproperties);
             $issue = reset($issues);
         }
 
         if (!empty($issue)) {
+            // If it exists then just bump the last modified time.
             $issue->update();
         } else {
+            // Otherwise create it.
             $issueproperties['rawtext'] = $text;
             $issue = new translation_issue();
             $issue->from_record((object)$issueproperties);
             $issue->save();
         }
 
+        // Cache the issue.
         $translationissuescache->set($cachekey, $issue);
     }
 
+    /**
+     * Choose the option that has the most specific match by hash.
+     *
+     * @param translation[] $options
+     * @param $generatedhash
+     * @param $foundhash
+     * @return false|mixed
+     */
     private function filter_options_by_best_hash($options, $generatedhash, $foundhash) {
+        // Does one of them match the hash found in the translation span tag.
         foreach ($options as $option) {
             if ($option->get('md5key') == $foundhash) {
                 return $option;
             }
         }
+
+        // Does one of them match the hash of the text to be translated.
         foreach ($options as $option) {
             if ($option->get('md5key') == $generatedhash) {
                 return $option;
             }
         }
+        // Was one of them created or last updated when translating text which generated the same hash.
         foreach ($options as $option) {
             if ($option->get('lastgeneratedhash') == $generatedhash) {
                 return $option;
@@ -178,6 +217,13 @@ class translator {
         return false;
     }
 
+    /**
+     * Get the translation that fits the highest priority language.
+     *
+     * @param translation[] $options
+     * @param $prioritisedlanguages
+     * @return array|mixed
+     */
     private function filter_options_by_best_language($options, $prioritisedlanguages) {
         $translationsbylang = [];
         foreach ($options as $option) {
@@ -196,6 +242,16 @@ class translator {
         return [];
     }
 
+    /**
+     * Get all translations that could be used against the supplied hashes to target any of the given languages.
+     *
+     * @param $prioritisedlanguages
+     * @param $generatedhash
+     * @param $foundhash
+     * @return translation[]
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     private function get_usable_translations($prioritisedlanguages, $generatedhash, $foundhash) {
         global $DB;
 
@@ -213,5 +269,30 @@ class translator {
         $select = "($hashor) AND targetlanguage $langsql";
 
         return translation::get_records_select($select, $params + $langparam);
+    }
+
+    /**
+     * Based on a supplied language return a list of languages which could supply a usable translation
+     * sorted by priority.
+     *
+     * @param string $language
+     * @param array $translations Installed language packs.
+     * @return array
+     */
+    public function get_prioritised_languages(string $language, array $translations) {
+        global $CFG;
+
+        $dependencies = $this->get_string_manager()->get_language_dependencies($language);
+
+        // Workplace compatibility.
+        if (isset($CFG->wphideparentlang) && $CFG->wphideparentlang) {
+            // Parent language is hidden, so add dependency to WP language.
+            if (isset($translations[$dependencies[0] . '_wp']) && !in_array($dependencies[0] . '_wp', $dependencies)) {
+                array_splice($dependencies, 1, 0, $dependencies[0] . '_wp');
+            }
+        }
+
+        $prioritisedlanguages = array_reverse(array_merge(['en'], $dependencies));
+        return array($dependencies, $prioritisedlanguages);
     }
 }
