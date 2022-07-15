@@ -27,6 +27,8 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
         'returnurl': '',
         'init': function (returnurl) {
             translation_button.returnurl = returnurl;
+            // Register both right and left click handlers on the translation button - we need both as it will sometimes
+            // conflict with the left click action on elements in front.
             $('body').on('click', '.filter_translations_btn_translate', translation_button.opentranslation);
             $('body').on('contextmenu', '.filter_translations_btn_translate', translation_button.opentranslation);
         },
@@ -35,6 +37,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
             var encodedzero = "\u{200C}"; // Zero-Width Non-Joiner
             var encodedseperator = "\u{200D}"; // Zero-Width Joiner
 
+            // Two encodedseperator next to each other indicates a placeholder to swap for a translation button.
             var elems = translation_button.findElementsDirectlyContainingText(document, encodedseperator + encodedseperator);
             elems.forEach(function(elem) {
                 var matches = new RegExp(encodedseperator + encodedseperator + '([' + encodedone + encodedzero + ']*)');
@@ -42,15 +45,20 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                 var regexzero = new RegExp(encodedzero, 'g');
                 var regexone = new RegExp(encodedone, 'g');
 
+                // Decode the inpagetranslationid so we can grab the translation info from translation_button.objects.
                 var binary = matches.exec($(elem).html())[1].replace(regexone, '1').replace(regexzero, '0');
                 var key = parseInt(binary, 2);
                 var translationinfo = translation_button.objects[key];
 
+                // Render the translation button.
                 templates.render('filter_translations/translatebutton', translationinfo).done(function (html) {
                     $(elem).append(html);
                 });
             });
 
+            // Count missing and stale translations and inject the numbers into the menu.
+            // This has to be done in JS as we need to render the menu in the header but don't know the number
+            // until the whole page has renderred.
             var stalecount = 0;
             var missingcount = 0;
             for (var k in translation_button.objects) {
@@ -81,6 +89,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
             var context = translation_button.objects[$(this).data('inpagetranslationid')];
             context.returnurl = translation_button.returnurl;
 
+            // Show the translation modal.
             Str.get_strings([{
                 key: 'translationdetails',
                 component: 'filter_translations'
@@ -99,6 +108,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
         'register': function (key, translationinfo) {
             translation_button.objects[key] = translationinfo;
         },
+        // Utility function to find elements that contain a piece of text directly, rather than in a descendant.
         'findElementsDirectlyContainingText': function (ancestor, text) {
             var elements = [];
             walk(ancestor);
