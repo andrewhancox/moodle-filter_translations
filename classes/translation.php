@@ -30,63 +30,111 @@ use filter_translations\event\translation_created;
 use filter_translations\event\translation_deleted;
 use filter_translations\event\translation_updated;
 
+/**
+ * Persistent object to handle CRUD operations for translations.
+ */
 class translation extends persistent {
     const TABLE = 'filter_translations';
 
+    /**
+     * Translation was manually performed.
+     */
     const SOURCE_MANUAL = 10;
+    /**
+     * Translation was automatically generated - e.g. Google translate.
+     */
     const SOURCE_AUTOMATIC = 20;
 
     protected static function define_properties() {
         return array(
+                // The md5 hash that will be used to refer to this translation using span tags.
                 'md5key'               => [
                         'type' => PARAM_TEXT,
                 ],
+                // The md5 hash of the raw text that was last seen when this translation was updated/created.
                 'lastgeneratedhash'    => [
                         'type'    => PARAM_TEXT,
                         'default' => ''
                 ],
+                // Target language of this translation.
                 'targetlanguage'       => [
                         'type' => PARAM_TEXT,
                 ],
+                // The context that this translation was intiailly created for.
                 'contextid'            => [
                         'type' => PARAM_INT,
                 ],
+                // The raw text that was last seen when this translation was updated/created.
                 'rawtext'       => [
                         'type'    => PARAM_RAW,
                         'default' => ''
                 ],
+                // Text to use as substitution.
                 'substitutetext'       => [
                         'type'    => PARAM_RAW,
                         'default' => ''
                 ],
+                // Format of the text to use as subtitution.
                 'substitutetextformat' => [
                         'choices' => array(FORMAT_HTML, FORMAT_MOODLE, FORMAT_PLAIN, FORMAT_MARKDOWN),
                         'type'    => PARAM_INT,
                         'default' => FORMAT_HTML
                 ],
+                // How the translation was obtained - manual or automatic.
                 'translationsource' => [
                     'type' => PARAM_INT,
-                    'default' => self::SOURCE_MANUAL
+                    'default' => self::SOURCE_MANUAL,
+                    'choices' => array(self::SOURCE_MANUAL, self::SOURCE_AUTOMATIC),
                 ]
         );
     }
 
+    /**
+     * Snapshot of previous state for use in post update/delete handlers.
+     * @var null
+     */
     private $previous = null;
 
+    /**
+     * Drop the cached copy of the translation.
+     *
+     * @return void
+     * @throws \coding_exception
+     */
     protected function dropfromcache() {
         \filter_translations::cache()->delete($this->get('md5key'));
     }
 
+    /**
+     * Snapshot the translation for use in after_update
+     *
+     * @return void
+     * @throws \coding_exception
+     */
     protected function before_update() {
         parent::before_update();
         $this->previous = self::get_record(['id' => $this->get('id')]);
     }
 
+    /**
+     * Snapshot the translation for use in after_delete
+     *
+     * @return void
+     * @throws \coding_exception
+     */
     protected function before_delete() {
         parent::before_delete();
         $this->previous = self::get_record(['id' => $this->get('id')]);
     }
 
+    /**
+     * After creating new translation:
+     * Trigger creation event
+     * Purge any translation issues relating to this piece of text.
+     *
+     * @return void
+     * @throws \coding_exception
+     */
     protected function after_create() {
         parent::after_create();
         translation_created::trigger_from_translation($this);
@@ -94,12 +142,31 @@ class translation extends persistent {
         $this->dropfromcache();
     }
 
+    /**
+     * After deleteing a translation:
+     * Trigger deleted event
+     * Drop from cache
+     *
+     * @param $result
+     * @return void
+     * @throws \coding_exception
+     */
     protected function after_delete($result) {
         parent::after_delete($result);
         translation_deleted::trigger_from_translation($this->previous);
         $this->dropfromcache();
     }
 
+    /**
+     * After updating a translation:
+     * Trigger updated event
+     * Purge any translation issues relating to this piece of text
+     * Drop old version from cache
+     *
+     * @param $result
+     * @return void
+     * @throws \coding_exception
+     */
     protected function after_update($result) {
         parent::after_update($result);
         translation_updated::trigger_from_translation($this, $this->previous);
