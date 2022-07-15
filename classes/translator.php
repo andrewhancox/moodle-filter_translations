@@ -292,7 +292,6 @@ class translator {
             }
         }
 
-        $prioritisedlanguages = array_reverse(array_merge(['en'], $dependencies));
-        return array($dependencies, $prioritisedlanguages);
+        return array_reverse(array_merge(['en'], $dependencies));
     }
 }
