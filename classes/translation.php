@@ -102,7 +102,7 @@ class translation extends persistent {
      * @throws \coding_exception
      */
     protected function dropfromcache() {
-        \filter_translations::cache()->delete($this->get('md5key'));
+        \filter_translations::cache()->purge();
     }
 
     /**
