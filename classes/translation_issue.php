@@ -107,11 +107,10 @@ class translation_issue extends persistent {
      */
     public static function remove_records_for_translation($translation) {
         $issues = self::get_records_select(
-            'targetlanguage = :targetlanguage AND (md5key = :md5key OR generatedhash = :generatedhash OR translationid = translationid)',
+            'targetlanguage = :targetlanguage AND (md5key = :md5key OR generatedhash = :generatedhash)',
             [
                 'md5key' => $translation->get('md5key'),
                 'generatedhash' => $translation->get('lastgeneratedhash'),
-                'translationid' => $translation->get('id'),
                 'targetlanguage' => $translation->get('targetlanguage')
             ]);
 
