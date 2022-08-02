@@ -26,7 +26,6 @@
 namespace filter_translations;
 
 use cache;
-use context_system;
 use filter_translations\translationproviders\googletranslate;
 use filter_translations\translationproviders\languagestringreverse;
 
@@ -97,10 +96,7 @@ class translator {
         }
 
         // Check to see if there is an issue that needs logging (e.g. missing or stale translation).
-        // Only do this if user has permission to translate.
-        if (has_capability('filter/translations:edittranslations', context_system::instance())) {
-            $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
-        }
+        $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
 
         return $translation;
     }
