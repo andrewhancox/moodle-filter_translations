@@ -10,6 +10,19 @@ Full documentation available at: https://docs.moodle.org/311/en/Content_translat
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the 'Content translations' plugin there.
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Content translations" and choose a caching level appropriate to your site.
 
+# Cacheing #
+Since the filter makes database calls and, if Google Translate is enabled, web service calls, it is advisable to enable caching by working with the cachingmode setting. If you have a small volume of course material in active use then Application mode caching is advised, if you have a large volume then Session. In any case, the default of Request is rarely the optimal choice.
+
+# How it chooses translations #
+
+- Get a prioritised list of the languages we could translate into - starting with the user's preferred language, then working through parent languages.
+- Get the translation(s) that fit the highest priority language.
+
+
+- If a span tag with an MD5 key in the data-translationhash property and a translation with a matching md5key can be found then use that one.
+- Otherwise, if a translation can be found which has an MD5 key matching the MD5 hash of the content then use that.
+- Finally, if a translation has a 'last generated hash' (meaning the MD5 hash of the content it was last updated in reference to) which matches the MD5 hash of the content then use that.
+
 # To Use it #
 Users with the 'filter/translations:edittranslations' capability will see an icon in the top right hand corner of the screen to enable the translator view of the course. At this point all translatable text will have an icon injected next to it to allow it to be translated.
 
