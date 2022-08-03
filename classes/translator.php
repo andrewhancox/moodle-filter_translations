@@ -53,6 +53,8 @@ class translator {
      * @throws \dml_exception
      */
     public function get_best_translation($language, $generatedhash, $foundhash, $text) {
+        global $CFG;
+
         $translations = $this->get_string_manager()->get_list_of_translations(true);
 
         // Don't translate names of languages.
@@ -96,8 +98,10 @@ class translator {
         }
 
         // Check to see if there is an issue that needs logging (e.g. missing or stale translation).
-        $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
-
+        // Skip the site default language.
+        if ($language != $CFG->lang) {
+            $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
+        }
         return $translation;
     }
 
