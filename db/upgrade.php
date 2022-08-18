@@ -107,5 +107,17 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022042709, 'filter', 'translations');
     }
 
+    if ($oldversion < 2022042711) {
+        // Context id cannot be 0.
+        // Update context id to 1.
+        $DB->execute("UPDATE {filter_translations} SET contextid = :contextid WHERE contextid=0",
+            ['contextid' => \context_system::instance()->id]);
+        $DB->execute("UPDATE {filter_translation_issues} SET contextid = :contextid WHERE contextid=0",
+            ['contextid' => \context_system::instance()->id]);
+
+        // Translations savepoint reached.
+        upgrade_plugin_savepoint(true, 2022042711, 'filter', 'translations');
+    }
+
     return true;
 }

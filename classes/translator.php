@@ -131,7 +131,7 @@ class translator {
             'url' => '',
             'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
             'targetlanguage' => $targetlanguage,
-            'contextid' => 0,
+            'contextid' => \context_system::instance()->id, // Default to system context.
             'generatedhash' => $generatedhash
         ];
 
@@ -179,10 +179,12 @@ class translator {
             $issue->update();
         } else {
             // Otherwise create it.
-            $issueproperties['rawtext'] = $text;
-            $issue = new translation_issue();
-            $issue->from_record((object)$issueproperties);
-            $issue->save();
+            if ($issueproperties['url'] != '') { // Don't log it url is empty.
+                $issueproperties['rawtext'] = $text;
+                $issue = new translation_issue();
+                $issue->from_record((object)$issueproperties);
+                $issue->save();
+            }
         }
 
         // Cache the issue.
