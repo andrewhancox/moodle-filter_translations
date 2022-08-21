@@ -99,7 +99,7 @@ class translator {
 
         // Check to see if there is an issue that needs logging (e.g. missing or stale translation).
         // Skip the site default language.
-        if ($language != $CFG->lang) {
+        if ($language != $CFG->lang && !$this->skiplanguage($language)) {
             $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
         }
         return $translation;
@@ -299,5 +299,25 @@ class translator {
         }
 
         return array_reverse(array_merge(['en'], $dependencies));
+    }
+
+    /**
+     * Check if this language can be skipped from logging in the missing translations table.
+     *
+     * @param string $language
+     * @return true if $language is found, false otherwise
+     */
+    public static function skiplanguage(string $language) {
+        static $skiplanguage = null;
+
+        if (!isset($skiplanguage)) {
+            $languagestoskip = get_config('filter_translations', 'excludelang');
+            if (!empty($languagestoskip)) {
+                $languagestoskip = explode(",", $languagestoskip);
+                $skiplanguage = in_array($language, $languagestoskip);
+            }
+        }
+
+        return $skiplanguage;
     }
 }
