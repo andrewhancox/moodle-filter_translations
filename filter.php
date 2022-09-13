@@ -58,7 +58,7 @@ class filter_translations extends moodle_text_filter {
 
     /**
      * Should the current page be translated.
-     * Must be based on the stript name as PAGE->url will not be set yet.
+     * Must be based on the script name as PAGE->url will not be set yet.
      *
      * @return bool
      * @throws dml_exception
@@ -82,7 +82,7 @@ class filter_translations extends moodle_text_filter {
     /**
      * Apply the filter to the text
      *
-     * @param string $text to be processed by the text
+     * @param string $text to be processed by the filter
      * @param array $options filter options
      * @return string text after processing
      * @see filter_manager::apply_filter_chain()
@@ -240,7 +240,7 @@ class filter_translations extends moodle_text_filter {
             return '';
         }
 
-        // Get the context if of the translation, page if possible, or fall back to system.
+        // Get the context of the translation, page if possible, or fall back to system.
         if (!empty($translation) && !empty($translation->get('contextid'))){
             $contextid = $translation->get('contextid');
         } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
@@ -263,7 +263,7 @@ class filter_translations extends moodle_text_filter {
         // Hash the object as a key to dedupe.
         $translationkey = md5(print_r($obj, true));
 
-        // Check to see if we've already got this translation in the list, if not, add it.
+        // Check to see if we've already got this translation in the list. If not, add it.
         if (!key_exists($translationkey, $registeredtranslations)) {
             $inpagetranslationid++;
             $id = $inpagetranslationid;

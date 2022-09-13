@@ -90,7 +90,7 @@ $showdiff = false;
 $old = false;
 if (!empty($rawtext) && !empty($persistent->get('rawtext')) && $rawtext != $persistent->get('rawtext')) {
     $PAGE->requires->js_call_amd('filter_translations/diffrenderer', 'init',
-        ['changeset' => unifieddiff::generatediff($rawtext, $persistent->get('rawtext'))]);
+        ['changeset' => unifieddiff::generatediff($persistent->get('rawtext'), $rawtext)]);
     $showdiff = true;
     $old = $persistent->get('rawtext');
 }
