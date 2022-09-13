@@ -50,12 +50,12 @@ if ($ADMIN->fulltree) {
         '/blocks/configurable_reports/viewreport.php')
     );
 
-    $settings->add(new admin_setting_configtext('filter_translations/excludelang',
-        get_string('excludelang', 'filter_translations')
-        , get_string('excludelang_desc', 'filter_translations'), '',
-        PARAM_TEXT));
-
     $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configtext('filter_translations/logexcludelang',
+        get_string('logexcludelang', 'filter_translations')
+        , get_string('logexcludelang_desc', 'filter_translations'), '',
+        PARAM_TEXT));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
         get_string('logmissing', 'filter_translations'), '', false));

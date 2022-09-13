@@ -311,7 +311,7 @@ class translator {
         static $skiplanguage = null;
 
         if (!isset($skiplanguage)) {
-            $languagestoskip = get_config('filter_translations', 'excludelang');
+            $languagestoskip = get_config('filter_translations', 'logexcludelang');
             if (!empty($languagestoskip)) {
                 $languagestoskip = explode(",", $languagestoskip);
                 $skiplanguage = in_array($language, $languagestoskip);

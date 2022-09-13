@@ -119,5 +119,15 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022042711, 'filter', 'translations');
     }
 
+    if ($oldversion < 2022042713) {
+        $logexcludelang = get_config('filter_translations', 'excludelang');
+        if (!empty($logexcludelang)) {
+            set_config('logexcludelang', $logexcludelang, 'filter_translations');
+        }
+
+        // Translations savepoint reached.
+        upgrade_plugin_savepoint(true, 2022042713, 'filter', 'translations');
+    }
+
     return true;
 }
