@@ -28,6 +28,7 @@ namespace filter_translations;
 use advanced_testcase;
 use cache_helper;
 use context_system;
+use filter_translations;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -123,6 +124,32 @@ class translatorcaching_test extends advanced_testcase {
 
         $stats = cache_helper::get_stats();
         $this->assertEquals(4, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['hits']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['misses']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['sets']);
+
+        $SESSION->lang = 'en';
+        $this->assertEquals('originaltext', $filter->filter('originaltext'));
+
+        $stats = cache_helper::get_stats();
+        $this->assertEquals(5, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['hits']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['misses']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['sets']);
+
+        filter_translations::toggleinlinestranslation(true);
+
+        $this->assertEquals('originaltext', $filter->filter('originaltext'));
+
+        $stats = cache_helper::get_stats();
+        $this->assertEquals(5, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['hits']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['misses']);
+        $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['sets']);
+
+        filter_translations::toggleinlinestranslation(false);
+
+        $this->assertEquals('originaltext', $filter->filter('originaltext'));
+
+        $stats = cache_helper::get_stats();
+        $this->assertEquals(6, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['hits']);
         $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['misses']);
         $this->assertEquals(3, $stats["filter_translations/translatedtext_4"]["stores"]["default_request"]['sets']);
     }
