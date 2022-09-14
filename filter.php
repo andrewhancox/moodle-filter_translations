@@ -68,12 +68,26 @@ class filter_translations extends moodle_text_filter {
 
         static $skip = null;
 
-        if (!isset($skip)) {
-            $pagestoskip = get_config('filter_translations', 'untranslatedpages');
-            if (!empty($pagestoskip)) {
-                $pagestoskip = preg_split("/\r?\n/", $pagestoskip);
-                $skip = in_array($SCRIPT, $pagestoskip);
-            }
+        if (isset($skip)) {
+            return $skip;
+        }
+
+        $skip = false;
+
+        if (in_array(current_language(),
+            explode(
+                ',',
+                get_config('filter_translations', 'excludelang')
+            ))) {
+            $skip = true;
+        }
+
+        if (!$skip && in_array($SCRIPT,
+            preg_split(
+                "/\r?\n/",
+                get_config('filter_translations', 'untranslatedpages')
+            ))) {
+            $skip = true;
         }
 
         return $skip;
@@ -241,7 +255,7 @@ class filter_translations extends moodle_text_filter {
         }
 
         // Get the context of the translation, page if possible, or fall back to system.
-        if (!empty($translation) && !empty($translation->get('contextid'))){
+        if (!empty($translation) && !empty($translation->get('contextid'))) {
             $contextid = $translation->get('contextid');
         } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
             $contextid = context_system::instance()->id;
@@ -250,15 +264,15 @@ class filter_translations extends moodle_text_filter {
         }
 
         // Build an object containing all the data that the AMD module will need to render the button.
-        $obj = (object) [
-                'rawtext'          => $rawtext,
-                'generatedhash'    => $generatedhash,
-                'foundhash'        => $foundhash,
-                'contextid'    => $contextid,
-                'translationid'    => !empty($translation) ? $translation->get('id') : '',
-                'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'), // is it stale
-                'goodtranslation'  => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'), // is it fresh
-                'notranslation'  => empty($translation), // is it not found
+        $obj = (object)[
+            'rawtext' => $rawtext,
+            'generatedhash' => $generatedhash,
+            'foundhash' => $foundhash,
+            'contextid' => $contextid,
+            'translationid' => !empty($translation) ? $translation->get('id') : '',
+            'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'), // is it stale
+            'goodtranslation' => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'), // is it fresh
+            'notranslation' => empty($translation), // is it not found
         ];
         // Hash the object as a key to dedupe.
         $translationkey = md5(print_r($obj, true));
@@ -272,7 +286,7 @@ class filter_translations extends moodle_text_filter {
             self::$translationstoinject[$id] = $jsobj;
             $registeredtranslations[$translationkey] = $id;
         } else {
-            $id =  $registeredtranslations[$translationkey];
+            $id = $registeredtranslations[$translationkey];
         }
 
         // Return the encoded inpagetranslationid to be appended to the text ready for it to be found by the javascript
@@ -346,7 +360,7 @@ class filter_translations extends moodle_text_filter {
             }
 
             if ($targetlanguage == $CFG->lang) {
-                $has_capability = has_capability('filter/translations:editsitedefaulttranslations',$contextid);
+                $has_capability = has_capability('filter/translations:editsitedefaulttranslations', $contextid);
             } else {
                 $has_capability = has_capability('filter/translations:edittranslations', $contextid);
             }
