@@ -125,6 +125,7 @@ class filter_translations extends moodle_text_filter {
             $cachedtranslatedtext = $translatedtextcache->get($cachekey);
 
             if ($cachedtranslatedtext !== false) {
+                translator::$cachehit++;
                 return $cachedtranslatedtext;
             }
         }

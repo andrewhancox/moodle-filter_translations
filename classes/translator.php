@@ -33,6 +33,13 @@ use filter_translations\translationproviders\languagestringreverse;
  *
  */
 class translator {
+    public static $googletranslatefetches = 0;
+    public static $langstringlookupfetches = 0;
+    public static $existingmanualtranslationsfound = 0;
+    public static $existingautotranslationsfound = 0;
+    public static $translationnotfound = 0;
+    public static $cachehit = 0;
+
     /**
      * Wrapper function to allow overriding in translator_testable.
      * @return \core_string_manager
@@ -85,6 +92,7 @@ class translator {
 
             if (!empty($languagestringtranslation)) {
                 // Got one, use it.
+                self::$langstringlookupfetches++;
                 $translation = $languagestringtranslation;
             } else {
                 // No dice... try google translate.
@@ -92,9 +100,18 @@ class translator {
                 $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
 
                 if (!empty($googletranslation)) {
+                    self::$googletranslatefetches++;
                     $translation = $googletranslation;
                 }
             }
+        } else if (!empty($translation)) {
+            if ($translation->get('translationsource') == translation::SOURCE_MANUAL) {
+                self::$existingmanualtranslationsfound++;
+            } else if ($translation->get('translationsource') == translation::SOURCE_AUTOMATIC) {
+                self::$existingautotranslationsfound++;
+            }
+        } else {
+            self::$translationnotfound++;
         }
 
         // Check to see if there is an issue that needs logging (e.g. missing or stale translation).

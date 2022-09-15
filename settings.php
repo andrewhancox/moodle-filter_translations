@@ -39,6 +39,9 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_heading('performance', get_string('performance', 'admin'), ''));
 
+    $settings->add(new admin_setting_configcheckbox('filter_translations/showperfdata',
+        get_string('showperfdata', 'filter_translations'), '', false));
+
     $options = [];
     foreach ([cache_store::MODE_REQUEST, cache_store::MODE_SESSION, cache_store::MODE_APPLICATION] as $mode) {
         $options[$mode] = get_string('mode_' . $mode, 'cache');

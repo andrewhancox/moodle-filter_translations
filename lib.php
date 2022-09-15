@@ -174,9 +174,20 @@ function filter_translations_after_config() {
  * translation_button.register - do this for all trans
  */
 function filter_translations_before_footer() {
-    global $PAGE, $CFG;
+    global $PAGE, $CFG, $OUTPUT;
 
     require_once("$CFG->dirroot/filter/translations/filter.php");
+
+    if (get_config('filter_translations', 'showperfdata')) {
+        echo $OUTPUT->render_from_template('filter_translations/translationperfdata', (object)[
+            'googletranslatefetches' => \filter_translations\translator::$googletranslatefetches,
+            'langstringlookupfetches' => \filter_translations\translator::$langstringlookupfetches,
+            'existingmanualtranslationsfound' => \filter_translations\translator::$existingmanualtranslationsfound,
+            'existingautotranslationsfound' => \filter_translations\translator::$existingautotranslationsfound,
+            'translationnotfound' => \filter_translations\translator::$translationnotfound,
+            'cachehit' => \filter_translations\translator::$cachehit,
+        ]);
+    }
 
     if (empty(\filter_translations::$translationstoinject)) {
         return;
@@ -192,4 +203,5 @@ function filter_translations_before_footer() {
 
     // findandinjectbuttons - add the actual buttons.
     $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.findandinjectbuttons();});");
+
 }
