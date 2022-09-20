@@ -143,5 +143,25 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022042715, 'filter', 'translations');
     }
 
+    if ($oldversion < 2022042717) {
+        $table = new xmldb_table('filter_translations');
+        $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'lastgeneratedhash']);
+
+        // Conditionally launch add index targetlanguage_issue.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('targetlang_md5key_lastgen', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'md5key', 'lastgeneratedhash']);
+
+        // Conditionally launch drop index targetlanguage_md5key.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Translations savepoint reached.
+        upgrade_plugin_savepoint(true, 2022042717, 'filter', 'translations');
+    }
+
     return true;
 }

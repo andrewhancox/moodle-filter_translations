@@ -180,4 +180,18 @@ class translation extends persistent {
         translation_issue::remove_records_for_translation($this);
         $this->dropfromcache();
     }
+
+    public static function get_records_sql($sql, array $params=null, $limitfrom=0, $limitnum=0) {
+        global $DB;
+
+        $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+
+        // We return class instances.
+        $instances = array();
+        foreach ($records as $key => $record) {
+            $instances[$key] = new static(0, $record);
+        }
+
+        return $instances;
+    }
 }

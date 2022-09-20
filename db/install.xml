@@ -26,7 +26,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="targetlanguage_md5key" UNIQUE="false" FIELDS="targetlanguage, md5key"/>
-        <INDEX NAME="targetlang_md5key_lastgen" UNIQUE="false" FIELDS="targetlanguage, md5key, lastgeneratedhash"/>
+        <INDEX NAME="targetlanguage_lastgen" UNIQUE="false" FIELDS="targetlanguage, lastgeneratedhash"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="filter_translation_issues" COMMENT="">

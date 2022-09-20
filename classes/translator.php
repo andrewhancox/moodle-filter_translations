@@ -278,7 +278,7 @@ class translator {
     private function get_usable_translations($prioritisedlanguages, $generatedhash, $foundhash) {
         global $DB;
 
-        $hashor = ['md5key = :generatedhash', 'lastgeneratedhash = :generatedhash2'];
+        $hashor = ['md5key = :generatedhash'];
         $params = ['generatedhash' => $generatedhash, 'generatedhash2' => $generatedhash];
 
         if (isset($foundhash)) {
@@ -287,11 +287,15 @@ class translator {
         }
         $hashor = implode(' OR ', $hashor);
 
-        list($langsql, $langparam) = $DB->get_in_or_equal($prioritisedlanguages, SQL_PARAMS_NAMED);
+        list($langsql, $langparam) = $DB->get_in_or_equal($prioritisedlanguages, SQL_PARAMS_NAMED, 'lang1');
+        list($langsql2, $langparam2) = $DB->get_in_or_equal($prioritisedlanguages, SQL_PARAMS_NAMED, 'lang2');
 
-        $select = "($hashor) AND targetlanguage $langsql";
-
-        return translation::get_records_select($select, $params + $langparam);
+        return translation::get_records_sql("
+                select * from {filter_translations} where ($hashor) AND targetlanguage $langsql
+                                                      union
+                select * from {filter_translations} where (lastgeneratedhash = :generatedhash2) AND targetlanguage $langsql2
+                ", $params + $langparam + $langparam2
+        );
     }
 
     /**
