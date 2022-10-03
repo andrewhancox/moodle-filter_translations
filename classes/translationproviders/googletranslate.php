@@ -51,6 +51,8 @@ class googletranslate extends translationprovider {
             if (!empty($config->google_backoffonerror) && $config->google_backoffonerror_time < time() - HOURSECS) {
                 $config->google_backoffonerror = false;
                 set_config('google_backoffonerror', false, 'filter_translations');
+                $cache = \filter_translations::cache();
+                $cache->purge();
             }
 
             if (empty($config->google_enable)
