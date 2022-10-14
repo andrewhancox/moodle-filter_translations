@@ -31,6 +31,7 @@ $string['cachingmode_desc'] = 'For sites with a relatively small number of cours
 $string['cachedef_translatedtext_1'] = 'Translated text (Request level)';
 $string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
 $string['cachedef_translatedtext_4'] = 'Translated text (Application level)';
+$string['cannottranslatelang'] = 'Translation of the selected language is disabled.';
 $string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
 php cli/insert_spans.php --mode=listcolumns
