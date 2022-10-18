@@ -109,7 +109,7 @@ class googletranslate extends translationprovider {
 
         $info = $curl->get_info();
         if ($info['http_code'] != 200) {
-            error_log("Error calling Google Translate: \n" . $info['http_code']);
+            error_log("Error calling Google Translate: \n" . $info['http_code'] . "\n" . print_r($curl->get_raw_response(), true));
             $this->backoff();
             return null;
         }
