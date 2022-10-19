@@ -71,6 +71,13 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
 
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
+    // Inform user that language cannot be translated.
+    if (filter_translations::skiptranslations()) {
+        return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
+            'skiptranslations' => true,
+        ]);
+    }
+
     $currentinlinetranslationstate = filter_translations::checkinlinestranslation();
     $inlinetransationtate = optional_param('inlinetransationtate', null, PARAM_BOOL);
 
@@ -140,6 +147,7 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'inlinetranslationstate' => $currentinlinetranslationstate,
         'alltranslationsurl' => $alltranslationsurl->out(false),
         'translateall' => (has_capability('filter/translations:editsitedefaulttranslations', $context)) ? true : false,
+        'skiptranslations' => false,
     ]);
 }
 
