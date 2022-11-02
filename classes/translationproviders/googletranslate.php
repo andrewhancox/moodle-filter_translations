@@ -91,6 +91,22 @@ class googletranslate extends translationprovider {
         $targetlanguage = str_replace('_wp', '', $targetlanguage);
         $curl = new curl();
 
+        // Look for any base64 encoded files, create an md5 of their content,
+        // use the md5 as a placeholder while we send the text to google translate.
+        $base64s = [];
+        if (strpos($text, 'base64') !== false) {
+            $text = preg_replace_callback(
+                '/(data:[^;]+\/[^;]+;base64)([^"]+)/i',
+                function ($m) use (&$base64s) {
+                    $md5 = md5($m[2]);
+                    $base64s[$md5] = $m[2];
+
+                    return $m[1] . $md5;
+                },
+                $text
+            );
+        }
+
         $params = [
                 'target' => $targetlanguage,
                 'key'    => $config->google_apikey,
@@ -120,7 +136,14 @@ class googletranslate extends translationprovider {
             return null;
         }
 
-        return $resp->data->translations[0]->translatedText;
+        $text = $resp->data->translations[0]->translatedText;
+
+        // Swap the base 64 encoded images back in.
+        foreach ($base64s as $md5 => $base64) {
+            $text = str_replace($md5, $base64, $text);
+        }
+
+        return $text;
     }
 
     /**
