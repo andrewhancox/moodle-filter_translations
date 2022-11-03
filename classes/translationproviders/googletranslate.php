@@ -91,6 +91,8 @@ class googletranslate extends translationprovider {
         $targetlanguage = str_replace('_wp', '', $targetlanguage);
         $curl = new curl();
 
+        $curl->setHeader(array('Content-Type: application/json'));
+
         // Look for any base64 encoded files, create an md5 of their content,
         // use the md5 as a placeholder while we send the text to google translate.
         $base64s = [];
@@ -107,16 +109,13 @@ class googletranslate extends translationprovider {
             );
         }
 
-        $params = [
-                'target' => $targetlanguage,
-                'key'    => $config->google_apikey,
-                'q'      => $text
-        ];
-
-        $url = new moodle_url($config->google_apiendpoint, $params);
+        $url = new moodle_url($config->google_apiendpoint, ['key' => $config->google_apikey]);
 
         try {
-            $resp = $curl->post($url->out(false));
+            $resp = $curl->post($url->out(false), json_encode([
+                'target' => $targetlanguage,
+                'q'      => $text
+            ]));
         } catch (\Exception $ex) {
             error_log("Error calling Google Translate: \n" . $ex->getMessage());
             $this->backoff();
