@@ -37,6 +37,8 @@ $download = optional_param('download', '', PARAM_ALPHA);
 
 $context = context_system::instance();
 
+require_login();
+
 require_capability('filter/translations:edittranslations', $context);
 
 $PAGE->set_context($context);

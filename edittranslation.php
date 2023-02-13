@@ -50,6 +50,8 @@ if (empty($contextid)) {
     $context = context::instance_by_id($contextid);
 }
 
+require_login();
+
 require_capability('filter/translations:edittranslations', $context);
 
 $url = new moodle_url('/filter/translations/edittranslation.php');
