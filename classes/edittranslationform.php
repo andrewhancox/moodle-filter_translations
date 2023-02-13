@@ -173,7 +173,7 @@ class edittranslationform extends persistent {
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
                 break;
             default:
-                print_error('Unknown form type');
+                throw new \moodle_exception('unknownformtype');
         }
         $mform->addElement('html', "</div>");
 

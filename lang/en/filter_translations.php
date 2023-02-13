@@ -122,6 +122,7 @@ $string['translations:deletetranslations'] = 'Delete translations';
 $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
 $string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
+$string['unknownformtype'] = 'Unknown form type';
 $string['untranslatedpages'] = 'Pages to leave untranslated';
 $string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
