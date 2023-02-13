@@ -35,15 +35,15 @@ class translation_created extends translation_base {
         parent::init();
         $this->data['crud'] = 'c';
     }
-    
+
     public static function get_name() {
         return get_string('translationcreated', 'filter_translations');
     }
-    
+
     public function get_description() {
         return "The user with id '$this->userid' created the translation with id '$this->objectid'.";
     }
-    
+
     public function get_url() {
         return new moodle_url('/mod/assign/edittranslation.php', array('id' => $this->objectid));
     }

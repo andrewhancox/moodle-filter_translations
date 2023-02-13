@@ -24,8 +24,6 @@
  */
 namespace filter_translations;
 
-defined('MOODLE_INTERNAL') || die();
-
 class events_test extends \advanced_testcase {
 
     public function setUp(): void {
@@ -49,7 +47,6 @@ class events_test extends \advanced_testcase {
                 'substitutetext'    => 'some text'
         ]);
         $translation->save();
-
 
         $translation->set('substitutetext', 'changed text');
         $translation->save();

@@ -268,9 +268,9 @@ class managetranslations_table extends table_sql {
         global $PAGE;
 
         // Begin the form.
-        echo html_writer::start_tag('form', array('method'=>'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php'));
-        echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
-        echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'returnurl', 'value'=> $PAGE->url));
+        echo html_writer::start_tag('form', array('method' => 'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php'));
+        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'returnurl', 'value' => $PAGE->url));
     }
 
     /**
@@ -292,7 +292,7 @@ class managetranslations_table extends table_sql {
     protected function submit_buttons() {
         global $PAGE;
         if (has_capability('filter/translations:bulkdeletetranslations', $PAGE->context)) {
-            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=> 'bulkdelete'));
+            echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'bulkdelete'));
 
             $deletebuttonparams = [
                 'type'  => 'submit',

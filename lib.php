@@ -201,15 +201,15 @@ function filter_translations_before_footer() {
         return;
     }
 
-    // init - register click handlers for the button
+    // Init - register click handlers for the button.
     $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
 
-    // register - the objects required to inject and power the buttons.
+    // Register - the objects required to inject and power the buttons.
     foreach (\filter_translations::$translationstoinject as $id => $jsobj) {
         $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
     }
 
-    // findandinjectbuttons - add the actual buttons.
+    // Find and inject buttons - add the actual buttons.
     $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.findandinjectbuttons();});");
 
 }

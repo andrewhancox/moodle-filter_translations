@@ -159,8 +159,9 @@ class managetranslationissues_table extends table_sql {
             $wheres[] = '1=1';
         }
 
-        $this->set_sql('ti.id, ti.issue, ti.url, ti.targetlanguage, ti.rawtext, ti.contextid, ti.generatedhash, ti.md5key, ti.translationid, t.substitutetext',
-            '{filter_translation_issues} ti left join {filter_translations} t on ti.translationid = t.id',
+        $this->set_sql('ti.id, ti.issue, ti.url, ti.targetlanguage, ti.rawtext, ti.contextid, ti.generatedhash, ti.md5key,
+            ti.translationid, t.substitutetext',
+            '{filter_translation_issues} ti LEFT JOIN {filter_translations} t on ti.translationid = t.id',
             implode(' AND ', $wheres),
             $params
         );
@@ -308,9 +309,9 @@ class managetranslationissues_table extends table_sql {
         global $PAGE;
 
         // Begin the form.
-        echo html_writer::start_tag('form', array('method'=>'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php'));
-        echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
-        echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'returnurl', 'value'=> $PAGE->url));
+        echo html_writer::start_tag('form', array('method' => 'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php'));
+        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'returnurl', 'value' => $PAGE->url));
     }
 
     /**
@@ -332,7 +333,7 @@ class managetranslationissues_table extends table_sql {
     protected function submit_buttons() {
         global $PAGE;
         if (has_capability('filter/translations:bulkdeletetranslations', $PAGE->context)) {
-            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=> 'deleteissues'));
+            echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'deleteissues'));
 
             $deletebuttonparams = [
                 'type'  => 'submit',

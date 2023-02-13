@@ -132,7 +132,8 @@ function xmldb_filter_translations_upgrade($oldversion) {
 
     if ($oldversion < 2022042715) {
         $table = new xmldb_table('filter_translations');
-        $index = new xmldb_index('targetlang_md5key_lastgen', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'md5key', 'lastgeneratedhash']);
+        $index = new xmldb_index('targetlang_md5key_lastgen', XMLDB_INDEX_NOTUNIQUE,
+            ['targetlanguage', 'md5key', 'lastgeneratedhash']);
 
         // Conditionally launch add index targetlanguage_issue.
         if (!$dbman->index_exists($table, $index)) {
@@ -145,14 +146,16 @@ function xmldb_filter_translations_upgrade($oldversion) {
 
     if ($oldversion < 2022042717) {
         $table = new xmldb_table('filter_translations');
-        $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'lastgeneratedhash']);
+        $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE,
+            ['targetlanguage', 'lastgeneratedhash']);
 
         // Conditionally launch add index targetlanguage_issue.
         if (!$dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
 
-        $index = new xmldb_index('targetlang_md5key_lastgen', XMLDB_INDEX_NOTUNIQUE, ['targetlanguage', 'md5key', 'lastgeneratedhash']);
+        $index = new xmldb_index('targetlang_md5key_lastgen', XMLDB_INDEX_NOTUNIQUE,
+            ['targetlanguage', 'md5key', 'lastgeneratedhash']);
 
         // Conditionally launch drop index targetlanguage_md5key.
         if ($dbman->index_exists($table, $index)) {

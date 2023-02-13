@@ -52,7 +52,8 @@ class edittranslationform extends persistent {
      * Fileds in the form that do not correspond to properties of the persistent class.
      * @var string[]
      */
-    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
+    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format',
+        'substitutetexttrust', 'returnurl', 'deletebutton'];
 
     /**
      * Build the form.
@@ -62,7 +63,7 @@ class edittranslationform extends persistent {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    function definition() {
+    public function definition() {
         global $PAGE, $CFG;
 
         $mform = $this->_form;
@@ -102,7 +103,7 @@ class edittranslationform extends persistent {
 
         $mform->addElement('html', '<ul class="nav nav-tabs" id="" role="tablist">');
 
-        // Build a bunch of tab links:
+        // Build a bunch of tab links.
 
         // View the raw source text.
         $this->addtablink($mform, 'rawtext', get_string('rawtext', 'filter_translations'), true);
@@ -215,9 +216,8 @@ class edittranslationform extends persistent {
                 $itemid = null;
             }
 
-            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_text_editoroptions(), context_system::instance(),
-                'filter_translations', 'substitutetext',
-                $itemid);
+            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_text_editoroptions(),
+                context_system::instance(), 'filter_translations', 'substitutetext', $itemid);
         } else {
             $data->substitutetext_plain = $data->substitutetext['text'];
         }
@@ -242,11 +242,13 @@ class edittranslationform extends persistent {
             $selectedariaattr = 'false';
             $selectedclass = '';
         }
-        $mform->addElement('html', '<li class="nav-item">
-                                                    <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name . '" role="tab" aria-selected="' . $selectedariaattr . '">
-                                                        <h4>' . $label . '</h4>
-                                                    </a>
-                                                </li>');
+        $mform->addElement('html',
+            '<li class="nav-item">
+            <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name .
+            '" role="tab" aria-selected="' . $selectedariaattr . '">
+            <h4>' . $label . '</h4>
+            </a>
+            </li>');
     }
 
     /**
@@ -264,7 +266,9 @@ class edittranslationform extends persistent {
         } else {
             $selectedattr = '';
         }
-        $mform->addElement('html', '<div class="tab-pane fade ' . $selectedattr . '" id="' . $name . '" role="tabpanel" aria-labelledby="' . $name . '-tab">');
+        $mform->addElement('html',
+            '<div class="tab-pane fade ' . $selectedattr . '" id="' . $name . '" role="tabpanel" aria-labelledby="' . $name .
+            '-tab">');
         $mform->addElement('html', $contents);
         $mform->addElement('html', "</div>");
     }

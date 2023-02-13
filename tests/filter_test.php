@@ -28,8 +28,6 @@ namespace filter_translations;
 use advanced_testcase;
 use context_system;
 
-defined('MOODLE_INTERNAL') || die();
-
 class filter_test extends advanced_testcase {
 
     public function setUp(): void {
@@ -78,10 +76,18 @@ class filter_test extends advanced_testcase {
         $kidstranslation->save();
 
         $SESSION->lang = 'de';
-        $this->assertEquals('some german text', format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_MOODLE, ['noclean' => true, 'trusted' => true]));
+        $this->assertEquals(
+            'some german text',
+            format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_MOODLE,
+                ['noclean' => true, 'trusted' => true])
+        );
 
         $SESSION->lang = 'sp';
-        $this->assertEquals('some spanish text', format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_HTML, ['noclean' => true, 'trusted' => true]));
+        $this->assertEquals(
+            'some spanish text',
+            format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_HTML,
+                ['noclean' => true, 'trusted' => true])
+        );
     }
 
     public function test_findandremovehash() {

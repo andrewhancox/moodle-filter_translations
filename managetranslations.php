@@ -65,7 +65,7 @@ $data->substitutetext = $substitutetext;
 $data->targetlanguage = $targetlanguage;
 $data->hash = $hash;
 
-if($usermodified > 0) {
+if ($usermodified > 0) {
     $data->usermodified = $usermodified;
 }
 

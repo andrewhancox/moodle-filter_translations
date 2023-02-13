@@ -27,8 +27,6 @@ namespace filter_translations;
 use advanced_testcase;
 use testable_lang_installer;
 
-defined('MOODLE_INTERNAL') || die();
-
 class languagestrings_test extends advanced_testcase {
     public function setUp(): void {
         parent::setUp();
