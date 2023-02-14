@@ -163,14 +163,17 @@ class edittranslationform extends persistent {
                 $mform->addElement('editor', 'substitutetext_editor', get_string('substitutetext', 'filter_translations'), null,
                     $this->get_substitute_text_editoroptions());
                 $mform->setType('substitutetext_editor', PARAM_RAW);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             case self::FORMTYPE_PLAINMULTILINE:
                 $mform->addElement('textarea', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'));
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             case self::FORMTYPE_PLAIN:
                 $mform->addElement('text', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'), 'size="48"');
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             default:
                 throw new \moodle_exception('unknownformtype');
@@ -298,5 +301,26 @@ class edittranslationform extends persistent {
             'noclean' => true,
             'context' => $context];
         return $editoroptions;
+    }
+
+    /**
+     * Extra validation.
+     *
+     * @param  stdClass $data Data to validate.
+     * @param  array $files Array of files.
+     * @param  array $errors Currently reported errors.
+     * @return array of additional errors, or overridden errors.
+     */
+    protected function extra_validation($data, $files, array &$errors) {
+        $newerrors = array();
+
+        if ((isset($data->substitutetext_plain) && $data->rawtext === $data->substitutetext_plain) ||
+                (isset($data->substitutetext_editor) && $data->rawtext === $data->substitutetext_editor['text'])) {
+            if ($data->sameasrawtext == "0") {
+                $newerrors['sameasrawtext'] = get_string('sameasrawcontentmessage', 'filter_translations');
+            }
+        }
+
+        return $newerrors;
     }
 }
