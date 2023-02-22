@@ -52,6 +52,26 @@ $string['clihelptext_migrate_filter_fulltranslate'] = 'This tool will copy trans
 Any entries previously copied using this tool will be duplicated.
 To execute the task run this command again specifying --confirm e.g:
 php cli/migrate_filter_fulltranslate.php --confirm';
+$string['clihelptext_removeduplicatehashes'] = 'This tool will find and remove duplicate translation hashes found in each specified table/field. USE WITH EXTREME CARE.
+To execute the task run this command again specifying a mode e.g:
+php cli/remove_duplicate_hashes.php --mode=listcolumns
+
+Valid modes are:
+process - Actually do it...
+dryrun - See how many records will be affected. It does not write any changes to the database.
+listcolumns - List the tables and columns that will be impacted
+
+Suggested use is to list out the columns that will could be modified:
+php filter/translations/cli/remove_duplicate_hashes.php --mode=listcolumns > /Users/moodleadmin/cols.json
+
+Edit the file using a text editor to remove any that should be ignored.
+Then run to process those columns:
+
+php filter/translations/cli/remove_duplicate_hashes.php --mode=process --file=/Users/moodleadmin/cols.json
+
+You can do a dryrun to check how many records will be affected when this process runs.
+php filter/translations/cli/remove_duplicate_hashes.php --mode=dryrun --file=/Users/moodleadmin/cols.json
+';
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
 $string['context'] = 'Context';
 $string['createtranslation'] = 'Create translation';
