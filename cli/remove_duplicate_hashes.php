@@ -121,15 +121,18 @@ if ($options['mode'] == 'listcolumns') {
                     "SELECT hash, COUNT(*) " .
                     "FROM ( " .
                     "SELECT mp.id, " .
-                    "REGEXP_SUBSTR({$column}, '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>') AS hash " .
+                    "SUBSTRING({$column} from POSITION('<span data-translationhash=' in {$column}) for 69) AS hash " .
                     "FROM {{$table}} mp " .
+                    "WHERE {$column} REGEXP '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>' " .
                 ") AS Q1 " .
                 "GROUP BY hash " .
                 "HAVING count(*) > 1) AS Q2, " .
                 "( " .
                     "SELECT mp.id, " .
-                    "REGEXP_SUBSTR({$column}, '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>') AS hash " .
-                "FROM {{$table}} mp) AS Q3 " .
+                    "SUBSTRING({$column} from POSITION('<span data-translationhash=' in {$column}) for 69) AS hash " .
+                "FROM {{$table}} mp " .
+                "WHERE {$column} REGEXP '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>' " .
+                ") AS Q3 " .
                 "WHERE Q2.hash = Q3.hash " .
                 "AND Q2.hash <> '' " .
                 "ORDER BY Q3.hash";
