@@ -74,7 +74,8 @@ if (empty($id)) {
     $persistent->set('targetlanguage', $targetlanguage);
     $persistent->set('substitutetext', $rawtext);
 } else {
-    $persistent = new translation($id);
+    $persistent = new translation($id); // Load translation record for this id.
+    $persistent->set('md5key', $foundhash); // Use the foundhash.
     $url->param('id', $id);
 
     if ($persistent->get('targetlanguage') == $CFG->lang) {
