@@ -79,14 +79,14 @@ class managetranslations_table extends table_sql {
             $columns[] = 'select';
         }
 
-        $columns += ['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'usermodified'];
-        $headers += [
+        $columns = array_merge($columns, ['md5key', 'targetlanguage', 'rawtext', 'substitutetext', 'usermodified']);
+        $headers = array_merge($headers, [
             get_string('md5key', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
             get_string('substitutetext', 'filter_translations'),
             get_string('translatedby', 'filter_translations')
-        ];
+        ]);
 
         if (empty($download)) {
             $columns[] = 'actions';

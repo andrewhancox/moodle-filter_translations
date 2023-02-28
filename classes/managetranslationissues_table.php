@@ -80,15 +80,15 @@ class managetranslationissues_table extends table_sql {
             $columns[] = 'select';
         }
 
-        $columns += ['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'substitutetext'];
-        $headers += [
+        $columns = array_merge($columns, ['issue', 'context', 'url', 'targetlanguage', 'rawtext', 'substitutetext']);
+        $headers = array_merge($headers, [
             get_string('issue', 'filter_translations'),
             get_string('context', 'filter_translations'),
             get_string('url', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
             get_string('substitutetext', 'filter_translations')
-        ];
+        ]);
 
         if (empty($download)) {
             $columns[] = 'actions';
