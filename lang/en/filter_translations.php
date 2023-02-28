@@ -32,6 +32,26 @@ $string['cachedef_translatedtext_1'] = 'Translated text (Request level)';
 $string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
 $string['cachedef_translatedtext_4'] = 'Translated text (Application level)';
 $string['cannottranslatelang'] = 'Translation in the selected language is disabled.';
+$string['clihelptext_copytranslations'] = 'This tool will copy over translations matching the hash of a content and save it under the found hash of the content for each specified table/field. USE WITH EXTREME CARE.
+To execute the task run this command again specifying a mode e.g:
+php cli/copy_translations.php --mode=listcolumns
+
+Valid modes are:
+process - Actually do it...
+dryrun - See how many records will be affected. It does not write any changes to the database.
+listcolumns - List the tables and columns that will be impacted
+
+Suggested use is to list out the columns that will could be modified:
+php filter/translations/cli/copy_translations.php --mode=listcolumns > /Users/moodleadmin/cols.json
+
+Edit the file using a text editor to remove any that should be ignored.
+Then run to process those columns:
+
+php filter/translations/cli/copy_translations.php --mode=process --file=/Users/moodleadmin/cols.json
+
+You can do a dryrun to check how many records will be affected when this process runs.
+php filter/translations/cli/copy_translations.php --mode=dryrun --file=/Users/moodleadmin/cols.json
+';
 $string['clihelptext_insertspans'] = 'This tool will append translation hashes to all rich text fields found in the database, USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
 php cli/insert_spans.php --mode=listcolumns
