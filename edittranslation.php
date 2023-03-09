@@ -127,11 +127,21 @@ if ($data = $form->get_data()) {
         redirect($returnurl);
     }
 
+    $persistent->from_record($form->filter_data_for_persistent($data));
+
     if ($formtype !== edittranslationform::FORMTYPE_RICH) {
         $persistent->set('substitutetext', $data->substitutetext_plain);
     }
 
-    $persistent->from_record($form->filter_data_for_persistent($data));
+    if ($formtype == edittranslationform::FORMTYPE_RICH) {
+        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_text_editoroptions(), $context,
+            'filter_translations',
+            'substitutetext', $persistent->get('id'));
+
+        $persistent->set('substitutetext', $data->substitutetext);
+        $persistent->set('substitutetextformat', $data->substitutetextformat);
+        // $persistent->update();
+    }
 
     // Before saving, ensure we are not overwriting existing translation.
     $record = $DB->get_record('filter_translations',
@@ -147,16 +157,6 @@ if ($data = $form->get_data()) {
         $persistent->update();
     } else {
         notice(get_string('translationalreadyexists', 'filter_translations', $targetlanguage), $returnurl);
-    }
-
-    if ($formtype == edittranslationform::FORMTYPE_RICH) {
-        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_text_editoroptions(), $context,
-            'filter_translations',
-            'substitutetext', $persistent->get('id'));
-
-        $persistent->set('substitutetext', $data->substitutetext);
-        $persistent->set('substitutetextformat', $data->substitutetextformat);
-        $persistent->update();
     }
 
     redirect($returnurl);
