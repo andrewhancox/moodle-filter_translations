@@ -166,5 +166,42 @@ function xmldb_filter_translations_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022042717, 'filter', 'translations');
     }
 
+    if ($oldversion < 2023031002) {
+        $table = new xmldb_table('filter_translations_history');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('md5key', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
+        $table->add_field('lastgeneratedhash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
+        $table->add_field('targetlanguage', XMLDB_TYPE_CHAR, '30', null, XMLDB_NOTNULL);
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('rawtext', XMLDB_TYPE_TEXT);
+        $table->add_field('substitutetext', XMLDB_TYPE_TEXT);
+        $table->add_field('substitutetextformat', XMLDB_TYPE_INTEGER, '1', null, null);
+        $table->add_field('translationsource', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('prevlastgeneratedhash', XMLDB_TYPE_CHAR, '32', null, null);
+        $table->add_field('prevrawtext', XMLDB_TYPE_TEXT);
+        $table->add_field('prevsubstitutetext', XMLDB_TYPE_TEXT);
+        $table->add_field('crud', XMLDB_TYPE_CHAR, '1', null, XMLDB_NOTNULL);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+
+            // Add indexes.
+            $index = new xmldb_index('targetlanguage_md5key', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'md5key']);
+            $dbman->add_index($table, $index);
+
+            $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'lastgeneratedhash']);
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2023031002, 'filter', 'translations');
+    }
+
     return true;
 }

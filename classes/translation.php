@@ -146,6 +146,10 @@ class translation extends persistent {
         parent::after_create();
         translation_created::trigger_from_translation($this);
         translation_issue::remove_records_for_translation($this);
+
+        // Add to translations history table.
+        $this->add_to_history('c');
+
         $this->dropfromcache();
     }
 
@@ -161,6 +165,10 @@ class translation extends persistent {
     protected function after_delete($result) {
         parent::after_delete($result);
         translation_deleted::trigger_from_translation($this->previous);
+
+        // Add to translations history table.
+        $this->add_to_history('d');
+
         $this->dropfromcache();
     }
 
@@ -178,6 +186,10 @@ class translation extends persistent {
         parent::after_update($result);
         translation_updated::trigger_from_translation($this, $this->previous);
         translation_issue::remove_records_for_translation($this);
+
+        // Add to translations history table.
+        $this->add_to_history('u');
+
         $this->dropfromcache();
     }
 
@@ -193,5 +205,37 @@ class translation extends persistent {
         }
 
         return $instances;
+    }
+
+    /**
+     * Add translation changes to a history table
+     *
+     * @param string $crud CRUD operation: c - create, u - update or d - delete
+     * @return void
+     */
+    private function add_to_history(string $crud) {
+        global $DB;
+
+        $record = new \stdClass();
+        $record->md5key = $this->get('md5key');
+        $record->lastgeneratedhash = $this->get('lastgeneratedhash');
+        $record->targetlanguage = $this->get('targetlanguage');
+        $record->contextid = $this->get('contextid');
+        $record->rawtext = $this->get('rawtext');
+        $record->substitutetext = $this->get('substitutetext');
+        $record->substitutetextformat = $this->get('substitutetextformat');
+        $record->translationsource = $this->get('translationsource');
+        $record->usermodified = $this->get('usermodified');
+        $record->timecreated = $this->get('timecreated');
+        $record->timemodified = $this->get('timemodified');
+        $record->crud = $crud;
+
+        if ($crud == 'u') {
+            $record->prevlastgeneratedhash = $this->previous->get('lastgeneratedhash');
+            $record->prevrawtext = $this->previous->get('rawtext');;
+            $record->prevsubstitutetext = $this->previous->get('substitutetext');;
+        }
+
+        $DB->insert_record('filter_translations_history', $record);
     }
 }
