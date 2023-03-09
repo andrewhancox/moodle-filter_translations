@@ -123,6 +123,7 @@ $string['logdebounce'] = 'Debounce log duration';
 $string['logging'] = 'Logging';
 $string['logexcludelang'] = 'Languages to exclude from log';
 $string['logexcludelang_desc'] = 'List of languages to skip from logging into missing translations table.';
+$string['loghistory'] = 'Keep translation history';
 $string['logmissing'] = 'Log missing translations';
 $string['logstale'] = 'Log stale translations';
 $string['managetranslationissues'] = 'Manage pending translations';

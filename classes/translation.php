@@ -147,8 +147,11 @@ class translation extends persistent {
         translation_created::trigger_from_translation($this);
         translation_issue::remove_records_for_translation($this);
 
+        $enablehistory = get_config('filter_translations', 'loghistory');
         // Add to translations history table.
-        $this->add_to_history('c');
+        if ($enablehistory) {
+            $this->add_to_history('c');
+        }
 
         $this->dropfromcache();
     }
@@ -166,8 +169,11 @@ class translation extends persistent {
         parent::after_delete($result);
         translation_deleted::trigger_from_translation($this->previous);
 
+        $enablehistory = get_config('filter_translations', 'loghistory');
         // Add to translations history table.
-        $this->add_to_history('d');
+        if ($enablehistory) {
+            $this->add_to_history('d');
+        }
 
         $this->dropfromcache();
     }
@@ -187,8 +193,11 @@ class translation extends persistent {
         translation_updated::trigger_from_translation($this, $this->previous);
         translation_issue::remove_records_for_translation($this);
 
+        $enablehistory = get_config('filter_translations', 'loghistory');
         // Add to translations history table.
-        $this->add_to_history('u');
+        if ($enablehistory) {
+            $this->add_to_history('u');
+        }
 
         $this->dropfromcache();
     }

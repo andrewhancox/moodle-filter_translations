@@ -68,6 +68,9 @@ if ($ADMIN->fulltree) {
         get_string('logexcludelang_desc', 'filter_translations'), [],
         $listoftranslations));
 
+    $settings->add(new admin_setting_configcheckbox('filter_translations/loghistory',
+        get_string('loghistory', 'filter_translations'), '', false));
+
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
         get_string('logmissing', 'filter_translations'), '', false));
 
