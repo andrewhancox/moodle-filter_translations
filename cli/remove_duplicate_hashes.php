@@ -98,8 +98,8 @@ if ($options['mode'] == 'listcolumns') {
             cli_writeln("Started processing column: $table -> $column");
 
             // TODO: Use cross-platform SQL, if possible.
-            // 'pgsql', 'mariadb', 'mysqli', 'auroramysql', 'sqlsrv' or 'oci'
-            if ($CFG->dbtype == 'pgsql') {
+            // DB family options: 'pgsql', 'mariadb', 'mysqli', 'auroramysql', 'sqlsrv' or 'oci'.
+            if ($DB->get_dbfamily() == 'pgsql') {
                 $sql = "SELECT Q3.* FROM (" .
                     "SELECT hash, COUNT(*) " .
                     "FROM ( " .
@@ -148,7 +148,7 @@ if ($options['mode'] == 'listcolumns') {
                     continue; // Hash cannot be empty.
                 }
                 // Extract hash only.
-                if ($CFG->dbtype == 'pgsql') {
+                if ($DB->get_dbfamily() == 'pgsql') {
                     // Hash is enclosed in {HASH_VALUE_32_CHARS}.
                     $hash = substr($row->hash, 1, 32);
                 } else {
