@@ -42,8 +42,6 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
-        mtrace('... -->--> Running remove_duplicate_hashes scheduled task...');
-
         // Get the columns JSON string.
         $json = get_config('filter_translations', 'columndefinition');
 
