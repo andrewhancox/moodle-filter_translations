@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package filter_translations
- * @author Andrew Hancox <andrewdchancox@googlemail.com>
- * @author Open Source Learning <enquiries@opensourcelearning.co.uk>
- * @link https://opensourcelearning.co.uk
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright 2021, Andrew Hancox
+ * Task schedule configuration for filter_translations.
+ *
+ * @package     filter_translations
+ * @copyright   2023 Rajneel Totaram <rajneel.totaram@moodle.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023031005;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061506;        // Requires this Moodle version.
-$plugin->component = 'filter_translations'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
+$tasks = [
+    [
+        'classname' => 'filter_translations\task\replace_duplicate_hashes',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '*/12',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+];

@@ -92,7 +92,18 @@ php filter/translations/cli/remove_duplicate_hashes.php --mode=process --file=/U
 You can do a dryrun to check how many records will be affected when this process runs.
 php filter/translations/cli/remove_duplicate_hashes.php --mode=dryrun --file=/Users/moodleadmin/cols.json
 ';
+$string['columndefinition'] = 'Tables/columns to check';
+$string['columndefinition_desc'] = 'Enter the tables/columns to check in JSON format, eg:
+    {
+        "label": [
+            "intro"
+        ]
+    }<br>
+    You can get the table/columns list by running:<br>
+    php filter/translations/cli/remove_duplicate_hashes.php --mode=listcolumns
+';
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
+$string['columndefinitionjsonerror'] = 'Invalid column definition json';
 $string['context'] = 'Context';
 $string['createtranslation'] = 'Create translation';
 $string['current'] = 'Current';
@@ -136,8 +147,10 @@ $string['pluginname'] = 'Content translations';
 $string['privacy:metadata'] = 'The content translations plugin does not store any personal data.';
 $string['rawtext'] = 'Original content';
 $string['rawhtml'] = 'Original HTML';
+$string['replace_duplicate_hashes'] = 'Replace duplicate hashes';
 $string['sameasrawcontent'] = 'Same text as original content';
 $string['sameasrawcontentmessage'] = 'Translated content is the same as original content';
+$string['scheduledtasks'] = 'Scheduled tasks';
 $string['showperfdata'] = 'Show performance data in footer';
 $string['staletranslation'] = 'Translation was created based on different source text. Please update the translation.';
 $string['startinlinetranslation'] = 'Start in-line translation';
@@ -166,6 +179,7 @@ $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
 $string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
 $string['unknownformtype'] = 'Unknown form type';
+$string['unknowncolumn'] = 'Unknown column or table';
 $string['untranslatedpages'] = 'Pages to leave untranslated';
 $string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
