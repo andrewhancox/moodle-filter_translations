@@ -170,12 +170,14 @@ class copy_translations extends \core\task\scheduled_task {
                     }
 
                     // Copy over any translations not recorded under the found hash of this content.
-                    if (!empty($generatedhashtranslations)) {
-                        mtrace("foundhash: $foundhash, content hash: $generatedhash");
-                    }
-
+                    $shouldprint = true;
                     foreach ($generatedhashtranslations as $tr) {
                         if (!isset($foundhashtranslations[$tr->targetlanguage])) {
+                            if ($shouldprint) {
+                                cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
+                                $shouldprint = false;
+                            }
+
                             mtrace("  + copying translation from md5key: $tr->md5key, lang: $tr->targetlanguage");
 
                             $record = $tr;

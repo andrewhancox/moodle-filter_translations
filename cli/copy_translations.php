@@ -171,12 +171,14 @@ if ($options['mode'] == 'listcolumns') {
                 }
 
                 // Copy over any translations not recorded under the found hash of this content.
-                if (!empty($generatedhashtranslations)) {
-                    cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
-                }
-
+                $shouldprint = true;
                 foreach ($generatedhashtranslations as $tr) {
                     if (!isset($foundhashtranslations[$tr->targetlanguage])) {
+                        if ($shouldprint) {
+                            cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
+                            $shouldprint = false;
+                        }
+
                         cli_writeln("  + copying translation from md5key: $tr->md5key, lang: $tr->targetlanguage");
 
                         if ($options['mode'] == 'process') {
