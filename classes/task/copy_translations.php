@@ -86,6 +86,7 @@ class copy_translations extends \core\task\scheduled_task {
             }
         }
 
+        $languages = get_string_manager()->get_list_of_translations(); // Languages in used in the site.
         $anyexception = null;
         $transaction = $DB->start_delegated_transaction();
         foreach ($columnsbytabletoprocess as $table => $columns) {
@@ -182,7 +183,7 @@ class copy_translations extends \core\task\scheduled_task {
                     // Copy over any translations not recorded under the found hash of this content.
                     $shouldprint = true;
                     foreach ($generatedhashtranslations as $tr) {
-                        if (!isset($foundhashtranslations[$tr->targetlanguage])) {
+                        if (!isset($foundhashtranslations[$tr->targetlanguage]) && isset($languages[$tr->targetlanguage])) {
                             if ($shouldprint) {
                                 cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
                                 $shouldprint = false;
