@@ -34,4 +34,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        'classname' => 'filter_translations\task\copy_translations',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '*/8', // 3 times a day.
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];

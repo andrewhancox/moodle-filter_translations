@@ -105,6 +105,7 @@ $string['columndefinition_desc'] = 'Enter the tables/columns to check in JSON fo
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
 $string['columndefinitionjsonerror'] = 'Invalid column definition json';
 $string['context'] = 'Context';
+$string['copytranslations'] = 'Copy translations';
 $string['createtranslation'] = 'Create translation';
 $string['current'] = 'Current';
 $string['deleteissuesconfirmation'] = 'Are you absolutely sure you want to completely delete these entires?';
