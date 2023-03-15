@@ -31,6 +31,8 @@ use filter_translations;
  * Copy translations scheduled task.
  */
 class copy_translations extends \core\task\scheduled_task {
+    /** @var int the maximum length of time one instance of this task will run. */
+    const TIME_LIMIT = 900;
 
     /**
      * Return the task's name as shown in admin screens.
@@ -46,6 +48,8 @@ class copy_translations extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB;
+
+        $stoptime = time() + self::TIME_LIMIT; // Time to stop execution.
 
         // Get the columns JSON string.
         $json = get_config('filter_translations', 'columndefinition');
@@ -86,6 +90,12 @@ class copy_translations extends \core\task\scheduled_task {
         $transaction = $DB->start_delegated_transaction();
         foreach ($columnsbytabletoprocess as $table => $columns) {
             $filter = new filter_translations(context_system::instance(), []);
+
+            if (time() >= $stoptime) {
+                mtrace("This task has been running for more than " .
+                        format_time(self::TIME_LIMIT) . ", so stopping this execution.");
+                break;
+            }
 
             mtrace("Started processing table: $table");
 

@@ -26,6 +26,8 @@ namespace filter_translations\task;
  * Replace duplicate translation hashes scheduled task.
  */
 class replace_duplicate_hashes extends \core\task\scheduled_task {
+    /** @var int the maximum length of time one instance of this task will run. */
+    const TIME_LIMIT = 900;
 
     /**
      * Return the task's name as shown in admin screens.
@@ -41,6 +43,8 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB;
+
+        $stoptime = time() + self::TIME_LIMIT; // Time to stop execution.
 
         // Get the columns JSON string.
         $json = get_config('filter_translations', 'columndefinition');
@@ -80,6 +84,12 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
         $anyexception = null;
         $transaction = $DB->start_delegated_transaction();
         foreach ($columnsbytabletoprocess as $table => $columns) {
+            if (time() >= $stoptime) {
+                mtrace("This task has been running for more than " .
+                        format_time(self::TIME_LIMIT) . ", so stopping this execution.");
+                break;
+            }
+
             mtrace("Started processing table: $table");
 
             foreach ($columns as $column) {
