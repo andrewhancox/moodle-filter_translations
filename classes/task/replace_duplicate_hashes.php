@@ -23,7 +23,7 @@
 namespace filter_translations\task;
 
 /**
- * An example of a scheduled task.
+ * Replace duplicate translation hashes scheduled task.
  */
 class replace_duplicate_hashes extends \core\task\scheduled_task {
 
