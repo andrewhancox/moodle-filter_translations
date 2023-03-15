@@ -33,6 +33,7 @@ $tasks = [
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
+        'disabled' => 1,
     ],
     [
         'classname' => 'filter_translations\task\copy_translations',
@@ -42,5 +43,6 @@ $tasks = [
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
+        'disabled' => 1,
     ],
 ];
