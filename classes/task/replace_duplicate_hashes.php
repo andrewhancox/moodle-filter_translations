@@ -33,7 +33,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('replace_duplicate_hashes', 'filter_translations');
+        return get_string('replaceduplicatehashes', 'filter_translations');
     }
 
     /**
