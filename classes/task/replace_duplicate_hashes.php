@@ -94,7 +94,6 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
 
             foreach ($columns as $column) {
                 if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
-                   // mtrace(get_string('unknowncolumn', 'filter_translations'));
                     $ex = new \moodle_exception('unknowncolumn', 'filter_translations');
                     mtrace_exception($ex);
                     $anyexception = $ex;
@@ -118,8 +117,8 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                         "REGEXP_MATCHES({$column}, '<span data-translationhash[ ]*=[ ]*[''\"]+([a-zA-Z0-9]+)[''\"]+[ ]*>[ ]*<\/span>') AS hash " .
                     "FROM {{$table}} mp) AS Q3 " .
                     "WHERE Q2.hash = Q3.hash " .
-                    //"AND Q2.hash <> '' " .
-                    "ORDER BY Q3.hash";
+                    // "AND Q2.hash <> '' " .
+                    "ORDER BY Q3.hash ASC, Q3.id ASC";
                 } else {
                     $sql = "SELECT Q3.* FROM (" .
                         "SELECT hash, COUNT(*) " .
@@ -139,12 +138,10 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                     ") AS Q3 " .
                     "WHERE Q2.hash = Q3.hash " .
                     "AND Q2.hash <> '' " .
-                    "ORDER BY Q3.hash";
+                    "ORDER BY Q3.hash ASC, Q3.id ASC";
                 }
 
                 $lasthash = '';
-                $hastranslations = false;
-                $skippedcount = 0;
                 $updatedcount = 0;
 
                 foreach ($DB->get_records_sql($sql) as $row) {
@@ -164,41 +161,29 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                     }
 
                     if ($lasthash != $hash) {
-                        // This is a different hash, so check if any translation record exists for this hash.
-                        if ($DB->count_records('filter_translations', ['md5key' => $hash]) > 0) {
-                            $hastranslations = true;
-                        } else {
-                            $hastranslations = false;
-                        }
-
                         $lasthash = $hash;
+                        continue; // Keep the first record for this hash, so skip.
                     }
 
-                    // No translations exists, so generate new hash.
-                    if (!$hastranslations) {
-                        // Get the full record from DB.
-                        $record = $DB->get_record($table, ['id' => $row->id]);
+                    // Generate new hash for all other duplicates.
+                    mtrace('+ Replacing hash for id: ' . $row->id . ' hash: ' . $hash);
 
-                        // Remove the old span tag from the text.
-                        $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '',
-                            $record->$column);
+                    // Get the full record from DB.
+                    $record = $DB->get_record($table, ['id' => $row->id]);
 
-                        // Generate and append new translation hash.
-                        $record->$column = $text . '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+                    // Remove the old span tag from the text.
+                    $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '',
+                                $record->$column);
 
-                        $DB->update_record($table, $record);
+                    // Generate and append new translation hash.
+                    $record->$column = $text . '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
 
-                        $updatedcount++;
-                        mtrace('+', '');
-                    } else {
-                        $skippedcount++;
-                        mtrace('-', '');
-                        mtrace('id: ' . $row->id . ' hash: ' . $hash);
-                    }
+                    $DB->update_record($table, $record);
+
+                    $updatedcount++;
                 }
                 mtrace('');
-                mtrace(" ++Updated: $updatedcount, --Skipped: $skippedcount");
-                mtrace('');
+                mtrace("  ++Updated: $updatedcount");
             }
 
             mtrace("Finished processing table: $table");
