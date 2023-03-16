@@ -103,7 +103,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                 mtrace("Started processing column: $table -> $column");
 
                 // TODO: Use cross-platform SQL, if possible.
-                if ($DB->get_dbfamily() == 'pgsql') {
+                if ($DB->get_dbfamily() == 'postgres') {
                     $sql = "SELECT Q3.* FROM (" .
                         "SELECT hash, COUNT(*) " .
                         "FROM ( " .
@@ -152,7 +152,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                         continue; // Hash cannot be empty.
                     }
                     // Extract hash only.
-                    if ($DB->get_dbfamily() == 'pgsql') {
+                    if ($DB->get_dbfamily() == 'postgres') {
                         // Hash is enclosed in {HASH_VALUE_32_CHARS}.
                         $hash = substr($row->hash, 1, 32);
                     } else {
