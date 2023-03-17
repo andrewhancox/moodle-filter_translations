@@ -55,7 +55,7 @@ class filter_translations extends moodle_text_filter {
     }
 
     /**
-     * Should the current page be translated.
+     * Should the current page be translated?
      * Must be based on the script name as PAGE->url will not be set yet.
      *
      * @return bool
@@ -89,6 +89,32 @@ class filter_translations extends moodle_text_filter {
         }
 
         return $skip;
+    }
+
+    /**
+     * Should inline-translation be disabled for this language?
+     *
+     * @return bool
+     * @throws dml_exception
+     */
+    public static function skiplanguage() {
+        static $skipthislang = null;
+
+        if (isset($skipthislang)) {
+            return $skipthislang;
+        }
+
+        $skipthislang = false;
+
+        if (in_array(current_language(),
+            explode(
+                ',',
+                get_config('filter_translations', 'excludelang')
+            ))) {
+            $skipthislang = true;
+        }
+
+        return $skipthislang;
     }
 
     /**

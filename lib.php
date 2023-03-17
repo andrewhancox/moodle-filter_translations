@@ -71,11 +71,19 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
 
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
-    // Inform user that language cannot be translated.
-    if (filter_translations::skiptranslations()) {
+    $skiplanguage = false;
+    $skiptranslations = false;
+
+    if (filter_translations::skiplanguage()) {
+        // Inform user that language cannot be translated.
+        $skiplanguage = true;
         return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
-            'skiptranslations' => true,
+            'skiplanguage' => $skiplanguage,
         ]);
+    }
+
+    if (filter_translations::skiptranslations()) {
+        $skiptranslations = true;
     }
 
     $currentinlinetranslationstate = filter_translations::checkinlinestranslation();
@@ -147,7 +155,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'inlinetranslationstate' => $currentinlinetranslationstate,
         'alltranslationsurl' => $alltranslationsurl->out(false),
         'translateall' => (has_capability('filter/translations:editsitedefaulttranslations', $context)) ? true : false,
-        'skiptranslations' => false,
+        'skiplanguage' => $skiplanguage,
+        'skiptranslations' => $skiptranslations,
     ]);
 }
 
