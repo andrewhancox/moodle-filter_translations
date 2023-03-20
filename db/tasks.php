@@ -45,4 +45,14 @@ $tasks = [
         'dayofweek' => '*',
         'disabled' => 1,
     ],
+    [
+        'classname' => 'filter_translations\task\insert_spans',
+        'blocking' => 0,
+        'minute' => '5',
+        'hour' => '4',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '1,4',
+        'disabled' => 1,
+    ],
 ];

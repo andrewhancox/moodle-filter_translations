@@ -129,6 +129,7 @@ $string['google_backoffonerror'] = 'Back off from erroring API';
 $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
 $string['hash'] = 'Hash';
+$string['insertspans'] = 'Insert translation spans tags';
 $string['issue'] = 'Status';
 $string['issue_10'] = 'Stale';
 $string['issue_20'] = 'Missing';
