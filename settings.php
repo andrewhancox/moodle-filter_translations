@@ -80,7 +80,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configduration('filter_translations/logdebounce',
         get_string('logdebounce', 'filter_translations'), '', DAYSECS));
 
-    $settings->add(new admin_setting_heading('scheduledtasks', get_string('scheduledtasks', 'filter_translations'), ''));
+    $settings->add(new admin_setting_heading('scheduledtasks', get_string('scheduledtasksheading', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configtextarea('filter_translations/columndefinition',
         new lang_string('columndefinition', 'filter_translations'),

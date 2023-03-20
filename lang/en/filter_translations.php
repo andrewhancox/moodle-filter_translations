@@ -94,14 +94,16 @@ You can do a dryrun to check how many records will be affected when this process
 php filter/translations/cli/remove_duplicate_hashes.php --mode=dryrun --file=/Users/moodleadmin/cols.json
 ';
 $string['columndefinition'] = 'Tables/columns to check';
-$string['columndefinition_desc'] = 'Enter the tables/columns to check in JSON format, eg:
+$string['columndefinition_desc'] = 'Scheduled tasks are used to conduct periodic maintenance and syncing of translations.<br>
+    Enter the tables/columns to check in JSON format, eg:
     {
         "label": [
             "intro"
         ]
     }<br>
     You can get the table/columns list by running:<br>
-    php filter/translations/cli/remove_duplicate_hashes.php --mode=listcolumns
+    <pre>php filter/translations/cli/remove_duplicate_hashes.php --mode=listcolumns</pre>
+    Scheduled tasks for this plugin are disabled by default. You can enable them from the <a href="tool/task/scheduledtasks.php">Scheduled tasks</a> page.
 ';
 $string['columndefinitionfileerror'] = 'Missing or invalid column definition file';
 $string['columndefinitionjsonerror'] = 'Invalid column definition json';
@@ -152,7 +154,7 @@ $string['rawhtml'] = 'Original HTML';
 $string['replaceduplicatehashes'] = 'Replace duplicate hashes';
 $string['sameasrawcontent'] = 'Check this box if translated text is the same as original content';
 $string['sameasrawcontentmessage'] = 'Is translated content the same as original content?';
-$string['scheduledtasks'] = 'Scheduled tasks';
+$string['scheduledtasksheading'] = 'Maintenance scheduled tasks';
 $string['showperfdata'] = 'Show performance data in footer';
 $string['staletranslation'] = 'Translation was created based on different source text. Please update the translation.';
 $string['startinlinetranslation'] = 'Start in-line translation';
