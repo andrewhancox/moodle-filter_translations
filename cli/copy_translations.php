@@ -92,6 +92,7 @@ if ($options['mode'] == 'listcolumns') {
     // Get all translations records.
     $alltranslations = $DB->get_records('filter_translations', null, '', 'id, md5key, lastgeneratedhash, targetlanguage');
 
+    $copiedcount = 0;
     $transaction = $DB->start_delegated_transaction();
     foreach ($columnsbytabletoprocess as $table => $columns) {
         $filter = new filter_translations(context_system::instance(), []);
@@ -185,6 +186,8 @@ if ($options['mode'] == 'listcolumns') {
 
                             $DB->insert_record('filter_translations', $record);
                         }
+
+                        $copiedcount++;
                     }
                 }
             }
@@ -194,8 +197,7 @@ if ($options['mode'] == 'listcolumns') {
         cli_writeln('');
     }
     $transaction->allow_commit();
-
-    // Todo: Purge the translation cache.
+    cli_writeln("++ Copied translations: $copiedcount");
 }
 
 /**
