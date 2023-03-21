@@ -89,6 +89,9 @@ if ($options['mode'] == 'listcolumns') {
 
     $languages = get_string_manager()->get_list_of_translations(); // Languages in used in the site.
 
+    // Get all translations records.
+    $alltranslations = $DB->get_records('filter_translations', null, '', 'id, md5key, lastgeneratedhash, targetlanguage');
+
     $transaction = $DB->start_delegated_transaction();
     foreach ($columnsbytabletoprocess as $table => $columns) {
         $filter = new filter_translations(context_system::instance(), []);
@@ -158,19 +161,9 @@ if ($options['mode'] == 'listcolumns') {
                 // Get all matching translations for this content.
                 $foundhashtranslations = [];
                 $generatedhashtranslations = [];
-                $translations = $DB->get_records_select(
-                    'filter_translations',
-                    "md5key = '$foundhash' OR lastgeneratedhash = '$generatedhash'",
-                    null,
-                    "md5key");
 
-                foreach ($translations as $tr) {
-                    if ($tr->md5key == $foundhash) {
-                        $foundhashtranslations[$tr->targetlanguage] = $tr; // Translations recorded for this content.
-                    } else {
-                        $generatedhashtranslations[$tr->targetlanguage] = $tr; // Translations matching this content hash.
-                    }
-                }
+                $foundhashtranslations = filter_translations_findtranslations($alltranslations, $foundhash, 'md5key');
+                $generatedhashtranslations = filter_translations_findtranslations($alltranslations, $generatedhash, 'lastgeneratedhash');
 
                 // Copy over any translations not recorded under the found hash of this content.
                 $shouldprint = true;
@@ -181,11 +174,14 @@ if ($options['mode'] == 'listcolumns') {
                             $shouldprint = false;
                         }
 
-                        cli_writeln("  + copying translation from md5key: $tr->md5key, lang: $tr->targetlanguage");
+                        // Get full translation record.
+                        $record = $DB->get_record('filter_translations', ['id' => $tr->id]);
+
+                        cli_writeln("  + copying translation from md5key: $record->md5key, lang: $record->targetlanguage");
 
                         if ($options['mode'] == 'process') {
-                            $record = $tr;
-                            $record->md5key = $foundhash;
+                            $record->id = null; // Unset id.
+                            $record->md5key = $foundhash; // Copy under this hash.
 
                             $DB->insert_record('filter_translations', $record);
                         }
@@ -200,4 +196,26 @@ if ($options['mode'] == 'listcolumns') {
     $transaction->allow_commit();
 
     // Todo: Purge the translation cache.
+}
+
+/**
+ * Get a filtered list of translation records.
+ *
+ * @param array $alltranslations
+ * @param string $hash value to look for
+ * @param string $key key to search against
+ * @return array filtered array
+ */
+function filter_translations_findtranslations(array $alltranslations, string $hash, string $key) {
+    $matchedrecords = [];
+
+    foreach ($alltranslations as $tr) {
+        if ($tr->$key == $hash) {
+            if (!isset($matchedrecords[$tr->targetlanguage])) {
+                $matchedrecords[$tr->targetlanguage] = $tr;
+            }
+        }
+    }
+
+    return $matchedrecords;
 }
