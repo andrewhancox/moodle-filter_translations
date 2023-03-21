@@ -117,45 +117,7 @@ class insert_spans extends \core\task\scheduled_task {
                         continue;
                     }
 
-                    $formattedcolumn = $row->$column;
-
-                    // Rendered content may be different.
-                    // Get rendered version of content.
-                    if ($column == 'intro') {
-                        $cm = get_coursemodule_from_instance($table, $row->id, $row->course, false, MUST_EXIST);
-
-                        $formattedcolumn = format_module_intro($table, $row, $cm->id);
-                    } else if (strpos($row->$column, '@@PLUGINFILE@@') !== false) {
-                        // Need to get actual URIs.
-                        // Attempt to generate correct URIs for each plugin.
-                        switch ($table) {
-                            case 'course_sections':
-                                $context = context_course::instance($row->course);
-
-                                $formattedcolumn = file_rewrite_pluginfile_urls($row->summary, 'pluginfile.php', $context->id,
-                                    'course', 'section', $row->id);
-                            break;
-                            case 'book_chapters':
-                                $cm = get_coursemodule_from_instance('book', $row->bookid, 0, false, MUST_EXIST);
-                                $context = context_module::instance($cm->id);
-
-                                $formattedcolumn = file_rewrite_pluginfile_urls($row->content, 'pluginfile.php', $context->id,
-                                    'mod_book', 'chapter', $row->id);
-                            break;
-                            case 'page':
-                                $cm = get_coursemodule_from_instance($table, $row->id, $row->course, false, MUST_EXIST);
-                                $context = context_module::instance($cm->id);
-
-                                $formattedcolumn = file_rewrite_pluginfile_urls($row->content, 'pluginfile.php', $context->id,
-                                    'mod_page', 'content', $row->revision);
-                            break;
-                            // TODO: Add support for other content/resource types.
-                            default:
-                            break;
-                        }
-                    }
-
-                    $row->$column .= '<span data-translationhash="' . $filter->generatehash($formattedcolumn) . '"></span>';
+                    $row->$column .= '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
                     $DB->update_record($table, $row);
                     $updated = true;
                     mtrace('+', '');
