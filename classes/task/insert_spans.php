@@ -104,7 +104,35 @@ class insert_spans extends \core\task\scheduled_task {
             mtrace("Started processing table: $table");
             $updated = false;
             foreach ($columns as $column) {
-                if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
+                // Blocks content need to be handled differently.
+                if ($table == 'block_instances') {
+                    // Only check/process configdata field.
+                    if ($column == 'configdata') {
+                        // Get all html blocks only.
+                        foreach ($DB->get_records($table, ['blockname' => 'html']) as $row) {
+                            // Extract the content text from the block config.
+                            $blockinstance = block_instance('html', $row);
+                            $blockcontent = $blockinstance->config->text;
+
+                            // Skip if a translation span tag found.
+                            if (strpos($blockcontent, 'data-translationhash') !== false) {
+                                continue;
+                            }
+
+                            // Add the translation span tag.
+                            $blockinstance->config->text .= '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+
+                            // Encode and save block config data.
+                            $row->configdata = base64_encode(serialize($blockinstance->config));
+                            $DB->update_record($table, $row);
+
+                            $updated = true;
+                            mtrace('+', '');
+                        }
+                    }
+
+                    continue; // Done with blocks.
+                } else if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
                     $ex = new \moodle_exception('unknowncolumn', 'filter_translations');
                     mtrace_exception($ex);
                     $anyexception = $ex;
