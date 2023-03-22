@@ -25,7 +25,7 @@
 
 namespace filter_translations;
 
-use testable_core_string_manager;
+use core\testable_core_string_manager;
 
 require_once("$CFG->dirroot/filter/translations/filter.php");
 
