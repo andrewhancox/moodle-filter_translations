@@ -22,6 +22,9 @@
 
 namespace filter_translations\task;
 
+use context_system;
+use filter_translations;
+
 /**
  * Replace duplicate translation hashes scheduled task.
  */
@@ -93,7 +96,55 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
             mtrace("Started processing table: $table");
 
             foreach ($columns as $column) {
-                if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
+                $updatedcount = 0;
+
+                // Blocks are handled differently.
+                if ($table == 'block_instances') {
+                    if ($column == 'configdata') {
+                        mtrace("Started processing column: $table -> $column");
+                        $filter = new filter_translations(context_system::instance(), []);
+                        $translationhashes = [];
+
+                        // Get all html blocks only.
+                        foreach ($DB->get_records($table, ['blockname' => 'html'], 'id ASC') as $row) {
+                            // Extract the content text from the block config.
+                            $blockinstance = block_instance('html', $row);
+                            $blockcontent = $blockinstance->config->text;
+
+                            // Skip if no translation span tag found.
+                            if (strpos($blockcontent, 'data-translationhash') === false) {
+                                continue;
+                            }
+
+                            // Extract translation hash from content.
+                            $foundhash = $filter->findandremovehash($blockcontent);
+
+                            if (!isset($translationhashes[$foundhash])) {
+                                // This is a unique hash.
+                                // Add this hash to the array of used hashes.
+                                $translationhashes[$foundhash] = $foundhash;
+                                continue; // Move to the next record.
+                            }
+
+                            mtrace('+ Replacing hash for id: ' . $row->id . ' hash: ' . $foundhash);
+                            $newhash = md5(random_string(32)); // Generate a new hash.
+
+                            // Add the new translation span tag.
+                            $blockinstance->config->text = $blockcontent . '<span data-translationhash="' . $newhash . '"></span>';
+                            $translationhashes[$newhash] = $newhash; // Add to array of used hashes.
+
+                            // Encode and save block config data.
+                            $row->configdata = base64_encode(serialize($blockinstance->config));
+                            $DB->update_record($table, $row);
+                            $updatedcount++;
+                        }
+                    }
+
+                    mtrace('');
+                    mtrace("  ++Updated: $updatedcount");
+
+                    continue;
+                } else if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
                     $ex = new \moodle_exception('unknowncolumn', 'filter_translations');
                     mtrace_exception($ex);
                     $anyexception = $ex;
@@ -142,7 +193,6 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                 }
 
                 $lasthash = '';
-                $updatedcount = 0;
 
                 foreach ($DB->get_records_sql($sql) as $row) {
                     if (empty($row->hash)) {

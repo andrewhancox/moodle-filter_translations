@@ -105,7 +105,11 @@ class copy_translations extends \core\task\scheduled_task {
             mtrace("Started processing table: $table");
 
             foreach ($columns as $column) {
-                if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
+                // Blocks not supported yet.
+                if ($table == 'block_instances') {
+                    mtrace("-- Table $table cannot be processed. Skipping...");
+                    continue;
+                } else if (!isset($columnsbytable[$table]) || !in_array($column, $columnsbytable[$table])) {
                     $ex = new \moodle_exception('unknowncolumn', 'filter_translations');
                     mtrace_exception($ex);
                     $anyexception = $ex;
