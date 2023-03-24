@@ -94,6 +94,14 @@ class edittranslationform extends persistent {
             unset($translations[$CFG->lang]);
         }
 
+        // Also unset languages excluded from translations.
+        $excludedlangs = explode(',', get_config('filter_translations', 'excludelang'));
+        foreach ($excludedlangs as $lang) {
+            if (isset($translations[$lang])) {
+                unset($translations[$lang]);
+            }
+        }
+
         $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $translations);
         $mform->setDefault('targetlanguage', current_language());
 
