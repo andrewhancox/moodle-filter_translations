@@ -123,6 +123,7 @@ class copy_translations extends \core\task\scheduled_task {
                     }
 
                     $formattedcolumn = '';
+                    $context = null;
 
                     // Rendered content may be different.
                     // Get rendered version of content.
@@ -183,7 +184,13 @@ class copy_translations extends \core\task\scheduled_task {
                     foreach ($generatedhashtranslations as $tr) {
                         if (!isset($foundhashtranslations[$tr->targetlanguage]) && isset($languages[$tr->targetlanguage])) {
                             if ($shouldprint) {
-                                cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
+                                mtrace("foundhash: $foundhash, content hash: $generatedhash");
+
+                                if (empty($context)) {
+                                    // TODO: Use correct context ???
+                                    $context = context_course::instance($row->course); // Use course context.
+                                }
+
                                 $shouldprint = false;
                             }
 
@@ -193,6 +200,7 @@ class copy_translations extends \core\task\scheduled_task {
 
                             $record->id = null; // Unset id.
                             $record->md5key = $foundhash; // Copy under this hash.
+                            $record->contextid = $context->id; // Contextid of new content.
                             $DB->insert_record('filter_translations', $record);
                         }
                     }
