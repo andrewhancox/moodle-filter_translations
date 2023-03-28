@@ -164,6 +164,11 @@ class copy_translations extends \core\task\scheduled_task {
                     // Extract translation hash from content.
                     $foundhash = $filter->findandremovehash($row->$column);
 
+                    // Double check before continuing.
+                    if (empty($foundhash)) {
+                        continue;
+                    }
+
                     if (empty($formattedcolumn)) {
                         // Generate hash of content.
                         $generatedhash = $filter->generatehash($row->$column);
