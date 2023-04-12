@@ -191,7 +191,7 @@ class copy_translations extends \core\task\scheduled_task {
                             if ($shouldprint) {
                                 mtrace("foundhash: $foundhash, content hash: $generatedhash");
 
-                                if (empty($context)) {
+                                if (empty($context) && !empty($row->course) && $row->course > 1) {
                                     // TODO: Use correct context ???
                                     $context = context_course::instance($row->course); // Use course context.
                                 }
@@ -205,7 +205,11 @@ class copy_translations extends \core\task\scheduled_task {
 
                             $record->id = null; // Unset id.
                             $record->md5key = $foundhash; // Copy under this hash.
-                            $record->contextid = $context->id; // Contextid of new content.
+
+                            if ($context !== null) {
+                                $record->contextid = $context->id; // Contextid of new content.
+                            }
+
                             $DB->insert_record('filter_translations', $record);
                         }
                     }
