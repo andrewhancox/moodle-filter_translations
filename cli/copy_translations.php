@@ -112,6 +112,7 @@ if ($options['mode'] == 'listcolumns') {
                 }
 
                 $formattedcolumn = '';
+                $context = null;
 
                 // Rendered content may be different.
                 // Get rendered version of content.
@@ -177,6 +178,12 @@ if ($options['mode'] == 'listcolumns') {
                     if (!isset($foundhashtranslations[$tr->targetlanguage]) && isset($languages[$tr->targetlanguage])) {
                         if ($shouldprint) {
                             cli_writeln("foundhash: $foundhash, content hash: $generatedhash");
+
+                            if (empty($context) && !empty($row->course) && $row->course > 1) {
+                                // TODO: Use correct context ???
+                                $context = context_course::instance($row->course); // Use course context.
+                            }
+
                             $shouldprint = false;
                         }
 
@@ -188,6 +195,10 @@ if ($options['mode'] == 'listcolumns') {
                         if ($options['mode'] == 'process') {
                             $record->id = null; // Unset id.
                             $record->md5key = $foundhash; // Copy under this hash.
+
+                            if ($context !== null) {
+                                $record->contextid = $context->id; // Contextid of new content.
+                            }
 
                             $DB->insert_record('filter_translations', $record);
                         }
