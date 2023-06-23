@@ -311,6 +311,10 @@ class translator {
 
         $dependencies = $this->get_string_manager()->get_language_dependencies($language);
 
+        if (empty($dependencies)) {
+            $dependencies = [$language];
+        }
+
         // Workplace compatibility.
         if (isset($CFG->wphideparentlang) && $CFG->wphideparentlang) {
             // Parent language is hidden, so add dependency to WP language.
