@@ -55,4 +55,14 @@ $tasks = [
         'dayofweek' => '1,4',
         'disabled' => 1,
     ],
+    [
+        'classname' => 'filter_translations\task\cleanup_translation_issues',
+        'blocking' => 0,
+        'minute' => '23',
+        'hour' => '1',
+        'day' => '23',
+        'month' => '*',
+        'dayofweek' => '*',
+        'disabled' => 0,
+    ],
 ];

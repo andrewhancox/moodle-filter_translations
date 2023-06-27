@@ -33,6 +33,7 @@ $string['cachedef_translatedtext_2'] = 'Translated text (Session level)';
 $string['cachedef_translatedtext_4'] = 'Translated text (Application level)';
 $string['cannottranslatelang'] = 'Translation in the selected language is disabled.';
 $string['cannottranslatepage'] = 'This page cannot be translated.';
+$string['cleanuptranslationissues'] = 'Cleanup old translation issues records';
 $string['clihelptext_copytranslations'] = 'This tool will copy over translations matching the hash of a content and save it under the found hash of the content for each specified table/field. USE WITH EXTREME CARE.
 To execute the task run this command again specifying a mode e.g:
 php cli/copy_translations.php --mode=listcolumns
