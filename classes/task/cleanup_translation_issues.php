@@ -46,10 +46,10 @@ class cleanup_translation_issues extends \core\task\scheduled_task {
 
         $transaction = $DB->start_delegated_transaction();
 
-        // Delete missing translation records older than 30 days.
+        // Delete missing translation records older than 14 days.
         $DB->delete_records_select('filter_translation_issues',
             "issue = ? AND timecreated < ?",
-            [translation_issue::ISSUE_MISSING, strtotime('-30 day')]
+            [translation_issue::ISSUE_MISSING, strtotime('-14 day')]
         );
 
         $transaction->allow_commit();
