@@ -50,6 +50,12 @@
     z-index: 999;
 }
 
+.translation-icon-wrapper .icon-translate-default {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label,
 #page-filter-translations-edittranslation #fitem_id_substitutetext_plain .col-form-label,
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor + .form-group .col-form-label,
