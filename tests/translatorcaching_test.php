@@ -30,8 +30,6 @@ use cache_helper;
 use context_system;
 use filter_translations;
 
-defined('MOODLE_INTERNAL') || die();
-
 class translatorcaching_test extends advanced_testcase {
 
     public function setUp(): void {

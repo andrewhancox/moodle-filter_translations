@@ -42,6 +42,9 @@ if (empty($contextid)) {
 } else {
     list($context, $course, $cm) = get_context_info_array($contextid);
 }
+
+require_login();
+
 require_capability('filter/translations:edittranslations', $context);
 
 $PAGE->set_context($context);

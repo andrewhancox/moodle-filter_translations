@@ -27,8 +27,6 @@ namespace filter_translations;
 use advanced_testcase;
 use context_system;
 
-defined('MOODLE_INTERNAL') || die();
-
 class translator_test extends advanced_testcase {
 
     public function setUp(): void {

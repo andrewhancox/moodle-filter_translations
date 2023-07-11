@@ -50,6 +50,8 @@ if (empty($contextid)) {
     $context = context::instance_by_id($contextid);
 }
 
+require_login();
+
 require_capability('filter/translations:edittranslations', $context);
 
 $url = new moodle_url('/filter/translations/edittranslation.php');
@@ -72,7 +74,11 @@ if (empty($id)) {
     $persistent->set('targetlanguage', $targetlanguage);
     $persistent->set('substitutetext', $rawtext);
 } else {
-    $persistent = new translation($id);
+    $persistent = new translation($id); // Load translation record for this id.
+    if (!empty($foundhash)) {
+        $persistent->set('md5key', $foundhash); // Use the foundhash.
+    }
+
     $url->param('id', $id);
 
     if ($persistent->get('targetlanguage') == $CFG->lang) {
@@ -81,7 +87,8 @@ if (empty($id)) {
 }
 $persistent->set('contextid', $contextid);
 
-$istranslationstale = !empty($generatedhash) && !empty($persistent->get('id')) && $persistent->get('lastgeneratedhash') !== $generatedhash;
+$istranslationstale = !empty($generatedhash) && !empty($persistent->get('id')) &&
+    $persistent->get('lastgeneratedhash') !== $generatedhash;
 if (!empty($generatedhash)) {
     $persistent->set('lastgeneratedhash', $generatedhash);
 }
@@ -111,7 +118,8 @@ if (
     $formtype = edittranslationform::FORMTYPE_PLAIN;
 }
 
-$form = new edittranslationform($url->out(false), ['persistent' => $persistent, 'formtype' => $formtype, 'showdiff' => $showdiff, 'old' => $old]);
+$form = new edittranslationform($url->out(false),
+    ['persistent' => $persistent, 'formtype' => $formtype, 'showdiff' => $showdiff, 'old' => $old]);
 
 if ($data = $form->get_data()) {
     if (!empty($data->deletebutton) && has_capability('filter/translations:deletetranslations', $context)) {
@@ -119,11 +127,21 @@ if ($data = $form->get_data()) {
         redirect($returnurl);
     }
 
+    $persistent->from_record($form->filter_data_for_persistent($data));
+
     if ($formtype !== edittranslationform::FORMTYPE_RICH) {
         $persistent->set('substitutetext', $data->substitutetext_plain);
     }
 
-    $persistent->from_record($form->filter_data_for_persistent($data));
+    if ($formtype == edittranslationform::FORMTYPE_RICH) {
+        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_text_editoroptions(), $context,
+            'filter_translations',
+            'substitutetext', $persistent->get('id'));
+
+        $persistent->set('substitutetext', $data->substitutetext);
+        $persistent->set('substitutetextformat', $data->substitutetextformat);
+        // $persistent->update();
+    }
 
     // Before saving, ensure we are not overwriting existing translation.
     $record = $DB->get_record('filter_translations',
@@ -139,16 +157,6 @@ if ($data = $form->get_data()) {
         $persistent->update();
     } else {
         notice(get_string('translationalreadyexists', 'filter_translations', $targetlanguage), $returnurl);
-    }
-
-    if ($formtype == edittranslationform::FORMTYPE_RICH) {
-        $data = file_postupdate_standard_editor($data, 'substitutetext', $form->get_substitute_text_editoroptions(), $context,
-            'filter_translations',
-            'substitutetext', $persistent->get('id'));
-
-        $persistent->set('substitutetext', $data->substitutetext);
-        $persistent->set('substitutetextformat', $data->substitutetextformat);
-        $persistent->update();
     }
 
     redirect($returnurl);

@@ -52,7 +52,8 @@ class edittranslationform extends persistent {
      * Fileds in the form that do not correspond to properties of the persistent class.
      * @var string[]
      */
-    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format', 'substitutetexttrust', 'returnurl', 'deletebutton'];
+    protected static $foreignfields = ['substitutetext_plain', 'substitutetext_editor', 'substitutetext_format',
+        'substitutetexttrust', 'returnurl', 'deletebutton'];
 
     /**
      * Build the form.
@@ -62,7 +63,7 @@ class edittranslationform extends persistent {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    function definition() {
+    public function definition() {
         global $PAGE, $CFG;
 
         $mform = $this->_form;
@@ -93,6 +94,14 @@ class edittranslationform extends persistent {
             unset($translations[$CFG->lang]);
         }
 
+        // Also unset languages excluded from translations.
+        $excludedlangs = explode(',', get_config('filter_translations', 'excludelang'));
+        foreach ($excludedlangs as $lang) {
+            if (isset($translations[$lang])) {
+                unset($translations[$lang]);
+            }
+        }
+
         $mform->addElement('select', 'targetlanguage', get_string('targetlanguage', 'filter_translations'), $translations);
         $mform->setDefault('targetlanguage', current_language());
 
@@ -102,7 +111,7 @@ class edittranslationform extends persistent {
 
         $mform->addElement('html', '<ul class="nav nav-tabs" id="" role="tablist">');
 
-        // Build a bunch of tab links:
+        // Build a bunch of tab links.
 
         // View the raw source text.
         $this->addtablink($mform, 'rawtext', get_string('rawtext', 'filter_translations'), true);
@@ -162,17 +171,20 @@ class edittranslationform extends persistent {
                 $mform->addElement('editor', 'substitutetext_editor', get_string('substitutetext', 'filter_translations'), null,
                     $this->get_substitute_text_editoroptions());
                 $mform->setType('substitutetext_editor', PARAM_RAW);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             case self::FORMTYPE_PLAINMULTILINE:
                 $mform->addElement('textarea', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'));
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             case self::FORMTYPE_PLAIN:
                 $mform->addElement('text', 'substitutetext_plain', get_string('substitutetext', 'filter_translations'), 'size="48"');
                 $mform->setType('substitutetext_plain', PARAM_TEXT);
+                $mform->addElement('advcheckbox', 'sameasrawtext', '', get_string('sameasrawcontent', 'filter_translations'));
                 break;
             default:
-                print_error('Unknown form type');
+                throw new \moodle_exception('unknownformtype');
         }
         $mform->addElement('html', "</div>");
 
@@ -215,9 +227,8 @@ class edittranslationform extends persistent {
                 $itemid = null;
             }
 
-            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_text_editoroptions(), context_system::instance(),
-                'filter_translations', 'substitutetext',
-                $itemid);
+            $data = file_prepare_standard_editor($data, 'substitutetext', $this->get_substitute_text_editoroptions(),
+                context_system::instance(), 'filter_translations', 'substitutetext', $itemid);
         } else {
             $data->substitutetext_plain = $data->substitutetext['text'];
         }
@@ -242,11 +253,13 @@ class edittranslationform extends persistent {
             $selectedariaattr = 'false';
             $selectedclass = '';
         }
-        $mform->addElement('html', '<li class="nav-item">
-                                                    <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name . '" role="tab" aria-selected="' . $selectedariaattr . '">
-                                                        <h4>' . $label . '</h4>
-                                                    </a>
-                                                </li>');
+        $mform->addElement('html',
+            '<li class="nav-item">
+            <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name .
+            '" role="tab" aria-selected="' . $selectedariaattr . '">
+            <h4>' . $label . '</h4>
+            </a>
+            </li>');
     }
 
     /**
@@ -264,7 +277,9 @@ class edittranslationform extends persistent {
         } else {
             $selectedattr = '';
         }
-        $mform->addElement('html', '<div class="tab-pane fade ' . $selectedattr . '" id="' . $name . '" role="tabpanel" aria-labelledby="' . $name . '-tab">');
+        $mform->addElement('html',
+            '<div class="tab-pane fade ' . $selectedattr . '" id="' . $name . '" role="tabpanel" aria-labelledby="' . $name .
+            '-tab">');
         $mform->addElement('html', $contents);
         $mform->addElement('html', "</div>");
     }
@@ -294,5 +309,26 @@ class edittranslationform extends persistent {
             'noclean' => true,
             'context' => $context];
         return $editoroptions;
+    }
+
+    /**
+     * Extra validation.
+     *
+     * @param  stdClass $data Data to validate.
+     * @param  array $files Array of files.
+     * @param  array $errors Currently reported errors.
+     * @return array of additional errors, or overridden errors.
+     */
+    protected function extra_validation($data, $files, array &$errors) {
+        $newerrors = array();
+
+        if ((isset($data->substitutetext_plain) && $data->rawtext === $data->substitutetext_plain) ||
+                (isset($data->substitutetext_editor) && $data->rawtext === $data->substitutetext_editor['text'])) {
+            if ($data->sameasrawtext == "0") {
+                $newerrors['sameasrawtext'] = get_string('sameasrawcontentmessage', 'filter_translations');
+            }
+        }
+
+        return $newerrors;
     }
 }

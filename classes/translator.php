@@ -79,16 +79,19 @@ class translator {
         $translation = $this->filter_options_by_best_hash($optionsforbestlanguage, $generatedhash, $foundhash);
 
         // Never use stale translations that were auto-generated.
-        if (!empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash') && $translation->get('translationsource') != translation::SOURCE_MANUAL) {
+        if (!empty($translation) && $generatedhash !== $translation->get('lastgeneratedhash') &&
+                $translation->get('translationsource') != translation::SOURCE_MANUAL) {
             $translation = null;
         }
 
         // If no translation can be found, or the only translation is either stale or for a lower priority language then
         // try automated translations.
-        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language) {
+        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash ||
+                $translation->get('targetlanguage') != $language) {
             // First try reverse language string look up.
             $languagestrings = new languagestringreverse();
-            $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+            $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text,
+                $language, $translation);
 
             if (!empty($languagestringtranslation)) {
                 // Got one, use it.

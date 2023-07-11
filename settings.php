@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
-    $list_of_translations = get_string_manager()->get_list_of_translations(true);
+    $listoftranslations = get_string_manager()->get_list_of_translations(true);
 
     $settings->add(new admin_setting_heading('managetranslations', '',
         html_writer::link(new moodle_url('/filter/translations/managetranslations.php'),
@@ -47,7 +47,8 @@ if ($ADMIN->fulltree) {
         $options[$mode] = get_string('mode_' . $mode, 'cache');
     }
     $settings->add(new admin_setting_configselect('filter_translations/cachingmode',
-        get_string('cachingmode', 'filter_translations'), get_string('cachingmode_desc', 'filter_translations'), cache_store::MODE_REQUEST, $options));
+        get_string('cachingmode', 'filter_translations'), get_string('cachingmode_desc', 'filter_translations'),
+        cache_store::MODE_REQUEST, $options));
 
     $settings->add(new admin_setting_configtextarea('filter_translations/untranslatedpages',
         new lang_string('untranslatedpages', 'filter_translations'),
@@ -56,16 +57,19 @@ if ($ADMIN->fulltree) {
     );
 
     $settings->add(new admin_setting_configmultiselect('filter_translations/excludelang',
-        get_string('excludelang', 'filter_translations')
-        , get_string('excludelang_desc', 'filter_translations'), [],
-        $list_of_translations));
+        get_string('excludelang', 'filter_translations'),
+        get_string('excludelang_desc', 'filter_translations'), [],
+        $listoftranslations));
 
     $settings->add(new admin_setting_heading('logging', get_string('logging', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configmultiselect('filter_translations/logexcludelang',
-        get_string('logexcludelang', 'filter_translations')
-        , get_string('logexcludelang_desc', 'filter_translations'), [],
-        $list_of_translations));
+        get_string('logexcludelang', 'filter_translations'),
+        get_string('logexcludelang_desc', 'filter_translations'), [],
+        $listoftranslations));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/loghistory',
+        get_string('loghistory', 'filter_translations'), '', false));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/logmissing',
         get_string('logmissing', 'filter_translations'), '', false));
@@ -76,12 +80,22 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configduration('filter_translations/logdebounce',
         get_string('logdebounce', 'filter_translations'), '', DAYSECS));
 
-    $settings->add(new admin_setting_heading('languagestringreverseapi', get_string('languagestringreverse', 'filter_translations'), ''));
+    $settings->add(new admin_setting_heading('scheduledtasks', get_string('scheduledtasksheading', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configtextarea('filter_translations/columndefinition',
+        new lang_string('columndefinition', 'filter_translations'),
+        new lang_string('columndefinition_desc', 'filter_translations'),
+        '')
+    );
+
+    $settings->add(new admin_setting_heading('languagestringreverseapi',
+        get_string('languagestringreverse', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/languagestringreverse_enable',
         get_string('languagestringreverse_enable', 'filter_translations'), '', false));
 
-    $settings->add(new admin_setting_heading('googletranslateapi', get_string('googletranslate', 'filter_translations'), ''));
+    $settings->add(new admin_setting_heading('googletranslateapi',
+        get_string('googletranslate', 'filter_translations'), ''));
 
     $settings->add(new admin_setting_configcheckbox('filter_translations/google_enable',
         get_string('google_enable', 'filter_translations'), '', false));
@@ -90,10 +104,9 @@ if ($ADMIN->fulltree) {
         get_string('google_backoffonerror', 'filter_translations'), '', false));
 
     $settings->add(new admin_setting_configtext('filter_translations/google_apiendpoint',
-        get_string('google_apiendpoint', 'filter_translations')
-        , '', 'https://translation.googleapis.com/language/translate/v2',
+        get_string('google_apiendpoint', 'filter_translations'), '', 'https://translation.googleapis.com/language/translate/v2',
         PARAM_URL));
 
-    $settings->add(new admin_setting_configtext('filter_translations/google_apikey', get_string('google_apikey', 'filter_translations')
-        , '', null, PARAM_RAW_TRIMMED, 40));
+    $settings->add(new admin_setting_configtext('filter_translations/google_apikey',
+        get_string('google_apikey', 'filter_translations'), '', null, PARAM_RAW_TRIMMED, 40));
 }

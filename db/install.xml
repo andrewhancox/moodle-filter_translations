@@ -53,5 +53,34 @@
         <INDEX NAME="targetlanguage_issue" UNIQUE="false" FIELDS="targetlanguage, issue"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="filter_translations_history" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="md5key" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="lastgeneratedhash" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="targetlanguage" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="en" SEQUENCE="false"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="rawtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="substitutetext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="substitutetextformat" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="translationsource" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="prevgeneratedhash" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="prevrawtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="prevsubstitutetext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="crud" TYPE="char" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
+        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="targetlanguage_md5key" UNIQUE="false" FIELDS="targetlanguage, md5key"/>
+        <INDEX NAME="targetlanguage_lastgen" UNIQUE="false" FIELDS="targetlanguage, lastgeneratedhash"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

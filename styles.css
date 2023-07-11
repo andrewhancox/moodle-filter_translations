@@ -50,8 +50,16 @@
     z-index: 999;
 }
 
+.translation-icon-wrapper .icon-translate-default {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label,
-#page-filter-translations-edittranslation #fitem_id_substitutetext_plain .col-form-label {
+#page-filter-translations-edittranslation #fitem_id_substitutetext_plain .col-form-label,
+#page-filter-translations-edittranslation #fitem_id_substitutetext_editor + .form-group .col-form-label,
+#page-filter-translations-edittranslation #fitem_id_substitutetext_plain + .form-group .col-form-label {
     display: none !important;
 }
 
@@ -60,6 +68,11 @@
     padding: 0 1px;
     margin: 2px;
     height: 1.5rem;
+    z-index: 2;
+}
+
+.path-course-view .activityname .instancename .filter_translations_btn_translate {
+    position: relative;
 }
 
 pre.filter_translations_rawhtml {

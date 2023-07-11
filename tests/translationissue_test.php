@@ -27,8 +27,6 @@ namespace filter_translations;
 use advanced_testcase;
 use context_system;
 
-defined('MOODLE_INTERNAL') || die();
-
 class translationissue_test extends advanced_testcase {
 
     public function setUp(): void {
@@ -80,15 +78,15 @@ class translationissue_test extends advanced_testcase {
 
         $issues = translation_issue::get_records();
         $this->assertCount(1, $issues);
-        $translation_issue = $issues[0];
-        $this->assertEquals(translation_issue::ISSUE_STALE, $translation_issue->get('issue'));
+        $translationissue = $issues[0];
+        $this->assertEquals(translation_issue::ISSUE_STALE, $translationissue->get('issue'));
 
         $this->waitForSecond();
         $translator->get_best_translation('de', md5('new hash'), $foundhash, 'new text');
         $issues = translation_issue::get_records();
         $this->assertCount(1, $issues);
         $updatedissue = $issues[0];
-        $this->assertGreaterThan($translation_issue->get('timemodified'), $updatedissue->get('timemodified'));
+        $this->assertGreaterThan($translationissue->get('timemodified'), $updatedissue->get('timemodified'));
 
         set_config('logdebounce', 5, 'filter_translations');
         $this->waitForSecond();

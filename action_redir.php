@@ -39,7 +39,7 @@ $PAGE->set_url('/filter/translations/action_redir.php', array('action' => $actio
 require_capability('filter/translations:bulkdeletetranslations', $context);
 
 if (!confirm_sesskey()) {
-    print_error('confirmsesskeybad');
+    throw new \moodle_exception('confirmsesskeybad');
 }
 
 if ($data = data_submitted()) {
