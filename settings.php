@@ -21,6 +21,7 @@
  * @link https://opensourcelearning.co.uk
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
+ * @copyright 2023, Tina John <johnt.22.tijo@gmail.com> 
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -109,4 +110,21 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configtext('filter_translations/google_apikey',
         get_string('google_apikey', 'filter_translations'), '', null, PARAM_RAW_TRIMMED, 40));
-}
+
+    // Added tinjohn Deepl additions.
+    $settings->add(new admin_setting_heading('deepltranslateapi',
+        get_string('deepltranslate', 'filter_translations'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/deepl_enable',
+        get_string('deepl_enable', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_configcheckbox('filter_translations/deepl_backoffonerror',
+        get_string('deepl_backoffonerror', 'filter_translations'), '', false));
+
+    $settings->add(new admin_setting_configtext('filter_translations/deepl_apiendpoint',
+        get_string('deepl_apiendpoint', 'filter_translations'), '', 'https://api-free.deepl.com/v2/translate',
+        PARAM_URL));
+
+    $settings->add(new admin_setting_configtext('filter_translations/deepl_apikey',
+        get_string('deepl_apikey', 'filter_translations'), '', null, PARAM_RAW_TRIMMED, 40));
+    }
