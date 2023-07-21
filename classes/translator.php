@@ -21,6 +21,7 @@
  * @link https://opensourcelearning.co.uk
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
+ * @copyright 2023, Tina John <johnt.22.tijo@gmail.com> 
  */
 
 namespace filter_translations;
@@ -28,6 +29,8 @@ namespace filter_translations;
 use cache;
 use filter_translations\translationproviders\googletranslate;
 use filter_translations\translationproviders\languagestringreverse;
+// Added tinjohn for DeepL.
+use filter_translations\translationproviders\deepltranslate;
 
 /**
  *
@@ -39,6 +42,8 @@ class translator {
     public static $existingautotranslationsfound = 0;
     public static $translationnotfound = 0;
     public static $cachehit = 0;
+    // Added tinjohn for DeepL.
+    public static $deepltranslatefetches = 0;
 
     /**
      * Wrapper function to allow overriding in translator_testable.
@@ -98,13 +103,30 @@ class translator {
                 self::$langstringlookupfetches++;
                 $translation = $languagestringtranslation;
             } else {
-                // No dice... try google translate.
-                $google = new googletranslate();
-                $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+                if (!isset($config)) {
+                    $config = get_config('filter_translations');
+                }
+                // Added tinjohn for DeepL vs. Google.
+                if ($config->google_enable) {
+                    // No dice... try google translate.
+                    $google = new googletranslate();
+                    $googletranslation = $google->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
 
-                if (!empty($googletranslation)) {
-                    self::$googletranslatefetches++;
-                    $translation = $googletranslation;
+                    if (!empty($googletranslation)) {
+                        self::$googletranslatefetches++;
+                        $translation = $googletranslation;
+                    }
+                } else {
+                    if ($config->deepl_enable) {
+                        // No dice... try deepl translate.
+                        $deepl = new deepltranslate();
+                        $deepltranslation = $deepl->createorupdate_translation($foundhash, $generatedhash, $text, $language, $translation);
+
+                        if (!empty($deepltranslation)) {
+                            self::$deepltranslatefetches++;
+                            $translation = $deepltranslation;
+                        }
+                    }
                 }
             }
         } else if (!empty($translation)) {

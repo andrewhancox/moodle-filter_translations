@@ -21,6 +21,7 @@
  * @link https://opensourcelearning.co.uk
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
+ * @copyright 2023, Tina John <johnt.22.tijo@gmail.com> 
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -190,3 +191,10 @@ $string['untranslatedpages'] = 'Pages to leave untranslated';
 $string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
 $string['userid'] = 'User ID';
+// Added tinjohn for DeepL.
+$string['deepl_apiendpoint'] = 'API Endpoint';
+$string['deepl_apikey'] = 'API key';
+$string['deepl_backoffonerror'] = 'Back off from erroring API';
+$string['deepl_enable'] = 'Use DeepL Translate API';
+$string['deepltranslate'] = 'DeepL Translate';
+
