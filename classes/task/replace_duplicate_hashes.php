@@ -106,7 +106,8 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                         $translationhashes = [];
 
                         // Get all html blocks only.
-                        foreach ($DB->get_records($table, ['blockname' => 'html'], 'id ASC') as $row) {
+                        $blocksrs = $DB->get_recordset($table, ['blockname' => 'html'], 'id ASC');
+                        foreach ($blocksrs as $row) {
                             // Extract the content text from the block config.
                             $blockinstance = block_instance('html', $row);
                             $blockcontent = $blockinstance->config->text;
@@ -138,6 +139,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                             $DB->update_record($table, $row);
                             $updatedcount++;
                         }
+                        $blocksrs->close();
                     }
 
                     mtrace('');
@@ -194,7 +196,8 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
 
                 $lasthash = '';
 
-                foreach ($DB->get_records_sql($sql) as $row) {
+                $rs = $DB->get_recordset_sql($sql);
+                foreach ($rs as $row) {
                     if (empty($row->hash)) {
                         continue; // Hash cannot be empty.
                     }
@@ -232,6 +235,8 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
 
                     $updatedcount++;
                 }
+                $rs->close();
+
                 mtrace('');
                 mtrace("  ++Updated: $updatedcount");
             }

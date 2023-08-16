@@ -116,7 +116,8 @@ class copy_translations extends \core\task\scheduled_task {
                     continue; // Skip this and move to the next column.
                 }
 
-                foreach ($DB->get_records_select($table, "$column IS NOT NULL AND $column <> ''") as $row) {
+                $rs = $DB->get_recordset_select($table, "$column IS NOT NULL AND $column <> ''");
+                foreach ($rs as $row) {
                     // Skip if no translation span tag found.
                     if (strpos($row->$column, 'data-translationhash') === false) {
                         continue;
@@ -214,6 +215,7 @@ class copy_translations extends \core\task\scheduled_task {
                         }
                     }
                 }
+                $rs->close();
             }
 
             mtrace("Finished processing table: $table");

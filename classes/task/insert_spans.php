@@ -109,7 +109,8 @@ class insert_spans extends \core\task\scheduled_task {
                     // Only check/process configdata field.
                     if ($column == 'configdata') {
                         // Get all html blocks only.
-                        foreach ($DB->get_records($table, ['blockname' => 'html']) as $row) {
+                        $blocksrs = $DB->get_recordset($table, ['blockname' => 'html']);
+                        foreach ($blocksrs as $row) {
                             // Extract the content text from the block config.
                             $blockinstance = block_instance('html', $row);
                             $blockcontent = $blockinstance->config->text;
@@ -129,6 +130,7 @@ class insert_spans extends \core\task\scheduled_task {
                             $updated = true;
                             mtrace('+', '');
                         }
+                        $blocksrs->close();
                     }
 
                     continue; // Done with blocks.
@@ -139,7 +141,8 @@ class insert_spans extends \core\task\scheduled_task {
                     continue; // Skip this and move to the next column.
                 }
 
-                foreach ($DB->get_records_select($table, "$column IS NOT NULL AND $column <> ''") as $row) {
+                $rs = $DB->get_recordset_select($table, "$column IS NOT NULL AND $column <> ''");
+                foreach ($rs as $row) {
                     // Skip if a translation span tag found.
                     if (strpos($row->$column, 'data-translationhash') !== false) {
                         continue;
@@ -150,6 +153,7 @@ class insert_spans extends \core\task\scheduled_task {
                     $updated = true;
                     mtrace('+', '');
                 }
+                $rs->close();
             }
 
             if ($updated) {
