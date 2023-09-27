@@ -141,7 +141,8 @@ class filter_translations extends moodle_text_filter {
         $generatedhash = $this->generatehash($text);
         $targetlanguage = current_language();
 
-        $cachekey = $targetlanguage . ($generatedhash ?? $foundhash);
+        // Use foundhash where possible.
+        $cachekey = $targetlanguage . ($foundhash ?? $generatedhash);
 
         // Look for a cached translation and return it, unless we're doing in-line translations.
         if (!self::checkinlinestranslation(true)) {
