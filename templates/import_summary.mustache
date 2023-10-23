@@ -1,0 +1,45 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+
+<div class="generalbox">
+  <h2 class="h3">{{#str}} importsummary, filter_translations {{/str}}</h3>
+  <p>{{#str}} processedcount, filter_translations, {{processedcount}} {{/str}}</p>
+  <p>{{#str}} skippedcount, filter_translations, {{skippedcount}} {{/str}}</p>
+
+    <table class="table table-bordered">
+        <tr>
+            <thead>
+                <th>{{#str}} linenumber, filter_translations {{/str}}</th>
+                <th>{{#str}} md5key, filter_translations {{/str}}</th>
+                <th>{{#str}} targetlanguage, filter_translations {{/str}}</th>
+                <th>{{#str}} reason, filter_translations {{/str}}</th>
+            </thead>
+        </tr>
+        {{#skipped}}
+        <tr>
+            <tbody>
+                <td>{{{linenum}}}</td>
+                <td>{{{md5key}}}</td>
+                <td>{{{targetlanguage}}}</td>
+                <td>{{{reason}}}</td>
+            </tbody>
+        </tr>
+        {{/skipped}}
+    </table>
+
+  <p><a class="btn btn-primary" href="{{continueurl}}">{{#str}} continue {{/str}}</a></p>
+</div>
