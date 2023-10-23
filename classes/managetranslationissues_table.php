@@ -243,7 +243,7 @@ class managetranslationissues_table extends table_sql {
             return $row->substitutetext;
         }
 
-        return shorten_text(strip_tags($row->substitutetext));
+        return shorten_text(strip_tags($row->substitutetext ?? ''));
     }
 
     /**
