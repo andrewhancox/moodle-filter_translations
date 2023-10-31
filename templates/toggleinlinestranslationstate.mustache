@@ -26,6 +26,9 @@
             {{#translateall}}
                 <a class="dropdown-item" href="{{{alltranslationsurl}}}">{{#str}}managetranslations, filter_translations{{/str}}</a>
             {{/translateall}}
+            {{#canexport}}
+                <a class="dropdown-item" href="{{{exporttranslationsurl}}}">{{#str}}exporttranslations, filter_translations{{/str}}</a>
+            {{/canexport}}
             {{#bulkimport}}
                 <a class="dropdown-item" href="{{{importtranslationsurl}}}">{{#str}}importtranslations, filter_translations{{/str}}</a>
             {{/bulkimport}}
