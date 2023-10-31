@@ -26,6 +26,7 @@ use filter_translations\translation;
 
 define('REASON_LANGNOTFOUND', 1); // Language not found on the site.
 define('REASON_RECORDEXISTS', 2); // Transaltion record already exsits.
+define('REASON_MISSINGCSVDATA', 3); // Some transaltion data is missing.
 
 require('../../config.php');
 require_once($CFG->libdir . '/csvlib.class.php');
@@ -107,8 +108,22 @@ if ($data = $form->get_data()) {
         $targetlanguage = trim($line[3]);
         $contextid = trim($line[4]);
 
+        // Skip if any field is empty.
+        if(empty($md5key) || empty($rawtext) || empty($substitutetext) || empty($targetlanguage) || empty($contextid)) {
+            $row = new stdClass();
+            $row->linenum = $linenum;
+            $row->md5key = $md5key;
+            $row->targetlanguage = $targetlanguage;
+            $row->reason = get_string('reasonimportskipped' . REASON_MISSINGCSVDATA, 'filter_translations');
+
+            $skipped[$linenum] = $row;
+
+            $linenum++; // Increment line number before skipping.
+            continue;
+        }
+
         // Skip line if language is not installed.
-        if (isset($listoftranslations[$targetlanguage])) {
+        if (!isset($listoftranslations[$targetlanguage])) {
             $row = new stdClass();
             $row->linenum = $linenum;
             $row->md5key = $md5key;

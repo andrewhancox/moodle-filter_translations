@@ -14,12 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace filter_translations\form;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/formslib.php');
-
 /**
  * Import form
  *
@@ -27,6 +21,12 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright  2023 Rajneel Totaram <rajneel.totaram@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace filter_translations\form;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/formslib.php');
 
 class import_form extends \moodleform {
     public function definition() {

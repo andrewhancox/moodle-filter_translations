@@ -144,6 +144,7 @@ $string['skippedcount'] = 'Lines skipped: {$a}';
 $string['reason'] = 'Reason';
 $string['reasonimportskipped1'] = 'Language not available on site.';
 $string['reasonimportskipped2'] = 'Translation record for this hash already exists.';
+$string['reasonimportskipped3'] = 'Translation data is incomplete.';
 $string['insertspans'] = 'Insert translation spans tags';
 $string['issue'] = 'Status';
 $string['issue_10'] = 'Stale';
