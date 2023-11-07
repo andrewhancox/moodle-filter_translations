@@ -52,7 +52,7 @@ $alltranslations = $DB->get_records('filter_translations',
 // Course name.
 $name = trim($course->fullname);
 $generatedhash = $filter->generatehash($name);
-// Check if a translation exists.
+// Check for existing translations.
 //$count = $DB->count_records('filter_translations', ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
 
 if (!array_key_exists($generatedhash, $alltranslations)) {
@@ -281,8 +281,113 @@ foreach ($modinfo->cms as $cm) {
 }
 
 // Text block.
+$blocksrs = $DB->get_recordset('block_instances', ['blockname' => 'html', 'parentcontextid' => $coursecontext->id]);
+
+foreach ($blocksrs as $block) {
+    // Extract the content text from the block config.
+    $blockinstance = block_instance('html', $block);
+    $blockcontent = $blockinstance->config->text;
+
+    // Generate the hash for the block title.
+    if (!empty($blockinstance->config->title)) {
+        $name = trim($blockinstance->config->title);
+        $generatedhash = $filter->generatehash($name);
+
+        if (!array_key_exists($generatedhash, $alltranslations)) {
+                $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $cm->context->id];
+        }
+    }
+
+    // Block text.
+    // Rewrite url.
+    $text = file_rewrite_pluginfile_urls($blockinstance->config->text, 'pluginfile.php', $blockinstance->context->id,
+                'block_html', 'content', null);
+    $foundhash = $filter->findandremovehash($text);
+    $generatedhash = $filter->generatehash($text);
+
+    if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
+        $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $blockinstance->context->id];
+    }
+}
+
+$blocksrs->close();
 
 // Questions.
+// Get all question categories, based on course context.
+$catrs = $DB->get_recordset('question_categories', ['contextid' => $coursecontext->id, 'parent' => 0]);
+
+foreach ($catrs as $cat) {
+    $questions = get_questions_category($cat, true, true, true, true);
+
+    foreach ($questions as $q) {
+        // Question text.
+        //echo "<p>questiontext: " . htmlentities($q->questiontext) . "</p>" ;
+        $text = $q->questiontext;
+        // $text = file_rewrite_pluginfile_urls($blockinstance->config->text, 'pluginfile.php', $blockinstance->context->id,
+        //        'block_html', 'content', NULL);
+        $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+        if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+            $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+        }
+
+        // General feedback.
+        if (!empty($q->generalfeedback)) {
+            $text = $q->generalfeedback;
+            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+            }
+        }
+
+
+        // Combined feedback.
+        $fields = array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback');
+        foreach ($fields as $field) {
+            if (isset($q->options->$field) && !empty($q->options->$field)) {
+                $text = $q->options->$field;
+                $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+                if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+                    $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+                }
+            }
+        }
+
+        foreach ($q->options->answers as $answer) {
+            // Answers.
+            $text = $answer->answer;
+            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+            }
+
+            // Feedback.
+            if (!empty($answer->feedback)) {
+                $text = $answer->feedback;
+                $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+                if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+                    $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+                }
+            }
+        }
+
+        // Hints.
+        foreach ($q->hints as $hint) {
+            $text = $hint->hint;
+            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
+
+            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
+                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
+            }
+        }
+    }
+}
+
+$catrs->close();
 
 $downloadfilename = clean_filename("translations-course-{$course->id}");
 $delimiter = 'comma';
