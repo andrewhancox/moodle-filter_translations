@@ -321,10 +321,10 @@ foreach ($catrs as $cat) {
 
     foreach ($questions as $q) {
         // Question text.
-        //echo "<p>questiontext: " . htmlentities($q->questiontext) . "</p>" ;
+        // Use text as is. Do not replace url placeholders.
+        // TODO: In the future, we will always use url placeholders, instead of actual urls.
         $text = $q->questiontext;
-        // $text = file_rewrite_pluginfile_urls($blockinstance->config->text, 'pluginfile.php', $blockinstance->context->id,
-        //        'block_html', 'content', NULL);
+
         $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
 
         if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
