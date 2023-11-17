@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Export translations in CSV format.
+ * Export translations landing page
  *
  * @package    filter_translations
  * @copyright  2023 Rajneel Totaram <rajneel.totaram@moodle.com>
@@ -25,390 +25,38 @@
 use filter_translations\translation;
 
 require(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/csvlib.class.php');
 
-$courseid = required_param('id', PARAM_INT);
-$targetlanguage = current_language();
+$courseid = optional_param('id', SITEID, PARAM_INT);
+$targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-$coursecontext = context_course::instance($course->id);
+if ($courseid > 1) {
+    $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+}
+
+$context = context_system::instance();
 
 require_login();
 
-$PAGE->set_context($coursecontext);
+require_capability('filter/translations:exporttranslations', $context);
 
-require_capability('filter/translations:exporttranslations', $coursecontext);
+$url = new moodle_url('/filter/translations/export.php', ['id' => $courseid, 'targetlanguage' => $targetlanguage]);
+$PAGE->set_url($url);
+$PAGE->set_context($context);
 
-$exportdata = [];
-$filter = new filter_translations(context_system::instance(), []);
+$title = get_string('exporttranslations', 'filter_translations');
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
+$PAGE->set_pagelayout('standard');
 
-// Get all translations for this language so that we don't have to query the DB every time.
-$alltranslations = $DB->get_records('filter_translations',
-    ['targetlanguage' => $targetlanguage],
-    '',
-    'md5key,lastgeneratedhash'
-);
+$form = new \filter_translations\form\exporttranslations_form(new moodle_url('/filter/translations/processexport.php'));
 
-// Course name.
-$name = trim($course->fullname);
-$generatedhash = $filter->generatehash($name);
-// Check for existing translations.
-//$count = $DB->count_records('filter_translations', ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
+$data = new stdClass();
+$data->targetlanguage = $targetlanguage;
+$data->course = $courseid;
+$form->set_data($data);
 
-if (!array_key_exists($generatedhash, $alltranslations)) {
-    $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $coursecontext->id];
-}
+echo $OUTPUT->header();
+echo 'You can export untranslated content for a course to translate offline.';
+$form->display();
 
-// Course summary.
-$text = trim($course->summary);
-$foundhash = $filter->findandremovehash($text);
-$generatedhash = $filter->generatehash($text);
-
-// Check if a translation exists.
-//$count = $DB->count_records('filter_translations', ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-    $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $coursecontext->id];
-}
-
-$modinfo = get_fast_modinfo($course);
-
-$sections = $modinfo->get_section_info_all();
-
-foreach ($sections as $section) {
-    if ($section->uservisible) {
-        // Section name.
-        if (!empty($section->name)) {
-            $name = trim($section->name);
-            $generatedhash = $filter->generatehash($name);
-
-            // Check if a translation exists.
-            //$count = $DB->count_records('filter_translations', ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-            if (!array_key_exists($generatedhash, $alltranslations)) {
-                $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $coursecontext->id];
-            }
-        }
-
-        // Section summary.
-        if (!empty($section->summary)) {
-            $text = file_rewrite_pluginfile_urls(trim($section->summary), 'pluginfile.php', $coursecontext->id,
-                        'course', 'section', $section->id);
-
-            $foundhash = $filter->findandremovehash($text);
-            $generatedhash = $filter->generatehash($text);
-
-            // Check if a translation exists.
-            // $count = $DB->count_records('filter_translations',
-            //             ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-            if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $coursecontext->id];
-            }
-        }
-    }
-}
-
-foreach ($modinfo->cms as $cm) {
-   // mtrace("mod: {$cm->modname}, instanceid: {$cm->instance}, cmid: {$cm->id}, context: {$cm->context->id}, visible: {$cm->uservisible}");
-
-    // Only export visible activities.
-    if ($cm->uservisible) {
-        // Activity name.
-        $name = trim($cm->name);
-        $generatedhash = $filter->generatehash($name);
-
-        // Check if a translation exists.
-        //$count = $DB->count_records('filter_translations', ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-        if (!array_key_exists($generatedhash, $alltranslations)) {
-            $exportdata[] = [$generatedhash, $name,  '', $targetlanguage, $cm->context->id];
-        }
-
-        // Get the activity record from the database.
-        $activity = $DB->get_record($cm->modname, ['id' => $cm->instance]);
-
-        // Activity intro.
-        if (!empty($cm->content)) {
-            $text = format_module_intro($cm->modname, $activity, $cm->id);
-            $foundhash = $filter->findandremovehash($text);
-            $generatedhash = $filter->generatehash($text);
-
-            // Check if a translation exists.
-            //$count = $DB->count_records('filter_translations',
-            //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-            if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $cm->context->id];
-            }
-        }
-
-        switch ($cm->modname) {
-            case 'page':
-                $text = file_rewrite_pluginfile_urls(trim($activity->content), 'pluginfile.php', $cm->context->id,
-                            'mod_page', 'content', $activity->revision);
-
-                $foundhash = $filter->findandremovehash($text);
-                $generatedhash = $filter->generatehash($text);
-
-                // Check if a translation exists.
-                //$count = $DB->count_records('filter_translations',
-                //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                    $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $cm->context->id];
-                }
-
-            break;
-            case 'book':
-                // Get the book chapters.
-                $rs = $DB->get_recordset('book_chapters', ['bookid' => $cm->instance]);
-
-                foreach ($rs as $bookchapter) {
-                    // Chapter title.
-                    $name = trim($bookchapter->title);
-                    $generatedhash = $filter->generatehash($name);
-
-                    // Check if a translation exists.
-                    //$count = $DB->count_records('filter_translations',
-                    //            ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                    if (!array_key_exists($generatedhash, $alltranslations)) {
-                        $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $cm->context->id];
-                    }
-
-                    // Content.
-                    $text = file_rewrite_pluginfile_urls(trim($bookchapter->content), 'pluginfile.php', $cm->context->id,
-                                'mod_book', 'chapter', $bookchapter->id);
-
-                    $foundhash = $filter->findandremovehash($text);
-                    $generatedhash = $filter->generatehash($text);
-
-                    // Check if a translation exists.
-                    //$count = $DB->count_records('filter_translations',
-                    //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                    if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                        $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $cm->context->id];
-                    }
-                }
-
-                $rs->close();
-            break;
-            case 'lesson':
-                // Get the lesson pages.
-                $rs = $DB->get_recordset('lesson_pages', ['lessonid' => $cm->instance]);
-
-                foreach ($rs as $lessonpage) {
-                    // Page title.
-                    $name = trim($lessonpage->title);
-                    $generatedhash = $filter->generatehash($name);
-
-                    // Check if a translation exists.
-                    //$count = $DB->count_records('filter_translations',
-                    //            ['md5key' => $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                    if (!array_key_exists($generatedhash, $alltranslations)) {
-                        $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $cm->context->id];
-                    }
-
-                    // Content.
-                    $text = file_rewrite_pluginfile_urls(trim($lessonpage->contents), 'pluginfile.php', $cm->context->id,
-                                'mod_lesson', 'page_contents', $lessonpage->id);
-
-                    $foundhash = $filter->findandremovehash($text);
-                    $generatedhash = $filter->generatehash($text);
-
-                    // Check if a translation exists.
-                    //$count = $DB->count_records('filter_translations',
-                    //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                    if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                        $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $cm->context->id];
-                    }
-                }
-
-                $rs->close();
-
-                // Get the lesson answers and responses.
-                $rs = $DB->get_recordset('lesson_answers', ['lessonid' => $cm->instance]);
-
-                foreach ($rs as $lessonpage) {
-                    // Answer.
-                    $answer = trim($lessonpage->answer);
-                    if ($lessonpage->answerformat == 1) {
-                        $answer = file_rewrite_pluginfile_urls($answer, 'pluginfile.php', $cm->context->id,
-                                'mod_lesson', 'page_answers', $lessonpage->id);
-                    }
-
-                    $foundhash = $filter->findandremovehash($answer); // May or may not have a translation hash.
-                    $generatedhash = $filter->generatehash($answer);
-
-                    // Check if a translation exists.
-                    //$count = $DB->count_records('filter_translations',
-                    //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                    if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                        $exportdata[] = [$foundhash ?? $generatedhash, $answer, '', $targetlanguage, $cm->context->id];
-                    }
-
-                    // Response.
-                    // Response may be NULL as well.
-                    if (!empty($lessonpage->response)) {
-                        $text = file_rewrite_pluginfile_urls(trim($lessonpage->response), 'pluginfile.php', $cm->context->id,
-                                    'mod_lesson', 'page_responses', $lessonpage->id);
-
-                        $foundhash = $filter->findandremovehash($text);
-                        $generatedhash = $filter->generatehash($text);
-
-                        // Check if a translation exists.
-                        //$count = $DB->count_records('filter_translations',
-                        //            ['md5key' => $foundhash ?? $generatedhash, 'targetlanguage' => $targetlanguage]);
-
-                        if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-                            $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $cm->context->id];
-                        }
-                    }
-                }
-
-                $rs->close();
-            break;
-            default:
-                ;
-            break;
-        }
-    }
-}
-
-// Text block.
-$blocksrs = $DB->get_recordset('block_instances', ['blockname' => 'html', 'parentcontextid' => $coursecontext->id]);
-
-foreach ($blocksrs as $block) {
-    // Extract the content text from the block config.
-    $blockinstance = block_instance('html', $block);
-    $blockcontent = $blockinstance->config->text;
-
-    // Generate the hash for the block title.
-    if (!empty($blockinstance->config->title)) {
-        $name = trim($blockinstance->config->title);
-        $generatedhash = $filter->generatehash($name);
-
-        if (!array_key_exists($generatedhash, $alltranslations)) {
-                $exportdata[] = [$generatedhash, $name, '', $targetlanguage, $cm->context->id];
-        }
-    }
-
-    // Block text.
-    // Rewrite url.
-    $text = file_rewrite_pluginfile_urls($blockinstance->config->text, 'pluginfile.php', $blockinstance->context->id,
-                'block_html', 'content', null);
-    $foundhash = $filter->findandremovehash($text);
-    $generatedhash = $filter->generatehash($text);
-
-    if (!array_key_exists($foundhash ?? $generatedhash, $alltranslations)) {
-        $exportdata[] = [$foundhash ?? $generatedhash, $text, '', $targetlanguage, $blockinstance->context->id];
-    }
-}
-
-$blocksrs->close();
-
-// Questions.
-// Get all question categories, based on course context.
-$catrs = $DB->get_recordset('question_categories', ['contextid' => $coursecontext->id, 'parent' => 0]);
-
-foreach ($catrs as $cat) {
-    $questions = get_questions_category($cat, true, true, true, true);
-
-    foreach ($questions as $q) {
-        // Question text.
-        // Use text as is. Do not replace url placeholders.
-        // TODO: In the future, we will always use url placeholders, instead of actual urls.
-        $text = $q->questiontext;
-
-        $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-        if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-            $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-        }
-
-        // General feedback.
-        if (!empty($q->generalfeedback)) {
-            $text = $q->generalfeedback;
-            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-            }
-        }
-
-
-        // Combined feedback.
-        $fields = array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback');
-        foreach ($fields as $field) {
-            if (isset($q->options->$field) && !empty($q->options->$field)) {
-                $text = $q->options->$field;
-                $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-                if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-                    $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-                }
-            }
-        }
-
-        foreach ($q->options->answers as $answer) {
-            // Answers.
-            $text = $answer->answer;
-            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-            }
-
-            // Feedback.
-            if (!empty($answer->feedback)) {
-                $text = $answer->feedback;
-                $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-                if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-                    $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-                }
-            }
-        }
-
-        // Hints.
-        foreach ($q->hints as $hint) {
-            $text = $hint->hint;
-            $foundhash = $filter->findandremovehash($text); // May or may not have a translation hash.
-
-            if (!empty($foundhash) && !array_key_exists($foundhash, $alltranslations)) {
-                $exportdata[] = [$foundhash, $text, '', $targetlanguage, $coursecontext->id];
-            }
-        }
-    }
-}
-
-$catrs->close();
-
-$downloadfilename = clean_filename("translations-course-{$course->id}");
-$delimiter = 'comma';
-$csvexport = new csv_export_writer($delimiter);
-$csvexport->set_filename ($downloadfilename);
-
-// Print names of all the fields.
-$requiredfields = ['md5key', 'rawtext', 'substitutetext', 'targetlanguage', 'contextid', ];
-
-$exporttitle = [];
-foreach ($requiredfields as $field) {
-    $exporttitle[] = $field;
-}
-
-// Add the header line to the data.
-$csvexport->add_data($exporttitle);
-
-// Print all the lines of data.
-foreach ($exportdata as $datarow) {
-    $csvexport->add_data ($datarow);
-}
-
-// Download the file.
-$csvexport->download_file();
+echo $OUTPUT->footer();
