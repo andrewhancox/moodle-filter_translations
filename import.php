@@ -47,7 +47,9 @@ $PAGE->set_heading($title);
 
 $form = new \filter_translations\form\import_form();
 
-if ($data = $form->get_data()) {
+if ($form->is_cancelled()) {
+    redirect($CFG->wwwroot);
+} if ($data = $form->get_data()) {
 
     $filecontents = $form->get_file_content('file');
 
