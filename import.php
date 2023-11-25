@@ -44,6 +44,7 @@ $PAGE->set_context($context);
 $title = get_string('importtranslations', 'filter_translations');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
+$PAGE->set_pagelayout('standard');
 
 $form = new \filter_translations\form\import_form();
 
@@ -111,7 +112,7 @@ if ($form->is_cancelled()) {
         $contextid = trim($line[4]);
 
         // Skip if any field is empty.
-        if(empty($md5key) || empty($rawtext) || empty($substitutetext) || empty($targetlanguage) || empty($contextid)) {
+        if (empty($md5key) || empty($rawtext) || empty($substitutetext) || empty($targetlanguage) || empty($contextid)) {
             $row = new stdClass();
             $row->linenum = $linenum;
             $row->md5key = $md5key;
@@ -197,6 +198,10 @@ if ($form->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+
+echo '<div class="alert alert-info">';
+echo get_string('importdescription', 'filter_translations');
+echo '</div>';
 
 $form->display();
 

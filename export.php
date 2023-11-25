@@ -56,7 +56,9 @@ $data->course = $courseid;
 $form->set_data($data);
 
 echo $OUTPUT->header();
-echo 'You can export untranslated content for a course to translate offline.';
+echo '<div class="alert alert-info">';
+echo get_string('exportdescription', 'filter_translations');
+echo '</div>';
 $form->display();
 
 echo $OUTPUT->footer();

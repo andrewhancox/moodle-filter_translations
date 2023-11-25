@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace filter_translations\form;
-
 /**
  * Export translations form
  *
@@ -24,6 +22,7 @@ namespace filter_translations\form;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace filter_translations\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,8 +33,6 @@ class exporttranslations_form  extends \moodleform {
         global $CFG, $DB, $PAGE, $USER;
 
         $mform =& $this->_form;
-
-        //$mycourses = enrol_get_all_users_courses($USER->id, false, ['id', 'fullname']);
 
         if (has_capability('moodle/course:view', $PAGE->context)) {
             $mycourses = $DB->get_records_select('course', 'id > 1', null, 'fullname ASC', 'id,fullname');

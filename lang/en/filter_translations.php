@@ -210,3 +210,5 @@ $string['untranslatedpages'] = 'Pages to leave untranslated';
 $string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
 $string['userid'] = 'User ID';
+$string['exportdescription'] = 'You can export untranslated content of a course to translate offline.<br>The export file will be in CSV format.<br>This file can be imported back into the same site.';
+$string['importdescription'] = 'You can import translations done offline.<br>Only missing translations will be imported, existing translations will be skipped.<br>Importing translations from another site is currently not supported.';
