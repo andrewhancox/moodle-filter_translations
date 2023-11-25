@@ -50,7 +50,7 @@ class exporttranslations_form  extends \moodleform {
         }
 
         $mform->addElement('select', 'course', get_string('course'), $courses);
-        // TODO: Add validation. Course has to be selected.
+        $mform->addRule('course', get_string('errorselectcourse', 'filter_translations'), 'nonzero', '', 'client', false, false);
 
         $languages = get_string_manager()->get_list_of_translations();
 

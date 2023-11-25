@@ -142,6 +142,7 @@ $string['importtranslations'] = 'Import translations';
 $string['linenumber'] = 'Line number';
 $string['processedcount'] = 'Lines in file: {$a}';
 $string['selectcourse'] = 'Select a course...';
+$string['errorselectcourse'] = 'Please select a course.';
 $string['skippedcount'] = 'Lines skipped: {$a}';
 $string['reason'] = 'Reason';
 $string['reasonimportskipped1'] = 'Language not available on site.';
