@@ -40,7 +40,9 @@ require_capability('filter/translations:exporttranslations', $context);
 
 $form = new \filter_translations\form\exporttranslations_form(new moodle_url('/filter/translations/processexport.php'));
 if ($form->is_cancelled()) {
-    redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
+    if ($courseid > SITEID) {
+        redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
+    }
 } else if ($fromform = $form->get_data()) {
     $courseid = $fromform->course;
     $targetlanguage = $fromform->targetlanguage;
@@ -49,7 +51,7 @@ if ($form->is_cancelled()) {
     redirect($CFG->wwwroot);
 }
 
-if ($courseid == SITEID) {
+if ($courseid <= SITEID) {
     // Cannot export site-level details.
     redirect($CFG->wwwroot);
 }
