@@ -30,13 +30,14 @@ $courseid = optional_param('id', SITEID, PARAM_INT);
 $targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
 
 if ($courseid > 1) {
-    $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+    if (!$course = $DB->get_record('course', ['id' => $courseid])) {
+        throw new \moodle_exception('invalidcourseid');
+    }
 }
-
-$context = context_system::instance();
 
 require_login();
 
+$context = context_system::instance();
 require_capability('filter/translations:exporttranslations', $context);
 
 $url = new moodle_url('/filter/translations/export.php', ['id' => $courseid, 'targetlanguage' => $targetlanguage]);

@@ -31,6 +31,15 @@ define('REASON_MISSINGCSVDATA', 3); // Some transaltion data is missing.
 require('../../config.php');
 require_once($CFG->libdir . '/csvlib.class.php');
 
+$courseid = optional_param('id', SITEID, PARAM_INT);
+
+if ($courseid > 1) {
+    // Not really necessary to check course, but it provides a nicer user exprience.
+    if (!$course = $DB->get_record('course', ['id' => $courseid])) {
+        throw new \moodle_exception('invalidcourseid');
+    }
+}
+
 require_login();
 
 $context = context_system::instance();
@@ -47,10 +56,16 @@ $PAGE->set_heading($title);
 $PAGE->set_pagelayout('standard');
 
 $form = new \filter_translations\form\import_form();
+$data = new stdClass();
+$data->id = $courseid;
+$form->set_data($data);
 
 if ($form->is_cancelled()) {
+    if ($courseid > SITEID) {
+        redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
+    }
     redirect($CFG->wwwroot);
-} if ($data = $form->get_data()) {
+} else if ($data = $form->get_data()) {
 
     $filecontents = $form->get_file_content('file');
 
@@ -181,7 +196,11 @@ if ($form->is_cancelled()) {
     $processedcount = $linenum - 2;
     $skippedcount = count($skipped);
 
-    $returnurl = new moodle_url('/course/view.php', ['id' => $COURSE->id]); // TODO: Link to the correct course.
+    if ($courseid > SITEID) {
+        $returnurl = new moodle_url('/course/view.php', ['id' => $courseid]);
+    } else {
+        $returnurl = new moodle_url('/');
+    }
 
     $data = (object) [
         'processedcount' => $processedcount,

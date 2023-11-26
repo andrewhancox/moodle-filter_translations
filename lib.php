@@ -143,7 +143,7 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
     ]);
 
     $alltranslationsurl = new moodle_url("/filter/translations/managetranslations.php");
-    $importtranslationsurl = new moodle_url("/filter/translations/import.php");
+    $importtranslationsurl = new moodle_url("/filter/translations/import.php", ['id' => $PAGE->course->id]);
     $exporttranslationsurl = new moodle_url("/filter/translations/export.php", ['id' => $PAGE->course->id]);
 
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
