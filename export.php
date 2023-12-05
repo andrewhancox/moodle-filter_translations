@@ -57,7 +57,7 @@ $data->course = $courseid;
 $form->set_data($data);
 
 echo $OUTPUT->header();
-echo '<div class="alert alert-info">';
+echo '<div class="description">';
 echo get_string('exportdescription', 'filter_translations');
 echo '</div>';
 $form->display();

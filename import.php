@@ -218,7 +218,7 @@ if ($form->is_cancelled()) {
 
 echo $OUTPUT->header();
 
-echo '<div class="alert alert-info">';
+echo '<div class="description">';
 echo get_string('importdescription', 'filter_translations');
 echo '</div>';
 
