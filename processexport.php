@@ -56,7 +56,7 @@ if ($courseid <= SITEID) {
     redirect($CFG->wwwroot);
 }
 
-$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $coursecontext = context_course::instance($course->id);
 
 $exportdata = [];

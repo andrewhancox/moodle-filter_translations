@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package filter_translations
  * @author Andrew Hancox <andrewdchancox@googlemail.com>
@@ -24,6 +22,8 @@ defined('MOODLE_INTERNAL') || die();
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 2021, Andrew Hancox
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 $definitions = [
     'translatedtext_' . cache_store::MODE_REQUEST => [
@@ -47,13 +47,13 @@ $definitions = [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'simpledata' => false,
-        'staticacceleration' => false
+        'staticacceleration' => false,
     ],
     'stringsbycomponent' => [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'simpledata' => false,
-        'staticacceleration' => false
+        'staticacceleration' => false,
     ],
     'translationissues' => [
         'mode' => cache_store::MODE_APPLICATION,

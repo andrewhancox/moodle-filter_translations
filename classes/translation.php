@@ -46,7 +46,7 @@ class translation extends persistent {
     const SOURCE_AUTOMATIC = 20;
 
     protected static function define_properties() {
-        return array(
+        return [
                 // The md5 hash that will be used to refer to this translation using span tags.
                 'md5key'               => [
                         'type' => PARAM_TEXT,
@@ -54,7 +54,7 @@ class translation extends persistent {
                 // The md5 hash of the raw text that was last seen when this translation was updated/created.
                 'lastgeneratedhash'    => [
                         'type'    => PARAM_TEXT,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Target language of this translation.
                 'targetlanguage'       => [
@@ -67,26 +67,26 @@ class translation extends persistent {
                 // The raw text that was last seen when this translation was updated/created.
                 'rawtext'       => [
                         'type'    => PARAM_RAW,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Text to use as substitution.
                 'substitutetext'       => [
                         'type'    => PARAM_RAW,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Format of the text to use as subtitution.
                 'substitutetextformat' => [
-                        'choices' => array(FORMAT_HTML, FORMAT_MOODLE, FORMAT_PLAIN, FORMAT_MARKDOWN),
+                        'choices' => [FORMAT_HTML, FORMAT_MOODLE, FORMAT_PLAIN, FORMAT_MARKDOWN],
                         'type'    => PARAM_INT,
-                        'default' => FORMAT_HTML
+                        'default' => FORMAT_HTML,
                 ],
                 // How the translation was obtained - manual or automatic.
                 'translationsource' => [
                     'type' => PARAM_INT,
                     'default' => self::SOURCE_MANUAL,
-                    'choices' => array(self::SOURCE_MANUAL, self::SOURCE_AUTOMATIC),
-                ]
-        );
+                    'choices' => [self::SOURCE_MANUAL, self::SOURCE_AUTOMATIC],
+                ],
+        ];
     }
 
     /**
@@ -208,7 +208,7 @@ class translation extends persistent {
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 
         // We return class instances.
-        $instances = array();
+        $instances = [];
         foreach ($records as $key => $record) {
             $instances[$key] = new static(0, $record);
         }

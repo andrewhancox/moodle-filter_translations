@@ -33,7 +33,7 @@ $longparams = [
 
 $shortparams = [
     'm' => 'mode',
-    'f' => 'file'
+    'f' => 'file',
 ];
 
 // Now get cli options.

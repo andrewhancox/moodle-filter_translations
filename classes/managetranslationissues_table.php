@@ -87,7 +87,7 @@ class managetranslationissues_table extends table_sql {
             get_string('url', 'filter_translations'),
             get_string('targetlanguage', 'filter_translations'),
             get_string('rawtext', 'filter_translations'),
-            get_string('substitutetext', 'filter_translations')
+            get_string('substitutetext', 'filter_translations'),
         ]);
 
         if (empty($download)) {
@@ -296,7 +296,7 @@ class managetranslationissues_table extends table_sql {
                 'returnurl' => $PAGE->url,
             ]),
             get_string('edittranslation', 'filter_translations'),
-            array('class' => 'btn btn-secondary')
+            ['class' => 'btn btn-secondary']
         );
     }
 
@@ -309,9 +309,9 @@ class managetranslationissues_table extends table_sql {
         global $PAGE;
 
         // Begin the form.
-        echo html_writer::start_tag('form', array('method' => 'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php'));
-        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
-        echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'returnurl', 'value' => $PAGE->url));
+        echo html_writer::start_tag('form', ['method' => 'post', 'id' => 'bulkdeleteform', 'action' => 'action_redir.php']);
+        echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+        echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'returnurl', 'value' => $PAGE->url]);
     }
 
     /**
@@ -320,7 +320,7 @@ class managetranslationissues_table extends table_sql {
      * @return void
      */
     public function wrap_html_finish() {
-        echo html_writer::start_tag('div', array('class' => 'actions my-1'));
+        echo html_writer::start_tag('div', ['class' => 'actions my-1']);
         $this->submit_buttons();
         echo html_writer::end_tag('div');
         // Close the form.
@@ -333,7 +333,7 @@ class managetranslationissues_table extends table_sql {
     protected function submit_buttons() {
         global $PAGE;
         if (has_capability('filter/translations:bulkdeletetranslations', $PAGE->context)) {
-            echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'deleteissues'));
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'deleteissues']);
 
             $deletebuttonparams = [
                 'type'  => 'submit',
@@ -344,11 +344,11 @@ class managetranslationissues_table extends table_sql {
                 'data-action' => 'toggle',
                 'data-togglegroup' => 'translations-table',
                 'data-toggle' => 'action',
-                'disabled' => true
+                'disabled' => true,
             ];
             echo html_writer::empty_tag('input', $deletebuttonparams);
             $PAGE->requires->event_handler('#deletetranslationsbutton', 'click', 'M.util.show_confirm_dialog',
-                    array('message' => get_string('deleteissuesconfirmation', 'filter_translations')));
+                    ['message' => get_string('deleteissuesconfirmation', 'filter_translations')]);
         }
     }
 

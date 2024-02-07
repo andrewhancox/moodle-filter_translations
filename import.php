@@ -90,7 +90,7 @@ if ($form->is_cancelled()) {
     unset($filecontents); // Not needed anymore.
 
     // These are the fields, and they always should be in the same order (for simplicity).
-    $requiredfields = ['md5key', 'rawtext', 'substitutetext', 'targetlanguage', 'contextid', ];
+    $requiredfields = ['md5key', 'rawtext', 'substitutetext', 'targetlanguage', 'contextid'];
 
     // Using get_columns() ensures the Byte Order Mark is removed.
     $header = $csvimport->get_columns();

@@ -45,6 +45,6 @@ class translation_created extends translation_base {
     }
 
     public function get_url() {
-        return new moodle_url('/mod/assign/edittranslation.php', array('id' => $this->objectid));
+        return new moodle_url('/mod/assign/edittranslation.php', ['id' => $this->objectid]);
     }
 }

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package filter_translations
  * @author Andrew Hancox <andrewdchancox@googlemail.com>
@@ -25,43 +23,44 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2021, Andrew Hancox
  */
 
+defined('MOODLE_INTERNAL') || die();
 $capabilities = [
     'filter/translations:edittranslations' => [
         'captype' => 'write',
         'riskbitmask' => RISK_CONFIG,
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
     ],
     'filter/translations:editsitedefaulttranslations' => [
         'captype' => 'write',
         'riskbitmask' => RISK_CONFIG,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
     'filter/translations:edittranslationhashkeys' => [
         'captype' => 'write',
         'riskbitmask' => RISK_CONFIG,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
     'filter/translations:deletetranslations' => [
         'captype' => 'write',
         'riskbitmask' => RISK_DATALOSS,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
     'filter/translations:bulkdeletetranslations' => [
         'captype' => 'write',
         'riskbitmask' => RISK_DATALOSS,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
     'filter/translations:bulkimporttranslations' => [
         'captype' => 'write',
         'riskbitmask' => RISK_DATALOSS,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
     'filter/translations:exporttranslations' => [
         'captype' => 'read',
         'riskbitmask' => RISK_DATALOSS,
-        'contextlevel' => CONTEXT_SYSTEM
+        'contextlevel' => CONTEXT_SYSTEM,
     ],
 ];

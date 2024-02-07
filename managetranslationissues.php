@@ -62,7 +62,7 @@ $form = new managetranslationissues_filterform();
 $formdata = $form->get_data();
 
 if ($formdata) {
-    $urlparams = array(
+    $urlparams = [
         'rawtext' => $rawtext,
         'substitutetext' => $substitutetext,
         'issue' => $issue,
@@ -70,7 +70,7 @@ if ($formdata) {
         'contextid' => $contextid,
         'targetlanguage' => $targetlanguage,
         'hash' => $hash,
-    );
+    ];
     $baseurl->params($urlparams);
     redirect($baseurl);
 }

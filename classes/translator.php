@@ -152,7 +152,7 @@ class translator {
             'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
             'targetlanguage' => $targetlanguage,
             'contextid' => \context_system::instance()->id, // Default to system context.
-            'generatedhash' => $generatedhash
+            'generatedhash' => $generatedhash,
         ];
 
         if ($PAGE->state != $PAGE::STATE_BEFORE_HEADER) {

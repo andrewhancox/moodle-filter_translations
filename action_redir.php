@@ -26,7 +26,7 @@ use filter_translations\translation_issue;
 require_once("../../config.php");
 
 $action = required_param('action', PARAM_TEXT);
-$translationids = optional_param_array('translationid', array(), PARAM_INT);
+$translationids = optional_param_array('translationid', [], PARAM_INT);
 $default = new moodle_url('/filter/translations/managetranslations.php');
 $returnurl = new moodle_url(optional_param('returnurl', $default, PARAM_URL));
 
@@ -34,7 +34,7 @@ require_login();
 
 $context = context_system::instance();
 
-$PAGE->set_url('/filter/translations/action_redir.php', array('action' => $action));
+$PAGE->set_url('/filter/translations/action_redir.php', ['action' => $action]);
 
 require_capability('filter/translations:bulkdeletetranslations', $context);
 

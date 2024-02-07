@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/filter/translations/lib/diff/src/Parser.php');
 require_once($CFG->dirroot . '/filter/translations/lib/diff/src/TimeEfficientLongestCommonSubsequenceCalculator.php');
 
 use DOMDocument;
-use \SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Differ;
 
 /**
  * Wrapper for the unified diff generator https://github.com/sebastianbergmann/diff

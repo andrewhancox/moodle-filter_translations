@@ -145,7 +145,7 @@ if ($data = $form->get_data()) {
 
     // Before saving, ensure we are not overwriting existing translation.
     $record = $DB->get_record('filter_translations',
-            array('targetlanguage' => $targetlanguage, 'md5key' => $persistent->get('md5key'))
+            ['targetlanguage' => $targetlanguage, 'md5key' => $persistent->get('md5key')]
         );
 
     if (!$record) {
