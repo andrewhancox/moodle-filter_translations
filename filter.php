@@ -280,12 +280,19 @@ class filter_translations extends moodle_text_filter {
         }
 
         // Get the context of the translation, page if possible, or fall back to system.
+        // Get contextid like its done in filter_translations_render_navbar_output() in lib.php.
         if (!empty($translation) && !empty($translation->get('contextid'))) {
             $contextid = $translation->get('contextid');
-        } else if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
-            $contextid = context_system::instance()->id;
+        } else if (!empty($PAGE->cm->id)) {
+            $contextid = context_module::instance($PAGE->cm->id)->id;
+        } else if (!empty($PAGE->course->id) && $PAGE->course->id != SITEID) {
+            $contextid = context_course::instance($PAGE->course->id)->id;
         } else {
-            $contextid = $PAGE->context->id;
+            $context = $PAGE->context->get_course_context(false);
+            if (empty($context)) {
+                $context = context_system::instance();
+            }
+            $contextid = $context->id;
         }
 
         // Build an object containing all the data that the AMD module will need to render the button.
