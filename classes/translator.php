@@ -55,11 +55,12 @@ class translator {
      * @param string $generatedhash
      * @param string $foundhash
      * @param string $text
+     * @param context $context The context passed by the filter.
      * @return false|translation|mixed|null
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function get_best_translation($language, $generatedhash, $foundhash, $text) {
+    public function get_best_translation($language, $generatedhash, $foundhash, $text, $context) {
         global $CFG;
 
         $translations = $this->get_string_manager()->get_list_of_translations(true);
@@ -120,7 +121,7 @@ class translator {
         // Check to see if there is an issue that needs logging (e.g. missing or stale translation).
         // Skip the site default language.
         if ($language != $CFG->lang && !$this->skiplanguage($language)) {
-            $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation);
+            $this->checkforandlogissue($foundhash, $generatedhash, $language, $text, $translation, $context);
         }
         return $translation;
     }
@@ -133,9 +134,10 @@ class translator {
      * @param string $targetlanguage
      * @param string $text
      * @param translation $translation
+     * @param context $context The context passed by the filter.
      * @return void
      */
-    private function checkforandlogissue($foundhash, $generatedhash, $targetlanguage, $text, $translation) {
+    private function checkforandlogissue($foundhash, $generatedhash, $targetlanguage, $text, $translation, $context) {
         global $PAGE;
 
         // Is the logging all disabled?
@@ -151,15 +153,17 @@ class translator {
             'url' => '',
             'md5key' => empty($foundhash) ? $generatedhash : $foundhash,
             'targetlanguage' => $targetlanguage,
-            'contextid' => \context_system::instance()->id, // Default to system context.
+            //'contextid' => \context_system::instance()->id, // Default to system context.
+            'contextid' => $context->id, // Use context provided by filter.
             'generatedhash' => $generatedhash,
         ];
-
+/*
         if ($PAGE->state != $PAGE::STATE_BEFORE_HEADER) {
             // We can't be certain the context has been set so are not going to log it.
             // In a perfect world we'd be able to check directly to see if the context has been set yet...
             $issueproperties['contextid'] = $PAGE->context->id;
         }
+*/
         if ($PAGE->has_set_url()) {
             // If the page has had it's url set then we can log it.
             $issueproperties['url'] = $PAGE->url->out_as_local_url(false);

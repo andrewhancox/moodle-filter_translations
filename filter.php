@@ -135,6 +135,8 @@ class filter_translations extends moodle_text_filter {
             return $text;
         }
 
+        $context = $this->context; // Use the context value that the filter has.
+
         // Look for a hash in a span tag and remove the span tags.
         $foundhash = $this->findandremovehash($text);
         // Generate a hash based on the text to be translated.
@@ -160,7 +162,7 @@ class filter_translations extends moodle_text_filter {
         } else {
             // Get the best translation (object) to use.
             $translator = new translator();
-            $translation = $translator->get_best_translation($targetlanguage, $generatedhash, $foundhash, $text);
+            $translation = $translator->get_best_translation($targetlanguage, $generatedhash, $foundhash, $text, $context);
 
             if (empty($translation)) {
                 // No translation so we'll just return the text unaltered.
@@ -280,19 +282,10 @@ class filter_translations extends moodle_text_filter {
         }
 
         // Get the context of the translation, page if possible, or fall back to system.
-        // Get contextid like its done in filter_translations_render_navbar_output() in lib.php.
         if (!empty($translation) && !empty($translation->get('contextid'))) {
             $contextid = $translation->get('contextid');
-        } else if (!empty($PAGE->cm->id)) {
-            $contextid = context_module::instance($PAGE->cm->id)->id;
-        } else if (!empty($PAGE->course->id) && $PAGE->course->id != SITEID) {
-            $contextid = context_course::instance($PAGE->course->id)->id;
         } else {
-            $context = $PAGE->context->get_course_context(false);
-            if (empty($context)) {
-                $context = context_system::instance();
-            }
-            $contextid = $context->id;
+            $contextid = $this->context->id;
         }
 
         // Build an object containing all the data that the AMD module will need to render the button.
