@@ -223,15 +223,28 @@ class filter_translations extends moodle_text_filter {
             return null;
         }
 
+        // In TinyMCE translation span tags need to be inside <p> tags.
+        // So we handle both formats for now. Eventually everything will move to the new format.
+        // TODO: Update the old format into the new format, during upgrade???
+        // New format: <p class="translationhash"><span data-translationhash="abcxxx">/span></p>
+        // Old format: <span data-translationhash="abcxxx">/span>
+        $translationhashregex = '/(?:<p>|<p class="translationhash">)\s*'
+            . '<span\s*data-translationhash\s*=\s*[\'"]+([a-zA-Z0-9]+)[\'"]+\s*><\/span>\s*<\/p>|'
+            . '<span\s*data-translationhash\s*=\s*[\'"]+([a-zA-Z0-9]+)[\'"]\s*><\/span>/';
+
+
         // Get the actual hash.
         $translationhashes = [];
-        preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
+        //preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
+        preg_match($translationhashregex, $text, $translationhashes);
+
         if (empty($translationhashes[1])) {
             return null;
         }
 
         // Remove the span tag from the text.
-        $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
+        //$text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
+        $text = preg_replace($translationhashregex, '', $text);
 
         return $translationhashes[1];
     }
