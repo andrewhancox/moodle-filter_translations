@@ -230,15 +230,16 @@ class filter_translations extends moodle_text_filter {
         // Old format: <span data-translationhash="abcxxx">/span>
         $translationhashregex = '/(?:<p>|<p class="translationhash">)\s*'
             . '<span\s*data-translationhash\s*=\s*[\'"]+([a-zA-Z0-9]+)[\'"]+\s*><\/span>\s*<\/p>|'
-            . '<span\s*data-translationhash\s*=\s*[\'"]+([a-zA-Z0-9]+)[\'"]\s*><\/span>/';
-
+            . '<span\s*data-translationhash\s*=\s*[\'"]+([a-zA-Z0-9]+)[\'"]+\s*><\/span>/';
 
         // Get the actual hash.
         $translationhashes = [];
-        //preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
+       // preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
         preg_match($translationhashregex, $text, $translationhashes);
 
-        if (empty($translationhashes[1])) {
+        // We are matching for either the new or old syntax.
+        // So match can be at index 1 or 2.
+        if (empty($translationhashes[1]) && empty($translationhashes[2])) {
             return null;
         }
 
@@ -246,7 +247,18 @@ class filter_translations extends moodle_text_filter {
         //$text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
         $text = preg_replace($translationhashregex, '', $text);
 
-        return $translationhashes[1];
+        // New syntax.
+        if (!empty($translationhashes[1])) {
+            return $translationhashes[1];
+        }
+
+        // Old syntax.
+        if (!empty($translationhashes[2])) {
+            return $translationhashes[2];
+        }
+
+        // We should never reach here, but just in case.
+        return null;
     }
 
     /**
