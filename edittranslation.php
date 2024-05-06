@@ -23,7 +23,6 @@
  * @copyright 2021, Andrew Hancox
  */
 
-use core\notification;
 use filter_translations\edittranslationform;
 use filter_translations\translation;
 use filter_translations\unifieddiff;

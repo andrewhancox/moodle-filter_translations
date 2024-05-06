@@ -234,7 +234,7 @@ class filter_translations extends moodle_text_filter {
 
         // Get the actual hash.
         $translationhashes = [];
-       // preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
+        // preg_match('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', $text, $translationhashes);
         preg_match($translationhashregex, $text, $translationhashes);
 
         // We are matching for either the new or old syntax.
@@ -244,7 +244,7 @@ class filter_translations extends moodle_text_filter {
         }
 
         // Remove the span tag from the text.
-        //$text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
+        // $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '', $text);
         $text = preg_replace($translationhashregex, '', $text);
 
         // New syntax.
