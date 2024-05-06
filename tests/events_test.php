@@ -44,7 +44,7 @@ class events_test extends \advanced_testcase {
                 'lastgeneratedhash' => $generatedhash,
                 'md5key'            => $generatedhash,
                 'contextid'         => $contextid,
-                'substitutetext'    => 'some text'
+                'substitutetext'    => 'some text',
         ]);
         $translation->save();
 
