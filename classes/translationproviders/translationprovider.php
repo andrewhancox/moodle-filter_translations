@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -84,5 +83,5 @@ abstract class translationprovider {
      * @param $targetlanguage
      * @return mixed
      */
-    protected abstract function generate_translation($text, $targetlanguage);
+    abstract protected function generate_translation($text, $targetlanguage);
 }

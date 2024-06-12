@@ -4,20 +4,28 @@
         </i>
     </a>
     <div class="dropdown-menu dropdown-menu-right menu" aria-labelledby="dropdownMenuButton">
-        {{#skiptranslations}}
-            <p class="alert alert-info">{{#str}}cannottranslatelang, filter_translations{{/str}}</p>
-        {{/skiptranslations}}
-        {{^skiptranslations}}
-            <a class="dropdown-item" href="{{{toogleinlinetranslationurl}}}">{{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}{{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}</a>
-            <a class="dropdown-item" href="{{{coursemissingtranslationsurl}}}">{{#str}}translationissuesincoursemissing, filter_translations{{/str}}</a>
-            <a class="dropdown-item" href="{{{coursestaletranslationsurl}}}">{{#str}}translationissuesincoursestale, filter_translations{{/str}}</a>
-            <a class="dropdown-item missingonthispage" href="{{{missingtranslationsurl}}}">{{#str}}translationissuesinpagemissing, filter_translations{{/str}}</a>
-            <a class="dropdown-item staleonthispage" href="{{{staletranslationsurl}}}">{{#str}}translationissuesinpagestale, filter_translations{{/str}}</a>
+        {{#skiplanguage}}
+            <p class="alert alert-info small px-3 py-2 my-0 mx-2">{{#str}}cannottranslatelang, filter_translations{{/str}}</p>
+        {{/skiplanguage}}
+        {{^skiplanguage}}
+            {{#skiptranslations}}
+                <p class="alert alert-info small px-3 py-2 mb-1 mx-2">{{#str}}cannottranslatepage, filter_translations{{/str}}</p>
+            {{/skiptranslations}}
+            {{^skiptranslations}}
+                <a class="dropdown-item" href="{{{toogleinlinetranslationurl}}}">
+                    {{#inlinetranslationstate}}{{#str}}stopinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}
+                    {{^inlinetranslationstate}}{{#str}}startinlinetranslation, filter_translations{{/str}}{{/inlinetranslationstate}}
+                </a>
+                <a class="dropdown-item" href="{{{coursemissingtranslationsurl}}}">{{#str}}translationissuesincoursemissing, filter_translations{{/str}}</a>
+                <a class="dropdown-item" href="{{{coursestaletranslationsurl}}}">{{#str}}translationissuesincoursestale, filter_translations{{/str}}</a>
+                <a class="dropdown-item missingonthispage" href="{{{missingtranslationsurl}}}">{{#str}}translationissuesinpagemissing, filter_translations{{/str}}</a>
+                <a class="dropdown-item staleonthispage" href="{{{staletranslationsurl}}}">{{#str}}translationissuesinpagestale, filter_translations{{/str}}</a>
+            {{/skiptranslations}}
             <a class="dropdown-item" href="{{{allmissingtranslationsurl}}}">{{#str}}translationissuesinpagemissingall, filter_translations{{/str}}</a>
             <a class="dropdown-item" href="{{{allstaletranslationsurl}}}">{{#str}}translationissuesinpagestaleall, filter_translations{{/str}}</a>
             {{#translateall}}
                 <a class="dropdown-item" href="{{{alltranslationsurl}}}">{{#str}}managetranslations, filter_translations{{/str}}</a>
             {{/translateall}}
-        {{/skiptranslations}}
+        {{/skiplanguage}}
     </div>
 </div>

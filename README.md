@@ -1,6 +1,6 @@
 This plugin is part of a set, which also includes [Moodle Atto Translations](https://github.com/andrewhancox/moodle-atto_translations)
 
-Full documentation available at: https://docs.moodle.org/311/en/Content_translation_plugin_set
+Full documentation available at: https://docs.moodle.org/en/Content_translation_plugin_set
 
 # To Install it manually #
 - Unzip the plugin in the moodle .../filter/translations directory.
@@ -25,6 +25,17 @@ Since the filter makes database calls and, if Google Translate is enabled, web s
 
 # To Use it #
 Users with the 'filter/translations:edittranslations' capability will see an icon in the top right hand corner of the screen to enable the translator view of the course. At this point all translatable text will have an icon injected next to it to allow it to be translated.
+
+# Scheduled tasks #
+There are a number of scheduled tasks that can be enabled, if needed. These scheduled tasks are disabled by default and should only be enabled if content translation is to be applied to the whole site.
+
+**Insert translation spans**: This task scans records in specified tables/columns and adds a translation span tag if one is not found.
+
+**Remove duplicate hashes**: This task checks for duplicate translation hashes in specified tables/columns and replaces duplicate hashes with a new "unique" hash.
+
+**Copy translations**: This task finds matching translations for each content in specified tables/columns and copies them under the translation hash for that content.
+
+**Cleanup translation issues**: This task cleans up the translation issues table by deleting records older than 7 days.
 
 # To migrate from filter_fulltranslate #
 A CLI tool is available to migrate all translations across from the filter_fulltranslate.

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -28,8 +27,6 @@ namespace filter_translations\translationproviders;
 
 use cache;
 use core_component;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Translation provider to search installed language packs for a translation.
@@ -134,17 +131,17 @@ class languagestringreverse extends translationprovider {
             return null;
         }
 
-        $strings_by_component = $this->get_strings_by_component($targetlanguage);
+        $stringsbycomponent = $this->get_strings_by_component($targetlanguage);
 
         $languages = get_string_manager()->get_list_of_translations();
         foreach ($languages as $sourcelanguage => $value) {
-            foreach ($this->get_flipped_strings_by_component($sourcelanguage) as $component => $flipped_strings) {
-                if (!key_exists($text, $flipped_strings)) {
+            foreach ($this->get_flipped_strings_by_component($sourcelanguage) as $component => $flippedstrings) {
+                if (!key_exists($text, $flippedstrings)) {
                     continue;
                 }
 
-                if (key_exists($flipped_strings[$text], $strings_by_component[$component])) {
-                    return $strings_by_component[$component][$flipped_strings[$text]];
+                if (key_exists($flippedstrings[$text], $stringsbycomponent[$component])) {
+                    return $stringsbycomponent[$component][$flippedstrings[$text]];
                 }
             }
         }

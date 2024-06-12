@@ -25,6 +25,8 @@
 
 namespace filter_translations;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/filter/translations/lib/diff/src/Output/DiffOutputBuilderInterface.php');
 require_once($CFG->dirroot . '/filter/translations/lib/diff/src/Exception/Exception.php');
 require_once($CFG->dirroot . '/filter/translations/lib/diff/src/Exception/InvalidArgumentException.php');

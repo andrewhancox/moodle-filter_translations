@@ -37,6 +37,8 @@ $download = optional_param('download', '', PARAM_ALPHA);
 
 $context = context_system::instance();
 
+require_login();
+
 require_capability('filter/translations:edittranslations', $context);
 
 $PAGE->set_context($context);
@@ -65,7 +67,7 @@ $data->substitutetext = $substitutetext;
 $data->targetlanguage = $targetlanguage;
 $data->hash = $hash;
 
-if($usermodified > 0) {
+if ($usermodified > 0) {
     $data->usermodified = $usermodified;
 }
 

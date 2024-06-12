@@ -26,8 +26,6 @@
 use filter_translations\translation;
 use filter_translations\translator;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The actual filter class...
  */
@@ -57,7 +55,7 @@ class filter_translations extends moodle_text_filter {
     }
 
     /**
-     * Should the current page be translated.
+     * Should the current page be translated?
      * Must be based on the script name as PAGE->url will not be set yet.
      *
      * @return bool
@@ -91,6 +89,32 @@ class filter_translations extends moodle_text_filter {
         }
 
         return $skip;
+    }
+
+    /**
+     * Should inline-translation be disabled for this language?
+     *
+     * @return bool
+     * @throws dml_exception
+     */
+    public static function skiplanguage() {
+        static $skipthislang = null;
+
+        if (isset($skipthislang)) {
+            return $skipthislang;
+        }
+
+        $skipthislang = false;
+
+        if (in_array(current_language(),
+            explode(
+                ',',
+                get_config('filter_translations', 'excludelang')
+            ))) {
+            $skipthislang = true;
+        }
+
+        return $skipthislang;
     }
 
     /**
@@ -271,9 +295,9 @@ class filter_translations extends moodle_text_filter {
             'foundhash' => $foundhash,
             'contextid' => $contextid,
             'translationid' => !empty($translation) ? $translation->get('id') : '',
-            'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'), // is it stale
-            'goodtranslation' => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'), // is it fresh
-            'notranslation' => empty($translation), // is it not found
+            'staletranslation' => !empty($translation) && $generatedhash != $translation->get('lastgeneratedhash'), // Is it stale?
+            'goodtranslation' => !empty($translation) && $generatedhash == $translation->get('lastgeneratedhash'), // Is it fresh?
+            'notranslation' => empty($translation), // Is it not found?
         ];
         // Hash the object as a key to dedupe.
         $translationkey = md5(print_r($obj, true));
@@ -292,14 +316,15 @@ class filter_translations extends moodle_text_filter {
 
         // Return the encoded inpagetranslationid to be appended to the text ready for it to be found by the javascript
         // and turned in to a button when cross-referenced with the data from $registeredtranslations.
-        return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR;
+        return self::ENCODEDSEPERATOR . self::ENCODEDSEPERATOR . $this->encodeintegerashiddenchars($id) . self::ENCODEDSEPERATOR .
+            self::ENCODEDSEPERATOR;
     }
 
     /**
      * Zero-width characters used to hide information about the translation in plain text.
      */
-    const ENCODEDONE = "\u{200B}"; // Zero-Width Space - used to encode 1
-    const ENCODEDZERO = "\u{200C}"; // Zero-Width Non-Joiner - used to encode 0
+    const ENCODEDONE = "\u{200B}"; // Zero-Width Space - used to encode 1.
+    const ENCODEDZERO = "\u{200C}"; // Zero-Width Non-Joiner - used to encode 0.
     const ENCODEDSEPERATOR = "\u{200D}"; // Zero-Width Joiner - used to delimit the encoded text.
 
     /**
@@ -345,13 +370,13 @@ class filter_translations extends moodle_text_filter {
     public static function checkinlinestranslation($skipcapabilitycheck = false) {
         global $SESSION, $CFG, $PAGE;
 
-        static $has_capability;
+        static $hascapability;
 
         if ($skipcapabilitycheck) {
             return !empty($SESSION->filter_translations_toggleinlinestranslation);
         }
 
-        if (!isset($has_capability)) {
+        if (!isset($hascapability)) {
             $targetlanguage = current_language();
 
             if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
@@ -361,17 +386,17 @@ class filter_translations extends moodle_text_filter {
             }
 
             if ($targetlanguage == $CFG->lang) {
-                $has_capability = has_capability('filter/translations:editsitedefaulttranslations', $contextid);
+                $hascapability = has_capability('filter/translations:editsitedefaulttranslations', $contextid);
             } else {
-                $has_capability = has_capability('filter/translations:edittranslations', $contextid);
+                $hascapability = has_capability('filter/translations:edittranslations', $contextid);
             }
         }
 
-        $val = !empty($has_capability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
+        $val = !empty($hascapability) && !empty($SESSION->filter_translations_toggleinlinestranslation);
 
         if ($PAGE->state == $PAGE::STATE_BEFORE_HEADER) {
             // Don't hold the result in the static variable as it may change later in the page life-cycle.
-            unset($has_capability);
+            unset($hascapability);
         }
 
         return $val;
