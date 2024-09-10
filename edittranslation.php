@@ -33,7 +33,7 @@ $id = optional_param('id', null, PARAM_INT);
 $contextid = optional_param('contextid', null, PARAM_INT);
 $generatedhash = optional_param('generatedhash', null, PARAM_TEXT);
 $foundhash = optional_param('foundhash', null, PARAM_TEXT);
-$targetlanguage = optional_param('targetlanguage', current_language(), PARAM_TEXT);
+$targetlanguage = optional_param('targetlanguage', '', PARAM_TEXT);
 $rawtext = optional_param('rawtext', null, PARAM_RAW);
 $returnurl = optional_param('returnurl', new moodle_url('/filter/translations/managetranslations.php'), PARAM_URL);
 
@@ -68,6 +68,10 @@ $PAGE->set_heading($title);
 
 $persistent = null;
 if (empty($id)) {
+    if ($targetlanguage == '') {
+        $targetlanguage = current_language();
+    }
+
     $persistent = new translation();
     $persistent->set('md5key', empty($foundhash) ? $generatedhash : $foundhash);
     $persistent->set('targetlanguage', $targetlanguage);
@@ -79,6 +83,14 @@ if (empty($id)) {
     }
 
     $url->param('id', $id);
+
+    if ($targetlanguage == '') {
+        $targetlanguage = $persistent->get('targetlanguage');
+    }
+
+    if ($rawtext === null) {
+        $rawtext = $persistent->get('rawtext');
+    }
 
     if ($persistent->get('targetlanguage') == $CFG->lang) {
         require_capability('filter/translations:editsitedefaulttranslations', $context);

@@ -41,6 +41,6 @@ class translation_deleted extends translation_base {
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/assign/managetranslations.php');
+        return new \moodle_url('/filter/translations/managetranslations.php');
     }
 }
