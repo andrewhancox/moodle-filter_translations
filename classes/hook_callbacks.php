@@ -17,7 +17,8 @@
 namespace filter_translations;
 
 use core\hook\output\before_footer_html_generation;
-
+use core\hook\after_config;
+use filter_translations\text_filter as filter_translations;
 /**
  * Class hook_callbacks
  *
@@ -35,7 +36,7 @@ class hook_callbacks {
      * @param before_footer_html_generation $hook
      */
     public static function before_footer_html_generation(before_footer_html_generation $hook): void {
-        global $PAGE, $CFG, $OUTPUT;
+        global $CFG, $PAGE, $OUTPUT;
 
         require_once("$CFG->dirroot/filter/translations/filter.php");
 
@@ -59,10 +60,30 @@ class hook_callbacks {
 
         // Register - the objects required to inject and power the buttons.
         foreach (\filter_translations::$translationstoinject as $id => $jsobj) {
-            $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
+            $PAGE->requires->js_amd_inline(
+                "require(['filter_translations/translation_button'],
+                    function(translation_button) {
+                        translation_button.register('$id', $jsobj);
+                    });"
+            );
         }
 
         // Find and inject buttons - add the actual buttons.
-        $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.findandinjectbuttons();});");
+        $PAGE->requires->js_amd_inline(
+            "require(['filter_translations/translation_button'],
+                function(translation_button) {
+                    translation_button.findandinjectbuttons();
+                });"
+        );
+    }
+
+    public static function after_config(after_config $hook) {
+        global $CFG;
+
+        require_once("$CFG->dirroot/filter/translations/filter.php");
+
+        if (filter_translations::checkinlinestranslation(true)) {
+            $CFG->formatstringstriptags = false;
+        }
     }
 }
