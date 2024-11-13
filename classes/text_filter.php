@@ -34,7 +34,7 @@ use cache;
 /**
  * The actual filter class...
  */
-class text_filter extends \core_filters\text_filter {
+class text_filter extends \moodle_text_filter {
 
     /**
      * Get the cache that will be used to cache translations.
