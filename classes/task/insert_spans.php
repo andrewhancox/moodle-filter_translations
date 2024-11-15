@@ -121,7 +121,8 @@ class insert_spans extends \core\task\scheduled_task {
                             }
 
                             // Add the translation span tag.
-                            $blockinstance->config->text .= '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+                            $blockinstance->config->text = $filter->createtranslationspan(md5(random_string(32)))
+                                . $blockinstance->config->text;
 
                             // Encode and save block config data.
                             $row->configdata = base64_encode(serialize($blockinstance->config));
@@ -148,7 +149,8 @@ class insert_spans extends \core\task\scheduled_task {
                         continue;
                     }
 
-                    $row->$column .= '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+                    // Add the translation hash tag at the beginning.
+                    $row->$column = $filter->createtranslationspan(md5(random_string(32))) . $row->$column;
                     $DB->update_record($table, $row);
                     $updated = true;
                     mtrace('+', '');

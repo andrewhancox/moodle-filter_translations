@@ -105,7 +105,7 @@ if ($options['mode'] == 'listcolumns') {
                 if (strpos($row->$column, 'data-translationhash') !== false) {
                     cli_write('X');
                 } else {
-                    $row->$column .= '<span data-translationhash="' . $filter->generatehash($row->$column) . '"></span>';
+                    $row->$column .= $filter->createtranslationspan($filter->generatehash($row->$column));
                     $DB->update_record($table, $row);
                     cli_write('.');
                 }
