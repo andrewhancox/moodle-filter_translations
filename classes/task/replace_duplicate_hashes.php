@@ -131,7 +131,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                             $newhash = md5(random_string(32)); // Generate a new hash.
 
                             // Add the new translation span tag.
-                            $blockinstance->config->text = $blockcontent . '<span data-translationhash="' . $newhash . '"></span>';
+                            $blockinstance->config->text = $filter->createtranslationspan(md5(random_string(32))) . $blockcontent;
                             $translationhashes[$newhash] = $newhash; // Add to array of used hashes.
 
                             // Encode and save block config data.
@@ -179,7 +179,7 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                         "SELECT mp.id, " .
                         "SUBSTRING({$column} from POSITION('<span data-translationhash=' in {$column}) for 69) AS hash " .
                         "FROM {{$table}} mp " .
-                        "WHERE {$column} REGEXP '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>' " .
+                        "WHERE {$column} REGEXP '<span data-translationhash\\s*=\\s*[\'\"]+([a-zA-Z0-9]+)[\'\"]+\\s*><\\/span>' " .
                     ") AS Q1 " .
                     "GROUP BY hash " .
                     "HAVING count(*) > 1) AS Q2, " .
@@ -187,13 +187,14 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                         "SELECT mp.id, " .
                         "SUBSTRING({$column} from POSITION('<span data-translationhash=' in {$column}) for 69) AS hash " .
                     "FROM {{$table}} mp " .
-                    "WHERE {$column} REGEXP '<span data-translationhash[ ]*=[ ]*[\'\"]+([a-zA-Z0-9]+)[\'\"]+[ ]*>[ ]*<\/span>' " .
+                    "WHERE {$column} REGEXP '<span data-translationhash\\s*=\\s*[\'\"]+([a-zA-Z0-9]+)[\'\"]+\\s*><\\/span>' " .
                     ") AS Q3 " .
                     "WHERE Q2.hash = Q3.hash " .
                     "AND Q2.hash <> '' " .
                     "ORDER BY Q3.hash ASC, Q3.id ASC";
                 }
 
+                $filter = new filter_translations(context_system::instance(), []);
                 $lasthash = '';
 
                 $rs = $DB->get_recordset_sql($sql);
@@ -224,16 +225,17 @@ class replace_duplicate_hashes extends \core\task\scheduled_task {
                     // Get the full record from DB.
                     $record = $DB->get_record($table, ['id' => $row->id]);
 
-                    // Remove the old span tag from the text.
-                    $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '',
-                                $record->$column);
+                    // Extract translation hash from content. This will also remove the translation span tag.
+                    $foundhash = $filter->findandremovehash($record->$column);
 
-                    // Generate and append new translation hash.
-                    $record->$column = $text . '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+                    if (!empty($foundhash) && $foundhash == $hash) {
+                        // Generate and prepend new translation hash.
+                        $record->$column = $filter->createtranslationspan(md5(random_string(32))) . $record->$column;
 
-                    $DB->update_record($table, $record);
+                        $DB->update_record($table, $record);
 
-                    $updatedcount++;
+                       $updatedcount++;
+                    }
                 }
                 $rs->close();
 
