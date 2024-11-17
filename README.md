@@ -3,8 +3,10 @@ This plugin is part of a set, which also includes [Moodle Atto Translations](htt
 Full documentation available at: https://docs.moodle.org/en/Content_translation_plugin_set
 
 # To Install it manually #
-- Unzip the plugin in the moodle .../filter/translations directory.
-- Also install the Atto plugin from: https://github.com/andrewhancox/moodle-atto_translations
+- Unzip the plugin in your "moodleroot""/filter/translations directory.
+- Also install the companion editor plugins:
+-- TinyMCE plugin from: https://github.com/moodleacademy/moodle-tiny_translations
+-- Atto plugin from: https://github.com/andrewhancox/moodle-atto_translations
 
 # To Enable it #
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the 'Content translations' plugin there.

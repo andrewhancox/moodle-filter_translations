@@ -42,7 +42,7 @@ class filter_test extends advanced_testcase {
         filter_set_global_state('translations', TEXTFILTER_ON);
 
         // Fake the installation of the spanish and german language packs.
-        foreach (['de', 'sp', 'de_kids'] as $lang) {
+        foreach (['de', 'es', 'de_kids'] as $lang) {
             $langconfig = "<?php\n\$string['decsep'] = 'X';";
             $langfolder = $CFG->dataroot . '/lang/' . $lang;
             check_dir_exists($langfolder);
@@ -62,30 +62,35 @@ class filter_test extends advanced_testcase {
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $generatedhash,
             'contextid' => $contextid,
-            'substitutetext' => 'some german text'
+            'substitutetext' => 'some german text',
         ]);
         $translation->save();
 
         $kidstranslation = new translation(0, (object)[
-            'targetlanguage' => 'sp',
+            'targetlanguage' => 'es',
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $generatedhash,
             'contextid' => $contextid,
-            'substitutetext' => 'some spanish text'
+            'substitutetext' => 'some spanish text',
         ]);
         $kidstranslation->save();
 
         $SESSION->lang = 'de';
         $this->assertEquals(
             'some german text',
-            format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_MOODLE,
-                ['noclean' => true, 'trusted' => true])
+            format_text(
+                '<p class="translationhash"><span data-translationhash="' . $generatedhash .'"></span></p>Hello',
+                FORMAT_MOODLE,
+                ['noclean' => true, 'trusted' => true]
+            )
         );
 
-        $SESSION->lang = 'sp';
+        $SESSION->lang = 'es';
         $this->assertEquals(
             'some spanish text',
-            format_text("<span data-translationhash='$generatedhash'></span>Hello", FORMAT_HTML,
+            format_text(
+                '<p class="translationhash"><span data-translationhash="' . $generatedhash .'"></span></p>Hello',
+                FORMAT_HTML,
                 ['noclean' => true, 'trusted' => true])
         );
     }
@@ -100,11 +105,11 @@ class filter_test extends advanced_testcase {
         $this->assertEquals('thehash', $filter->findandremovehash($text));
         $this->assertEquals('Some text', $text);
 
-        $text = '<span data-translationhash="thenexthash"></span>Some more text<span data-translationhash="thenexthash"></span>';
+        $text = '<p class="translationhash"><span data-translationhash="thenexthash"></span></p>Some more text<span data-translationhash="thenexthash"></span>';
         $this->assertEquals('thenexthash', $filter->findandremovehash($text));
         $this->assertEquals('Some more text', $text);
 
-        $text = '<span data-translationhash="thenexthash"></span>Some more text with <span>spans</span> in it<span data-translationhash="thenexthash"></span>';
+        $text = '<p class="translationhash"><span data-translationhash="thenexthash"></span></p>Some more text with <span>spans</span> in it<p class="translationhash"><span data-translationhash="thenexthash"></span></p>';
         $this->assertEquals('thenexthash', $filter->findandremovehash($text));
         $this->assertEquals('Some more text with <span>spans</span> in it', $text);
     }
@@ -115,14 +120,14 @@ class filter_test extends advanced_testcase {
         $generatedhash = md5('generatedhash');
         $foundhash = md5('foundhash');
 
-        $contextid = context_system::instance()->id;
+        $context = context_system::instance();
 
         $translation = new translation(0, (object)[
             'targetlanguage' => 'de',
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $generatedhash,
-            'contextid' => $contextid,
-            'substitutetext' => 'some text'
+            'contextid' => $context->id,
+            'substitutetext' => 'some text',
         ]);
         $translation->save();
 
@@ -130,24 +135,24 @@ class filter_test extends advanced_testcase {
             'targetlanguage' => 'de_kids',
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $generatedhash,
-            'contextid' => $contextid,
-            'substitutetext' => 'some text for kids'
+            'contextid' => $context->id,
+            'substitutetext' => 'some text for kids',
         ]);
         $kidstranslation->save();
 
         $this->assertEquals($kidstranslation->get('id'),
-            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text', $context)->get('id'));
 
         $kidstranslationmatchonfound = new translation(0, (object)[
             'targetlanguage' => 'de_kids',
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $foundhash,
-            'contextid' => $contextid,
-            'substitutetext' => 'some text for kids'
+            'contextid' => $context->id,
+            'substitutetext' => 'some text for kids',
         ]);
         $kidstranslationmatchonfound->save();
 
         $this->assertEquals($kidstranslationmatchonfound->get('id'),
-            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+            $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text', $context)->get('id'));
     }
 }

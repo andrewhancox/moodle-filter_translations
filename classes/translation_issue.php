@@ -61,11 +61,11 @@ class translation_issue extends persistent {
      * @return array[]
      */
     protected static function define_properties() {
-        return array(
+        return [
             // Type of issue that occurred.
             'issue' => [
                 'type' => PARAM_INT,
-                'choices' => array_keys(self::get_issue_types())
+                'choices' => array_keys(self::get_issue_types()),
             ],
             // Page URL - as set at PAGE->url - where the issue occurred.
             'url' => [
@@ -95,7 +95,7 @@ class translation_issue extends persistent {
             'translationid' => [
                 'type' => PARAM_INT,
             ],
-        );
+        ];
     }
 
     /**
@@ -111,7 +111,7 @@ class translation_issue extends persistent {
             [
                 'md5key' => $translation->get('md5key'),
                 'generatedhash' => $translation->get('lastgeneratedhash'),
-                'targetlanguage' => $translation->get('targetlanguage')
+                'targetlanguage' => $translation->get('targetlanguage'),
             ]);
 
         foreach ($issues as $issue) {
@@ -129,7 +129,7 @@ class translation_issue extends persistent {
      * @param $limit
      * @return translation_issue[]
      */
-    public static function get_records_sql_compare_text($filters = array(), $sort = '', $order = 'ASC', $skip = 0, $limit = 0) {
+    public static function get_records_sql_compare_text($filters = [], $sort = '', $order = 'ASC', $skip = 0, $limit = 0) {
         global $DB;
 
         $whereclauses = [];
@@ -144,6 +144,6 @@ class translation_issue extends persistent {
             $params[$key] = $value;
         }
 
-        return translation_issue::get_records_select(implode(' AND ', $whereclauses), $params, $sort, '*', $skip, $limit);
+        return self::get_records_select(implode(' AND ', $whereclauses), $params, $sort, '*', $skip, $limit);
     }
 }

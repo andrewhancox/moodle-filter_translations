@@ -90,7 +90,7 @@ class googletranslate extends translationprovider {
         $targetlanguage = str_replace('_wp', '', $targetlanguage);
         $curl = new curl();
 
-        $curl->setHeader(array('Content-Type: application/json'));
+        $curl->setHeader(['Content-Type: application/json']);
 
         // Look for any base64 encoded files, create an md5 of their content,
         // use the md5 as a placeholder while we send the text to google translate.
@@ -113,17 +113,17 @@ class googletranslate extends translationprovider {
         try {
             $resp = $curl->post($url->out(false), json_encode([
                 'target' => $targetlanguage,
-                'q'      => $text
+                'q'      => $text,
             ]));
         } catch (\Exception $ex) {
-            error_log("Error calling Google Translate: \n" . $ex->getMessage());
+            debugging("Error calling Google Translate: \n" . $ex->getMessage());
             $this->backoff();
             return null;
         }
 
         $info = $curl->get_info();
         if ($info['http_code'] != 200) {
-            error_log("Error calling Google Translate: \n" . $info['http_code'] . "\nFailed Text:\n" . substr($text, 0, 1000) . "\n" . print_r($curl->get_raw_response(), true));
+            debugging("Error calling Google Translate: \n" . $info['http_code'] . "\nFailed Text:\n" . substr($text, 0, 1000) . "\n" . print_r($curl->get_raw_response(), true));
             $this->backoff();
             return null;
         }

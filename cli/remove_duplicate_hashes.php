@@ -33,7 +33,7 @@ $longparams = [
 
 $shortparams = [
     'm' => 'mode',
-    'f' => 'file'
+    'f' => 'file',
 ];
 
 // Now get cli options.
@@ -143,6 +143,8 @@ if ($options['mode'] == 'listcolumns') {
             $skippedcount = 0;
             $updatedcount = 0;
 
+            $filter = new filter_translations(context_system::instance(), []);
+
             foreach ($DB->get_records_sql($sql) as $row) {
                 if (empty($row->hash)) {
                     continue; // Hash cannot be empty.
@@ -175,19 +177,20 @@ if ($options['mode'] == 'listcolumns') {
                     // Get the full record from DB.
                     $record = $DB->get_record($table, ['id' => $row->id]);
 
-                    // Remove the old span tag from the text.
-                    $text = preg_replace('/<span data-translationhash[ ]*=[ ]*[\'"]+([a-zA-Z0-9]+)[\'"]+[ ]*>[ ]*<\/span>/', '',
-                        $record->$column);
+                    // Extract translation hash from content. This will also remove the translation span tag.
+                    $foundhash = $filter->findandremovehash($record->$column);
 
-                    // Generate and append new translation hash.
-                    $record->$column = $text . '<span data-translationhash="' . md5(random_string(32)) . '"></span>';
+                    if (!empty($foundhash) && $foundhash == $hash) {
+                        // Generate and prepend new translation hash.
+                        $record->$column = $filter->createtranslationspan(md5(random_string(32))) . $record->$column;
 
-                    if ($options['mode'] == 'process') {
-                        $DB->update_record($table, $record);
+                        if ($options['mode'] == 'process') {
+                            $DB->update_record($table, $record);
+                        }
+
+                        $updatedcount++;
+                        cli_write('+');
                     }
-
-                    $updatedcount++;
-                    cli_write('+');
                 } else {
                     $skippedcount++;
                     cli_write('-');

@@ -120,6 +120,13 @@ $string['edittranslation'] = 'Edit translation';
 $string['edittranslationsbutton'] = 'Edit translation';
 $string['excludelang'] = 'Languages to exclude from translation';
 $string['excludelang_desc'] = 'List of languages to entirely exclude from translation.';
+$string['export'] = 'Export';
+$string['exporttranslations'] = 'Export translations';
+$string['fieldrequired'] = 'Field "{$a}" is not allowed. The allowed fields are: "md5key, rawtext, substitutetext, targetlanguage, contextid".';
+$string['fieldsmismatch'] = 'Please check the fields in the CSV file. The required fields are: "md5key, rawtext, substitutetext, targetlanguage, contextid"';
+$string['fieldwrongorder'] = 'Field "{$a}" is in an incorrect order. The fields order is: "md5key, rawtext, substitutetext, targetlanguage, contextid".';
+$string['filetoimport'] = 'File to import';
+$string['filetoimport_help'] = 'Browse for and select the CSV file on your computer which contains the translations to import.';
 $string['filtername'] = 'Content translations';
 $string['filteroptions'] = 'Filter options';
 $string['foundhash'] = 'Found hash';
@@ -130,6 +137,17 @@ $string['google_backoffonerror'] = 'Back off from erroring API';
 $string['google_enable'] = 'Use Google Translate API';
 $string['googletranslate'] = 'Google Translate';
 $string['hash'] = 'Hash';
+$string['importsummary'] = 'Summary of import';
+$string['importtranslations'] = 'Import translations';
+$string['linenumber'] = 'Line number';
+$string['processedcount'] = 'Lines in file: {$a}';
+$string['selectcourse'] = 'Select a course...';
+$string['errorselectcourse'] = 'Please select a course.';
+$string['skippedcount'] = 'Lines skipped: {$a}';
+$string['reason'] = 'Reason';
+$string['reasonimportskipped1'] = 'Language not available on site.';
+$string['reasonimportskipped2'] = 'Translation record for this hash already exists.';
+$string['reasonimportskipped3'] = 'Translation data is incomplete.';
 $string['insertspans'] = 'Insert translation spans tags';
 $string['issue'] = 'Status';
 $string['issue_10'] = 'Stale';
@@ -169,6 +187,9 @@ $string['translate_good'] = 'Translate - translation is up to date';
 $string['translatedby'] = 'Translated by';
 $string['translation'] = 'Translation';
 $string['translations'] = 'Translations';
+$string['translationcreated'] = 'Content translation created';
+$string['translationdeleted'] = 'Content translation deleted';
+$string['translationupdated'] = 'Content translation updated';
 $string['translationalreadyexists'] = 'Translation cannot be saved. A Translation for language "{$a}" already exists.';
 $string['translationissuesinpagemissing'] = 'Missing on this page';
 $string['translationissuesincoursemissing'] = 'Missing in this course';
@@ -180,13 +201,28 @@ $string['translationdetails'] = 'Translation details';
 $string['translationid'] = 'Translation ID';
 $string['translationissues'] = 'Translation issues';
 $string['translations:bulkdeletetranslations'] = 'Bulk delete translations';
+$string['translations:bulkimporttranslations'] = 'Bulk import translations';
 $string['translations:deletetranslations'] = 'Delete translations';
 $string['translations:edittranslationhashkeys'] = 'Edit hash keys';
 $string['translations:editsitedefaulttranslations'] = 'Edit site default language translations';
 $string['translations:edittranslations'] = 'Edit translations';
+$string['translations:exporttranslations'] = 'Export translations';
 $string['unknownformtype'] = 'Unknown form type';
 $string['unknowncolumn'] = 'Unknown column or table';
 $string['untranslatedpages'] = 'Pages to leave untranslated';
 $string['untranslatedpages_desc'] = 'One per line.';
 $string['url'] = 'Page';
 $string['userid'] = 'User ID';
+$string['exportdescription'] = "<p>Export a CSV file with the missing translations of the selected course.</p>
+                                <p>You can then translate the content using automated translation tools such as matecat.com, before importing the translations back into the course.</p>
+                                <p>Important notes:</p>
+                                <ul>
+                                  <li>Only missing translations will be exported.</li>
+                                  <li>Importing this file into a different Moodle site is currently not supported.</li>
+                                </ul>";
+$string['importdescription'] = "<p>Import a CSV file with the missing translations of a course.</p>
+                                <p>Important notes:</p>
+                                <ul>
+                                  <li>Only missing translations will be uploaded.</li>
+                                  <li>Importing translations from other Moodle sites is currently not supported.</li>
+                                </ul>";

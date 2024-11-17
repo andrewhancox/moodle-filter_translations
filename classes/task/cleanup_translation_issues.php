@@ -44,6 +44,14 @@ class cleanup_translation_issues extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
+        // How many record will be cleaned up?
+        $count = $DB->count_records_select('filter_translation_issues',
+            "issue = ? AND timecreated < ?",
+            [translation_issue::ISSUE_MISSING, strtotime('-14 day')]
+        );
+
+        mtrace("    $count records will be cleaned up.");
+
         $transaction = $DB->start_delegated_transaction();
 
         // Delete missing translation records older than 14 days.
