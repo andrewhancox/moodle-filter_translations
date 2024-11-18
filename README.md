@@ -63,7 +63,8 @@ php cli/insert_spans.php
 Author
 ------
 
-The module has been written and is currently maintained by Andrew Hancox on behalf of [Open Source Learning](https://opensourcelearning.co.uk).
+The module was written by Andrew Hancox on behalf of [Open Source Learning](https://opensourcelearning.co.uk).
+It is currently maintained by Rajneel Totaram for [Moodle Academy](https://moodle.academy)
 
 Useful links
 ------------
