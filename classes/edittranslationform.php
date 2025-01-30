@@ -195,7 +195,7 @@ class edittranslationform extends persistent {
         $mform->addElement('hidden', 'lastgeneratedhash');
 
         $buttonarray = [
-            $mform->createElement('submit', 'submitbutton', get_string('savechanges'))
+            $mform->createElement('submit', 'submitbutton', get_string('savechanges')),
         ];
 
         $buttonarray[] = $mform->createElement('cancel');
@@ -204,7 +204,7 @@ class edittranslationform extends persistent {
             $buttonarray[] = $mform->createElement('submit', 'deletebutton', get_string('delete'));
         }
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }
 
     /**
@@ -320,7 +320,7 @@ class edittranslationform extends persistent {
      * @return array of additional errors, or overridden errors.
      */
     protected function extra_validation($data, $files, array &$errors) {
-        $newerrors = array();
+        $newerrors = [];
 
         if ((isset($data->substitutetext_plain) && $data->rawtext === $data->substitutetext_plain) ||
                 (isset($data->substitutetext_editor) && $data->rawtext === $data->substitutetext_editor['text'])) {

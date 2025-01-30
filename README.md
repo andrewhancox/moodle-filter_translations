@@ -1,16 +1,20 @@
-This plugin is part of a set, which also includes [Moodle Atto Translations](https://github.com/andrewhancox/moodle-atto_translations)
+This plugin allows translation of user-generated content in Moodle.
 
-Full documentation available at: https://docs.moodle.org/en/Content_translation_plugin_set
+It is part of a set, which also includes [Moodle Atto Translations](https://github.com/andrewhancox/moodle-atto_translations) and [Moodle TinyMCE Translations](https://github.com/moodleacademy/moodle-tiny_translations) as companion plugins.
+
+Full documentation available at: https://docs.moodle.org/en/Content_translation_plugin_set.
 
 # To Install it manually #
-- Unzip the plugin in the moodle .../filter/translations directory.
-- Also install the Atto plugin from: https://github.com/andrewhancox/moodle-atto_translations
+- Unzip the filter_translations plugin in your "moodleroot""/filter/translations directory.
+- Also install the companion editor plugins:
+-- TinyMCE plugin from: https://github.com/moodleacademy/moodle-tiny_translations
+-- Atto plugin from: https://github.com/andrewhancox/moodle-atto_translations
 
 # To Enable it #
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Manage filters" and enable the 'Content translations' plugin there.
 - Go to "Site Administration &gt;&gt; Plugins &gt;&gt; Filters &gt;&gt; Content translations" and choose a caching level appropriate to your site.
 
-# Cacheing #
+# Caching #
 Since the filter makes database calls and, if Google Translate is enabled, web service calls, it is advisable to enable caching by working with the cachingmode setting. If you have a small volume of course material in active use then Application mode caching is advised, if you have a large volume then Session. In any case, the default of Request is rarely the optimal choice.
 
 # How it chooses translations #
@@ -31,7 +35,7 @@ There are a number of scheduled tasks that can be enabled, if needed. These sche
 
 **Insert translation spans**: This task scans records in specified tables/columns and adds a translation span tag if one is not found.
 
-**Remove duplicate hashes**: This task checks for duplicate translation hashes in specified tables/columns and replaces duplicate hashes with a new "unique" hash.
+**Replace duplicate hashes**: This task checks for duplicate translation hashes in specified tables/columns and replaces duplicate hashes with a new "unique" hash.
 
 **Copy translations**: This task finds matching translations for each content in specified tables/columns and copies them under the translation hash for that content.
 
@@ -61,7 +65,8 @@ php cli/insert_spans.php
 Author
 ------
 
-The module has been written and is currently maintained by Andrew Hancox on behalf of [Open Source Learning](https://opensourcelearning.co.uk).
+The module was written by Andrew Hancox on behalf of [Open Source Learning](https://opensourcelearning.co.uk).
+It is currently maintained by Rajneel Totaram for [Moodle Academy](https://moodle.academy)
 
 Useful links
 ------------

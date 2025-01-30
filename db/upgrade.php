@@ -67,7 +67,7 @@ function xmldb_filter_translations_upgrade($oldversion) {
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('generatedhash', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL);
 
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -185,7 +185,7 @@ function xmldb_filter_translations_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
 
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -201,6 +201,64 @@ function xmldb_filter_translations_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2023031002, 'filter', 'translations');
+    }
+
+    if ($oldversion < 2024110103) {
+        $table = new xmldb_table('filter_translations_history');
+
+        // Drop the index temporarily. We will add them back later.
+        $index = new xmldb_index('targetlanguage_md5key', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'md5key']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'lastgeneratedhash']);
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Rename field 'prevgeneratedhash' on table filter_translations_history to 'prevlastgeneratedhash'.
+        $field = new xmldb_field('prevgeneratedhash', XMLDB_TYPE_CHAR, '32', null, null, null, null, 'translationsource');
+        $renamedfield = new xmldb_field('prevlastgeneratedhash', XMLDB_TYPE_CHAR, '32', null, null, null, null, 'translationsource');
+
+        if ($dbman->field_exists($table, $field) && !$dbman->field_exists($table, $renamedfield)) {
+            // Launch rename field prevgeneratedhash.
+            $dbman->rename_field($table, $field, 'prevlastgeneratedhash');
+        }
+
+        // Changing the default of field targetlanguage on table filter_translations_history to en.
+        $field = new xmldb_field('targetlanguage', XMLDB_TYPE_CHAR, '30', null, XMLDB_NOTNULL, null, 'en', 'lastgeneratedhash');
+
+        // Launch change of default for field targetlanguage.
+        $dbman->change_field_default($table, $field);
+
+        // Add indexes.
+        $index = new xmldb_index('targetlanguage_md5key', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'md5key']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('targetlanguage_lastgen', XMLDB_INDEX_NOTUNIQUE,
+                ['targetlanguage', 'lastgeneratedhash']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('filttranhist_use_ix', XMLDB_INDEX_NOTUNIQUE, ['usermodified']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('filttranhist_con_ix', XMLDB_INDEX_NOTUNIQUE, ['contextid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Translations savepoint reached.
+        upgrade_plugin_savepoint(true, 2024110103, 'filter', 'translations');
     }
 
     return true;

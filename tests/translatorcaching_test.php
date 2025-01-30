@@ -66,7 +66,7 @@ class translatorcaching_test extends advanced_testcase {
             'lastgeneratedhash' => $generatedhash,
             'md5key' => $generatedhash,
             'contextid' => $contextid,
-            'substitutetext' => 'translatedtext'
+            'substitutetext' => 'translatedtext',
         ]);
         $translation->save();
 
@@ -99,7 +99,7 @@ class translatorcaching_test extends advanced_testcase {
             'lastgeneratedhash' => md5('unusedtranslation'),
             'md5key' => md5('unusedtranslation'),
             'contextid' => $contextid,
-            'substitutetext' => 'unusedtranslatedtext'
+            'substitutetext' => 'unusedtranslatedtext',
         ]);
         $unusedtranslation->save();
 

@@ -49,15 +49,15 @@ abstract class translation_base extends base {
     }
 
     public static function trigger_from_translation(translation $translation, translation $previous = null) {
-        $data = array(
+        $data = [
             'context' => context_system::instance(),
             'objectid' => $translation->get('id'),
             'relateduserid' => $translation->get('usermodified'),
             'other' => [
                 'previous' => isset($previous) ? json_encode($previous->to_record()) : '',
-                'translation' => json_encode($translation->to_record())
-            ]
-        );
+                'translation' => json_encode($translation->to_record()),
+            ],
+        ];
         $event = self::create($data);
 
         $event->trigger();

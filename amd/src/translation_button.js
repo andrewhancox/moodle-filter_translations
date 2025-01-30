@@ -39,6 +39,8 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
 
             // Two encodedseperator next to each other indicates a placeholder to swap for a translation button.
             var elems = translation_button.findElementsDirectlyContainingText(document, encodedseperator + encodedseperator);
+            let itemsprocessed = 0;
+            let missingitems = [];
             elems.forEach(function(elem) {
                 var matches = new RegExp(encodedseperator + encodedseperator + '([' + encodedone + encodedzero + ']*)');
 
@@ -53,34 +55,53 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates'], function 
                 // Render the translation button.
                 templates.render('filter_translations/translatebutton', translationinfo).done(function (html) {
                     $(elem).append(html);
+
+                    // Some content may be rendered multiple times, such as in title attributes, for screenreaders
+                    // and hidden for display in responsive views.
+                    // Do not count duplicates.
+                    if (translationinfo.notranslation == true) {
+                        if (!missingitems.includes(translationinfo.generatedhash)) {
+                            missingitems.push(translationinfo.generatedhash);
+                        }
+                    }
+
+                    itemsprocessed++;
+                    if (itemsprocessed === elems.length) {
+                        // Last inline button has been added. Now we can start counting.
+                        // There will always be one <title> element, but get its count anyways.
+                        const titlemissing = document.querySelectorAll('title .icon-translate-cross').length;
+                        const missingitemscount = missingitems.length - titlemissing;
+
+                        // Count missing and stale translations and inject the numbers into the menu.
+                        // This has to be done in JS as we need to render the menu in the header but don't know the number
+                        // until the whole page has renderred.
+                        let stalecount = 0;
+                        for (let k in translation_button.objects) {
+                            if (translation_button.objects[k].staletranslation) {
+                                stalecount += 1;
+                            }
+                        }
+
+                        const totalcount = stalecount + missingitemscount;
+
+                        $('.translation-icon-wrapper i').after(
+                            '<div class="count-container " data-region="count-container">'
+                            + translation_button.cap_count(totalcount)
+                            + '</div>'
+                        );
+
+                        $('.translation-icon-wrapper a.missingonthispage').html(
+                            $('.translation-icon-wrapper a.missingonthispage').html()
+                            + ' (' +  translation_button.cap_count(missingitemscount) + ')'
+                        );
+
+                        $('.translation-icon-wrapper a.staleonthispage').html(
+                            $('.translation-icon-wrapper a.staleonthispage').html()
+                            + ' (' +  translation_button.cap_count(stalecount) + ')'
+                        );
+                    }
                 });
             });
-
-            // Count missing and stale translations and inject the numbers into the menu.
-            // This has to be done in JS as we need to render the menu in the header but don't know the number
-            // until the whole page has renderred.
-            var stalecount = 0;
-            var missingcount = 0;
-            for (var k in translation_button.objects) {
-                if (translation_button.objects[k].staletranslation) {
-                    stalecount += 1;
-                } else if (translation_button.objects[k].notranslation) {
-                    missingcount += 1;
-                }
-            }
-            var totalcount = stalecount + missingcount;
-
-            $('.translation-icon-wrapper i').after(
-                '<div class="count-container " data-region="count-container">' + translation_button.cap_count(totalcount) + '</div>'
-            );
-
-            $('.translation-icon-wrapper a.missingonthispage').html(
-                $('.translation-icon-wrapper a.missingonthispage').html() + ' (' +  translation_button.cap_count(missingcount) + ')'
-            );
-
-            $('.translation-icon-wrapper a.staleonthispage').html(
-                $('.translation-icon-wrapper a.staleonthispage').html() + ' (' +  translation_button.cap_count(stalecount) + ')'
-            );
         },
         'opentranslation': function (event) {
             event.stopPropagation();

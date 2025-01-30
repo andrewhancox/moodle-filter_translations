@@ -71,11 +71,18 @@
     z-index: 2;
 }
 
-.path-course-view .activityname .instancename .filter_translations_btn_translate {
+.activity-instance .activityname .instancename .filter_translations_btn_translate {
     position: relative;
 }
 
 pre.filter_translations_rawhtml {
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+/* Applied to parent of span tags to keep them hidden */
+.translationhash {
+    display: none;
+    height:0;
+    width: 0;
 }

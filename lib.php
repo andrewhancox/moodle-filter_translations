@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 use filter_translations\translation_issue;
+use filter_translations\text_filter as filter_translations;
 
 /**
  * @package filter_translations
@@ -53,7 +55,7 @@ function filter_translations_pluginfile($course, $cm, context $context, $fileare
  * @return string The HTML
  */
 function filter_translations_render_navbar_output(\renderer_base $renderer) {
-    global $PAGE, $CFG, $DB;
+    global $CFG, $PAGE;
 
     if (!filter_is_enabled('translations')) {
         return '';
@@ -91,7 +93,7 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
 
     if (isset($inlinetransationtate)) {
         require_capability('filter/translations:edittranslations', $PAGE->context);
-        \filter_translations::toggleinlinestranslation($inlinetransationtate);
+        filter_translations::toggleinlinestranslation($inlinetransationtate);
         redirect($PAGE->url);
     }
 
@@ -143,6 +145,8 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
     ]);
 
     $alltranslationsurl = new moodle_url("/filter/translations/managetranslations.php");
+    $importtranslationsurl = new moodle_url("/filter/translations/import.php", ['id' => $PAGE->course->id]);
+    $exporttranslationsurl = new moodle_url("/filter/translations/export.php", ['id' => $PAGE->course->id]);
 
     return $renderer->render_from_template('filter_translations/toggleinlinestranslationstate', (object)[
         'toogleinlinetranslationurl' => $PAGE->url->out(false, ['inlinetransationtate' => !$currentinlinetranslationstate]),
@@ -152,9 +156,13 @@ function filter_translations_render_navbar_output(\renderer_base $renderer) {
         'staletranslationsurl' => $staletranslationsurl->out(false),
         'allmissingtranslationsurl' => $allmissingtranslationsurl->out(false),
         'allstaletranslationsurl' => $allstaletranslationsurl->out(false),
+        'importtranslationsurl' => $importtranslationsurl->out(false),
+        'exporttranslationsurl' => isset($exporttranslationsurl) ? $exporttranslationsurl->out(false) : '',
         'inlinetranslationstate' => $currentinlinetranslationstate,
         'alltranslationsurl' => $alltranslationsurl->out(false),
         'translateall' => (has_capability('filter/translations:editsitedefaulttranslations', $context)) ? true : false,
+        'bulkimport' => (has_capability('filter/translations:bulkimporttranslations', $context)) ? true : false,
+        'canexport' => (has_capability('filter/translations:exporttranslations', $context)) ? true : false,
         'skiplanguage' => $skiplanguage,
         'skiptranslations' => $skiptranslations,
     ]);
@@ -178,6 +186,7 @@ function filter_translations_cap_count($count) {
  */
 function filter_translations_after_config() {
     global $CFG;
+
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
     if (filter_translations::checkinlinestranslation(true)) {
@@ -191,7 +200,7 @@ function filter_translations_after_config() {
  * translation_button.register - do this for all trans
  */
 function filter_translations_before_footer() {
-    global $PAGE, $CFG, $OUTPUT;
+    global $CFG, $PAGE, $OUTPUT;
 
     require_once("$CFG->dirroot/filter/translations/filter.php");
 
@@ -206,7 +215,7 @@ function filter_translations_before_footer() {
         ]);
     }
 
-    if (empty(\filter_translations::$translationstoinject)) {
+    if (empty(filter_translations::$translationstoinject)) {
         return;
     }
 
@@ -214,11 +223,20 @@ function filter_translations_before_footer() {
     $PAGE->requires->js_call_amd('filter_translations/translation_button', 'init', ['returnurl' => $PAGE->url->out()]);
 
     // Register - the objects required to inject and power the buttons.
-    foreach (\filter_translations::$translationstoinject as $id => $jsobj) {
-        $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.register('$id', $jsobj);});");
+    foreach (filter_translations::$translationstoinject as $id => $jsobj) {
+        $PAGE->requires->js_amd_inline(
+            "require(['filter_translations/translation_button'],
+                function(translation_button) {
+                    translation_button.register('$id', $jsobj);
+                });"
+        );
     }
 
     // Find and inject buttons - add the actual buttons.
-    $PAGE->requires->js_amd_inline("require(['filter_translations/translation_button'], function(translation_button) { translation_button.findandinjectbuttons();});");
-
+    $PAGE->requires->js_amd_inline(
+        "require(['filter_translations/translation_button'],
+            function(translation_button) {
+                translation_button.findandinjectbuttons();
+            });"
+    );
 }

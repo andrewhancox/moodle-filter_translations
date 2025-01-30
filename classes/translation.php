@@ -46,7 +46,7 @@ class translation extends persistent {
     const SOURCE_AUTOMATIC = 20;
 
     protected static function define_properties() {
-        return array(
+        return [
                 // The md5 hash that will be used to refer to this translation using span tags.
                 'md5key'               => [
                         'type' => PARAM_TEXT,
@@ -54,7 +54,7 @@ class translation extends persistent {
                 // The md5 hash of the raw text that was last seen when this translation was updated/created.
                 'lastgeneratedhash'    => [
                         'type'    => PARAM_TEXT,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Target language of this translation.
                 'targetlanguage'       => [
@@ -67,26 +67,26 @@ class translation extends persistent {
                 // The raw text that was last seen when this translation was updated/created.
                 'rawtext'       => [
                         'type'    => PARAM_RAW,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Text to use as substitution.
                 'substitutetext'       => [
                         'type'    => PARAM_RAW,
-                        'default' => ''
+                        'default' => '',
                 ],
                 // Format of the text to use as subtitution.
                 'substitutetextformat' => [
-                        'choices' => array(FORMAT_HTML, FORMAT_MOODLE, FORMAT_PLAIN, FORMAT_MARKDOWN),
+                        'choices' => [FORMAT_HTML, FORMAT_MOODLE, FORMAT_PLAIN, FORMAT_MARKDOWN],
                         'type'    => PARAM_INT,
-                        'default' => FORMAT_HTML
+                        'default' => FORMAT_HTML,
                 ],
                 // How the translation was obtained - manual or automatic.
                 'translationsource' => [
                     'type' => PARAM_INT,
                     'default' => self::SOURCE_MANUAL,
-                    'choices' => array(self::SOURCE_MANUAL, self::SOURCE_AUTOMATIC),
-                ]
-        );
+                    'choices' => [self::SOURCE_MANUAL, self::SOURCE_AUTOMATIC],
+                ],
+        ];
     }
 
     /**
@@ -113,12 +113,28 @@ class translation extends persistent {
     }
 
     /**
+     * Clean substitute text before saving
+     *
+     * @return void
+     * @throws \coding_exception
+     */
+    protected function before_create() {
+        // Strip out any ZWJ characters from substitute text.
+        $this->set('substitutetext', $this->strip_zwj($this->get('substitutetext')));
+
+        parent::before_create();
+    }
+
+    /**
      * Snapshot the translation for use in after_update
      *
      * @return void
      * @throws \coding_exception
      */
     protected function before_update() {
+        // Strip out any ZWJ characters from substitute text.
+        $this->set('substitutetext', $this->strip_zwj($this->get('substitutetext')));
+
         parent::before_update();
         $this->previous = self::get_record(['id' => $this->get('id')]);
     }
@@ -208,7 +224,7 @@ class translation extends persistent {
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 
         // We return class instances.
-        $instances = array();
+        $instances = [];
         foreach ($records as $key => $record) {
             $instances[$key] = new static(0, $record);
         }
@@ -246,5 +262,18 @@ class translation extends persistent {
         }
 
         $DB->insert_record('filter_translations_history', $record);
+    }
+
+    /**
+     * Strip out ZWJ characters
+     *
+     * @param string $text text to be cleaned
+     * @return string cleaned text
+     */
+    public function strip_zwj(string $text) {
+        // Remove ZWJ characters.
+        $text = preg_replace('/[\x{200B}\x{200C}\x{200D}]/u', '', $text);
+
+        return trim($text);
     }
 }

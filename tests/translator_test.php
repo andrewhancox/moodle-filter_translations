@@ -45,42 +45,42 @@ class translator_test extends advanced_testcase {
         $generatedhash = md5('generatedhash');
         $foundhash = md5('foundhash');
 
-        $contextid = context_system::instance()->id;
+        $context = context_system::instance();
 
         $translation = new translation(0, (object) [
                 'targetlanguage'    => 'de',
                 'lastgeneratedhash' => $generatedhash,
                 'md5key'            => $generatedhash,
-                'contextid'         => $contextid,
-                'substitutetext'    => 'some text'
+                'contextid'         => $context->id,
+                'substitutetext'    => 'some text',
         ]);
         $translation->save();
 
         $this->assertEquals($translation->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text', $context)->get('id'));
 
         $kidstranslation = new translation(0, (object) [
                 'targetlanguage'    => 'de_kids',
                 'lastgeneratedhash' => $generatedhash,
                 'md5key'            => $generatedhash,
-                'contextid'         => $contextid,
-                'substitutetext'    => 'some text for kids'
+                'contextid'         => $context->id,
+                'substitutetext'    => 'some text for kids',
         ]);
         $kidstranslation->save();
 
         $this->assertEquals($kidstranslation->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text', $context)->get('id'));
 
         $kidstranslationmatchonfound = new translation(0, (object) [
                 'targetlanguage'    => 'de_kids',
                 'lastgeneratedhash' => $generatedhash,
                 'md5key'            => $foundhash,
-                'contextid'         => $contextid,
-                'substitutetext'    => 'some text for kids'
+                'contextid'         => $context->id,
+                'substitutetext'    => 'some text for kids',
         ]);
         $kidstranslationmatchonfound->save();
 
         $this->assertEquals($kidstranslationmatchonfound->get('id'),
-                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text')->get('id'));
+                $translator->get_best_translation('de_kids', $generatedhash, $foundhash, 'untranslated text', $context)->get('id'));
     }
 }

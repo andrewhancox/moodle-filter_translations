@@ -50,13 +50,13 @@ $form = new managetranslations_filterform();
 $formdata = $form->get_data();
 
 if ($formdata) {
-    $urlparams = array(
+    $urlparams = [
         'rawtext' => $rawtext,
         'substitutetext' => $substitutetext,
         'targetlanguage' => $targetlanguage,
         'hash' => $hash,
         'usermodified' => $usermodified,
-    );
+    ];
     $baseurl->params($urlparams);
     redirect($baseurl);
 }
