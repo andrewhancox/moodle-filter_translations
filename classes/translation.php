@@ -113,12 +113,28 @@ class translation extends persistent {
     }
 
     /**
+     * Clean substitute text before saving
+     *
+     * @return void
+     * @throws \coding_exception
+     */
+    protected function before_create() {
+        // Strip out any ZWJ characters from substitute text.
+        $this->set('substitutetext', $this->strip_zwj($this->get('substitutetext')));
+
+        parent::before_create();
+    }
+
+    /**
      * Snapshot the translation for use in after_update
      *
      * @return void
      * @throws \coding_exception
      */
     protected function before_update() {
+        // Strip out any ZWJ characters from substitute text.
+        $this->set('substitutetext', $this->strip_zwj($this->get('substitutetext')));
+
         parent::before_update();
         $this->previous = self::get_record(['id' => $this->get('id')]);
     }
@@ -246,5 +262,18 @@ class translation extends persistent {
         }
 
         $DB->insert_record('filter_translations_history', $record);
+    }
+
+    /**
+     * Strip out ZWJ characters
+     *
+     * @param string $text text to be cleaned
+     * @return string cleaned text
+     */
+    public function strip_zwj(string $text) {
+        // Remove ZWJ characters.
+        $text = preg_replace('/[\x{200B}\x{200C}\x{200D}]/u', '', $text);
+
+        return trim($text);
     }
 }

@@ -25,11 +25,12 @@
 
 namespace filter_translations;
 
+use cache;
+use cache_store;
+use context_system;
+
 use filter_translations\translation;
 use filter_translations\translator;
-
-use context_system;
-use cache;
 
 /**
  * The actual filter class...
