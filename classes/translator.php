@@ -86,9 +86,11 @@ class translator {
         }
 
         // If no translation can be found, or the only translation is either stale or for a lower priority language then
-        // try automated translations.
-        if (empty($translation) || $translation->get('lastgeneratedhash') != $generatedhash ||
-                $translation->get('targetlanguage') != $language) {
+        // try automated translations - unless its a manual translation. To retranslate manual translation automatically - delete it manually first.
+        if (empty($translation) || 
+                ($translation->get('translationsource') != translation::SOURCE_MANUAL && 
+                 ($translation->get('lastgeneratedhash') != $generatedhash || $translation->get('targetlanguage') != $language)) 
+            ) {
             // First try reverse language string look up.
             $languagestrings = new languagestringreverse();
             $languagestringtranslation = $languagestrings->createorupdate_translation($foundhash, $generatedhash, $text,
@@ -326,7 +328,7 @@ class translator {
             }
         }
 
-        return array_reverse(array_merge(['en'], $dependencies));
+        return array_reverse(array_merge([$CFG->lang], $dependencies));
     }
 
     /**
