@@ -56,6 +56,10 @@
     align-items: center;
 }
 
+.navbar .translation-icon-wrapper .count-container {
+    right: 19px;
+}
+
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor .col-form-label,
 #page-filter-translations-edittranslation #fitem_id_substitutetext_plain .col-form-label,
 #page-filter-translations-edittranslation #fitem_id_substitutetext_editor + .form-group .col-form-label,
