@@ -45,6 +45,11 @@ class managetranslationissues_table extends table_sql {
     private $languages = null;
 
     /**
+     * @var stdClass
+     */
+    private $filterparams;
+
+    /**
      * Set up the table, manage filters etc.
      *
      * @param $filterparams
