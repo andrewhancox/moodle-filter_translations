@@ -24,9 +24,16 @@
     }
 }}
 <div class="popover-region dropdown translation-icon-wrapper">
-    <a class="nav-link position-relative icon-no-margin dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" role="button" title="{{#str}}pluginname, filter_translations{{/str}}" aria-label="{{#str}}pluginname, filter_translations{{/str}}">
-        <i class="icon icon-translate-default" aria-hidden="true">
-        </i>
+    <a id="dropdownMenuButton"
+        class="nav-link position-relative icon-no-margin dropdown-toggle"
+        href="#"
+        data-bs-toggle="dropdown"
+        role="button"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-label="{{#str}}pluginname, filter_translations{{/str}}"
+        title="{{#str}}pluginname, filter_translations{{/str}}">
+        <i class="icon icon-translate-default" aria-hidden="true"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-end menu" aria-labelledby="dropdownMenuButton">
         {{#skiplanguage}}
