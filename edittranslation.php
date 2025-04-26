@@ -107,6 +107,7 @@ if (!empty($generatedhash)) {
 $showdiff = false;
 $old = false;
 if (!empty($rawtext) && !empty($persistent->get('rawtext')) && $rawtext != $persistent->get('rawtext')) {
+    $PAGE->requires->js_call_amd('theme_boost/bs4-compat', 'init');
     $PAGE->requires->js_call_amd('filter_translations/diffrenderer', 'init',
         ['changeset' => unifieddiff::generatediff($persistent->get('rawtext'), $rawtext)]);
     $showdiff = true;
