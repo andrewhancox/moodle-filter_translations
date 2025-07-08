@@ -255,7 +255,7 @@ class edittranslationform extends persistent {
         }
         $mform->addElement('html',
             '<li class="nav-item">
-            <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-toggle="tab" href="#' . $name .
+            <a class="nav-link ' . $selectedclass . '" id="diff-tab" data-bs-toggle="tab" href="#' . $name .
             '" role="tab" aria-selected="' . $selectedariaattr . '">
             <h4>' . $label . '</h4>
             </a>
